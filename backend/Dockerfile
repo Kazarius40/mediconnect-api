@@ -4,10 +4,10 @@ WORKDIR /app
 
 COPY package*.json ./
 
-COPY . .
-
 RUN npm install
+
+COPY . .
 
 RUN npm run build
 
-CMD ["npm", "run", "start:prod"]
+CMD ["node", "dist/main.js"]

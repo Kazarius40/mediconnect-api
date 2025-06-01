@@ -13,7 +13,7 @@ export class TokenCleanupService {
     private readonly tokenRepository: Repository<Token>,
   ) {}
 
-  @Cron('*/5 * * * *')
+  @Cron('0 * * * *')
   // @Cron(CronExpression.EVERY_6_HOURS)
   async handleCron() {
     const now = new Date();
@@ -21,7 +21,7 @@ export class TokenCleanupService {
     const deleteResult = await this.tokenRepository
       .createQueryBuilder()
       .delete()
-      .where('refreshTokenExpiresAt <= :now OR isBlocked = :blocked', {
+      .where('accessTokenExpiresAt <= :now OR isBlocked = :blocked', {
         now,
         blocked: true,
       })

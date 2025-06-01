@@ -32,10 +32,12 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {
-    this.accessTokenExpiresIn =
-      this.configService.get<number>('ACCESS_TOKEN_EXPIRATION_TIME') ?? 3600;
-    this.refreshTokenExpiresIn =
-      this.configService.get<number>('REFRESH_TOKEN_EXPIRATION_TIME') ?? 86400;
+    this.accessTokenExpiresIn = this.configService.get<number>(
+      'ACCESS_TOKEN_EXPIRATION_TIME',
+    )!;
+    this.refreshTokenExpiresIn = this.configService.get<number>(
+      'REFRESH_TOKEN_EXPIRATION_TIME',
+    )!;
   }
 
   async removeExpiredTokens(): Promise<number> {
