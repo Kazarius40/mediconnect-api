@@ -2,13 +2,15 @@ services:
   db:
     image: mysql:8
     container_name: mediconnect-db
-    environment:
-      MYSQL_DATABASE: ${DB_DATABASE}
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     volumes:
       - db_data:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=${DB_DATABASE}
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+    env_file:
+      - .env
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${DB_USERNAME}", "-p${DB_PASSWORD}"]
       interval: 5s
@@ -30,10 +32,11 @@ services:
       - .env
     ports:
       - "3000:3000"
-    command: npm run start:dev
+    command: npm run start:prod
+#    command: npm run start:dev
     volumes:
       - ./backend:/app
-      - /app/node_modules
+#      - /app/node_modules
 
 volumes:
   db_data:
