@@ -1,16 +1,18 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 import { TypeormModule } from './typeorm.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ServiceModule } from './services/service.module';
+import { DoctorsModule } from './doctors/doctors.module';
+import { ClinicsModule } from './clinics/clinics.module';
 
 @Module({
   imports: [
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({
-      envFilePath: '../../.env',
+      // envFilePath: '../../.env',
       isGlobal: true,
       validationSchema: Joi.object({
         ACCESS_TOKEN_EXPIRATION_TIME: Joi.number().required(),
@@ -26,8 +28,11 @@ import { ScheduleModule } from '@nestjs/schedule';
     }),
     TypeormModule,
     AuthModule,
+    ServiceModule,
+    DoctorsModule,
+    ClinicsModule,
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [],
 })
 export class AppModule {}

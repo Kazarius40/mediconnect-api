@@ -32,11 +32,11 @@ services:
       - .env
     ports:
       - "3000:3000"
-    command: npm run start:prod
-#    command: npm run start:dev
-#    volumes:
-#      - ./backend:/app
-#      - /app/node_modules
+#    command: npm run start:prod
+    command: npm run start:dev
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
 
 volumes:
   db_data:
