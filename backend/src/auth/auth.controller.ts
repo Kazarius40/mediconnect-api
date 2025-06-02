@@ -12,10 +12,16 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { UserRequest } from './interfaces/user-request.interface';
 import { AuthService } from './auth.service';
+import { TokenService } from './token.service';
+import { ProfileService } from './profile.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly tokenService: TokenService,
+    private readonly profileService: ProfileService,
+  ) {}
 
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
@@ -29,7 +35,7 @@ export class AuthController {
 
   @Post('refresh')
   async refresh(@Body() refreshTokenDto: RefreshTokenDto) {
-    return await this.authService.refresh(refreshTokenDto);
+    return await this.tokenService.refresh(refreshTokenDto);
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -38,12 +44,12 @@ export class AuthController {
     @Request() req: UserRequest,
     @Body() refreshTokenDto: RefreshTokenDto,
   ) {
-    return await this.authService.logOut(refreshTokenDto);
+    return await this.tokenService.logOut(refreshTokenDto.refreshToken);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Get('profile')
   getProfile(@Request() req: UserRequest) {
-    return req.user;
+    return this.profileService.getProfile(req.user);
   }
 }
