@@ -9,7 +9,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { Token } from './entities/token.entity';
 import { AuthService } from './auth.service';
 import { ScheduleModule } from '@nestjs/schedule';
-import { TokenCleanupService } from '../services/token-cleanup.service';
+import { TokenCleanupService } from './token-cleanup.service';
 import { TokenService } from './token.service';
 import { ProfileService } from './profile.service';
 

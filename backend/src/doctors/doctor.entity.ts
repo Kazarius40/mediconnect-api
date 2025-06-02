@@ -1,9 +1,11 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinTable,
   ManyToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Clinic } from '../clinics/clinic.entity';
 import { Service } from '../services/service.entity';
@@ -31,4 +33,10 @@ export class Doctor {
   @ManyToMany(() => Service, (service) => service.doctors)
   @JoinTable()
   services: Service[];
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }
