@@ -11,7 +11,10 @@ export class TokenCleanupService {
   constructor(
     @InjectRepository(Token)
     private readonly tokenRepository: Repository<Token>,
-  ) {}
+  ) {
+    const schedule = '0 * * * *';
+    this.logger.log(`Заплановане очищення токенів: ${schedule}`);
+  }
 
   @Cron('0 * * * *')
   // @Cron(CronExpression.EVERY_6_HOURS)
