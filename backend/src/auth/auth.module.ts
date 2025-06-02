@@ -10,6 +10,8 @@ import { Token } from './entities/token.entity';
 import { AuthService } from './auth.service';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TokenCleanupService } from '../services/token-cleanup.service';
+import { TokenService } from './token.service';
+import { ProfileService } from './profile.service';
 
 @Module({
   imports: [
@@ -29,7 +31,13 @@ import { TokenCleanupService } from '../services/token-cleanup.service';
     TypeOrmModule.forFeature([User, Token]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, TokenCleanupService],
-  exports: [AuthService, JwtStrategy],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    TokenCleanupService,
+    TokenService,
+    ProfileService,
+  ],
+  exports: [AuthService, JwtStrategy, TokenService],
 })
 export class AuthModule {}

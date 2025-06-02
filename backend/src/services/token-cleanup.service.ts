@@ -17,7 +17,6 @@ export class TokenCleanupService {
   }
 
   @Cron('0 * * * *')
-  // @Cron(CronExpression.EVERY_6_HOURS)
   async handleCron() {
     const now = new Date();
 
