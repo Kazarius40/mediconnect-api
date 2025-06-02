@@ -18,7 +18,7 @@ export class ClinicService {
   }
 
   async getAllClinics(filter?: FilterClinicDto): Promise<Clinic[]> {
-    const { name, sortBy, serviceIds, doctorIds } = filter || {}; // Деструктуризуємо нові поля
+    const { name, sortBy, serviceIds, doctorIds } = filter || {};
 
     const query = this.clinicRepository
       .createQueryBuilder('clinic')

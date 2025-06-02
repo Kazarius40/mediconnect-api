@@ -27,7 +27,7 @@ export class DoctorService {
   }
 
   async findAll(filter?: FilterDoctorDto): Promise<Doctor[]> {
-    const { name, surname, email, phone, sortBy } = filter || {};
+    const { name, surname, email, phone, sortBy, sortOrder } = filter || {};
 
     const query = this.doctorRepository
       .createQueryBuilder('doctor')
@@ -49,10 +49,16 @@ export class DoctorService {
       query.andWhere('doctor.phone LIKE :phone', { phone: `%${phone}%` });
     }
 
-    if (sortBy === 'name') {
-      query.orderBy('doctor.firstName', 'ASC');
-    } else if (sortBy === 'surname') {
-      query.orderBy('doctor.lastName', 'ASC');
+    if (sortBy) {
+      const orderDirection = sortOrder === 'DESC' ? 'DESC' : 'ASC';
+
+      if (sortBy === 'name') {
+        query.orderBy('doctor.firstName', orderDirection);
+      } else if (sortBy === 'surname') {
+        query.orderBy('doctor.lastName', orderDirection);
+      } else if (sortBy === 'email') {
+        query.orderBy('doctor.email', orderDirection);
+      }
     }
 
     return query.getMany();
