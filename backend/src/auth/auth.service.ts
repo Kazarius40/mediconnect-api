@@ -40,23 +40,6 @@ export class AuthService {
     )!;
   }
 
-  async removeExpiredTokens(): Promise<number> {
-    const now = new Date();
-
-    const deleteResult = await this.tokenRepository
-      .createQueryBuilder()
-      .delete()
-      .where('refreshTokenExpiresAt <= :now OR isBlocked = :blocked', {
-        now,
-        blocked: true,
-      })
-      .execute();
-
-    this.logger.log(`Видалено токенів: ${deleteResult.affected || 0}`);
-
-    return deleteResult.affected || 0;
-  }
-
   async register(registerDto: RegisterDto): Promise<SafeUser> {
     const existingUser = await this.userRepository.findOneBy({
       email: registerDto.email,
@@ -76,6 +59,14 @@ export class AuthService {
 
   async login(loginDto: LoginDto): Promise<ITokens> {
     const user = await this.validateUser(loginDto.email, loginDto.password);
+
+    const existingToken = await this.tokenRepository.findOne({
+      where: { user: { id: user.id }, isBlocked: false },
+    });
+
+    if (existingToken) {
+      await this.blockToken(existingToken);
+    }
 
     const tokens = await this.generateTokensAndSave(user);
 
@@ -101,8 +92,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
 
-    tokenEntity.isBlocked = true;
-    await this.tokenRepository.save(tokenEntity);
+    await this.blockToken(tokenEntity);
 
     const tokens = await this.generateTokensAndSave(tokenEntity.user);
 
@@ -116,13 +106,18 @@ export class AuthService {
     const { refreshToken } = refreshTokenDto;
     const tokenEntity = await this.tokenRepository.findOne({
       where: { refreshToken, isBlocked: false },
+      relations: ['user'],
     });
 
     if (tokenEntity) {
-      tokenEntity.isBlocked = true;
-      await this.tokenRepository.save(tokenEntity);
+      await this.blockToken(tokenEntity);
       this.logger.log(`User logged out: ${tokenEntity.user.email}`);
     }
+  }
+
+  private async blockToken(token: Token): Promise<void> {
+    token.isBlocked = true;
+    await this.tokenRepository.save(token);
   }
 
   private async generateTokensAndSave(user: User): Promise<ITokens> {
