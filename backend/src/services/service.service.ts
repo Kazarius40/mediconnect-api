@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Service } from './service.entity';
-import { Like, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CreateServiceDto } from './dto/create-service.dto';
 import { UpdateServiceDto } from './dto/update-service.dto';
+import { FilterServiceDto } from './dto/filter-service.dto';
 
 @Injectable()
 export class ServiceService {
@@ -12,46 +13,55 @@ export class ServiceService {
     private serviceRepository: Repository<Service>,
   ) {}
 
-  async create(dto: CreateServiceDto): Promise<Service> {
-    const service = this.serviceRepository.create(dto);
+  async create(createServiceDto: CreateServiceDto): Promise<Service> {
+    const service = this.serviceRepository.create(createServiceDto);
     return this.serviceRepository.save(service);
   }
 
-  async findAll(name?: string) {
+  async findAll(filterDto?: FilterServiceDto): Promise<Service[]> {
+    const { name, sortBy, sortOrder } = filterDto || {};
+
+    const query = this.serviceRepository.createQueryBuilder('service');
+
     if (name) {
-      return this.serviceRepository.find({
-        where: { name: Like(`%${name}%`) },
-        relations: ['doctors', 'doctors.clinics'],
-      });
+      query.andWhere('service.name LIKE :name', { name: `%${name}%` });
     }
-    return this.serviceRepository.find({
-      relations: ['doctors', 'doctors.clinics'],
-    });
+
+    if (sortBy) {
+      const orderDirection = sortOrder === 'DESC' ? 'DESC' : 'ASC';
+      if (sortBy === 'name') {
+        query.orderBy('service.name', orderDirection);
+      }
+    }
+
+    return query.getMany();
   }
 
-  async findOne(id: number) {
-    return this.serviceRepository.findOne({
-      where: { id },
-      relations: ['doctors', 'doctors.clinics'],
-    });
-  }
-
-  async update(id: number, updateServiceDto: UpdateServiceDto) {
-    const service = await this.serviceRepository.preload({
-      id,
-      ...updateServiceDto,
-    });
+  async findOne(id: number): Promise<Service> {
+    const service = await this.serviceRepository.findOneBy({ id });
     if (!service) {
       throw new NotFoundException(`Service with ID ${id} not found`);
     }
+    return service;
+  }
+
+  async update(
+    id: number,
+    updateServiceDto: UpdateServiceDto,
+  ): Promise<Service> {
+    const service = await this.serviceRepository.findOneBy({ id });
+    if (!service) {
+      throw new NotFoundException(`Service with ID ${id} not found`);
+    }
+
+    Object.assign(service, updateServiceDto);
     return this.serviceRepository.save(service);
   }
 
   async remove(id: number): Promise<void> {
-    const service = await this.findOne(id);
-    if (!service) {
+    const result = await this.serviceRepository.delete(id);
+    if (result.affected === 0) {
       throw new NotFoundException(`Service with ID ${id} not found`);
     }
-    await this.serviceRepository.remove(service);
   }
 }

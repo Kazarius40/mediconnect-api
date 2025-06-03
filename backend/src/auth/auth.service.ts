@@ -3,6 +3,7 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  OnModuleInit,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -17,16 +18,68 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import * as crypto from 'crypto';
 import * as bcrypt from 'bcrypt';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { UserRole } from '../users/user-role.enum';
+import { ConfigService } from '@nestjs/config';
+import { plainToInstance } from 'class-transformer';
+import { validate } from 'class-validator';
 
 @Injectable()
-export class AuthService {
+export class AuthService implements OnModuleInit {
   private readonly logger = new Logger(AuthService.name);
 
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly tokenService: TokenService,
+    private readonly configService: ConfigService,
   ) {}
+
+  async onModuleInit() {
+    await this.createInitialAdmin();
+  }
+
+  private async createInitialAdmin(): Promise<void> {
+    const adminEmail = this.configService.get<string>('ADMIN_EMAIL');
+    const adminPassword = this.configService.get<string>('ADMIN_PASSWORD');
+
+    if (!adminEmail || !adminPassword) {
+      this.logger.warn(
+        'ADMIN_EMAIL or ADMIN_PASSWORD not set in environment variables. Initial admin will not be created automatically.',
+      );
+      return;
+    }
+
+    const tempDto = plainToInstance(RegisterDto, {
+      email: adminEmail,
+      password: adminPassword,
+    });
+
+    const errors = await validate(tempDto);
+    if (errors.length > 0) {
+      this.logger.warn(
+        'Initial admin was NOT created due to invalid ADMIN_EMAIL or ADMIN_PASSWORD format. Check your .env file.',
+      );
+      this.logger.debug(errors);
+      return;
+    }
+
+    const existingAdmin = await this.userRepository.findOneBy({
+      role: UserRole.ADMIN,
+    });
+    if (!existingAdmin) {
+      this.logger.log('No admin user found. Creating initial admin...');
+      const hashedPassword = await bcrypt.hash(adminPassword, 10);
+      const adminUser = this.userRepository.create({
+        email: adminEmail,
+        password: hashedPassword,
+        role: UserRole.ADMIN,
+      });
+      await this.userRepository.save(adminUser);
+      this.logger.log(`Initial admin user created with email: ${adminEmail}`);
+    } else {
+      this.logger.log('Admin user already exists.');
+    }
+  }
 
   async register(registerDto: RegisterDto): Promise<SafeUser> {
     const existingUser = await this.userRepository.findOneBy({
@@ -36,12 +89,31 @@ export class AuthService {
       throw new BadRequestException('Email already in use');
     }
 
-    const user = this.userRepository.create(registerDto);
+    const user = this.userRepository.create({
+      ...registerDto,
+      role: UserRole.PATIENT,
+    });
+
     await this.userRepository.save(user);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...safeUser } = user;
     this.logger.log(`User registered: ${user.email}`);
+    return safeUser;
+  }
+
+  async updateUserRole(id: number, newRole: UserRole): Promise<SafeUser> {
+    const user = await this.userRepository.findOneBy({ id });
+    if (!user) {
+      throw new NotFoundException(`User with ID "${id}" not found`);
+    }
+
+    user.role = newRole;
+    await this.userRepository.save(user);
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...safeUser } = user;
+    this.logger.log(`User role updated: ${user.email} to ${newRole}`);
     return safeUser;
   }
 

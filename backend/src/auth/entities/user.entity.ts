@@ -1,6 +1,5 @@
 import {
   BeforeInsert,
-  BeforeUpdate,
   Column,
   CreateDateColumn,
   Entity,
@@ -32,10 +31,10 @@ export class User {
   role: UserRole;
 
   @Column({ nullable: true, default: null })
-  firstName: string;
+  firstName?: string;
 
   @Column({ nullable: true, default: null })
-  lastName: string;
+  lastName?: string;
 
   @Column({ nullable: true, default: null })
   phone?: string;
@@ -58,13 +57,6 @@ export class User {
       throw new Error('Password is missing during insert');
     }
     this.password = await bcrypt.hash(this.password, 10);
-  }
-
-  @BeforeUpdate()
-  async hashPasswordOnUpdate(): Promise<void> {
-    if (this.password && !this.password.startsWith('$2b$')) {
-      this.password = await bcrypt.hash(this.password, 10);
-    }
   }
 
   @OneToMany(() => Token, (token) => token.user)

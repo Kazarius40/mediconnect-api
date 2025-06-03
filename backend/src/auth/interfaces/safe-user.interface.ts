@@ -4,8 +4,8 @@ export interface SafeUser {
   id: number;
   email: string;
   role: UserRole;
-  firstName: string;
-  lastName: string;
+  firstName?: string;
+  lastName?: string;
   phone?: string;
   createdAt: Date;
   updatedAt: Date;

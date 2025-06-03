@@ -18,7 +18,25 @@ services:
       retries: 10
       start_period: 5s
     ports:
-      - "3306:3306"
+      - "3307:3306"
+
+  migration:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: mediconnect-migration
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    environment:
+      - DB_HOST=${DB_HOST}
+    env_file:
+      - .env
+    command: >
+      sh -c "sleep 15 && npm run migration:run"
 
   api:
     build:
@@ -26,8 +44,8 @@ services:
       dockerfile: Dockerfile
     container_name: mediconnect-api
     depends_on:
-      db:
-        condition: service_healthy
+      migration:
+        condition: service_completed_successfully
     env_file:
       - .env
     ports:
