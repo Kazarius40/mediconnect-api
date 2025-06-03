@@ -2,10 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Doctor } from './doctor.entity';
 import { In, Repository } from 'typeorm';
-import { Clinic } from '../clinics/clinic.entity';
-import { Service } from '../services/service.entity';
-import { CreateDoctorDto } from './dto/create-doctor.dto';
+import { Clinic } from 'src/clinics/clinic.entity';
+import { Service } from 'src/services/service.entity';
 import { FilterDoctorDto } from './dto/filter-doctor.dto';
+import { CreateDoctorDto } from './dto/create-doctor.dto';
 import { UpdateDoctorDto } from './dto/update-doctor';
 
 @Injectable()
@@ -27,19 +27,22 @@ export class DoctorService {
   }
 
   async findAll(filter?: FilterDoctorDto): Promise<Doctor[]> {
-    const { name, surname, email, phone, sortBy, sortOrder } = filter || {};
+    const { firstName, lastName, email, phone, sortBy, sortOrder } =
+      filter || {};
 
     const query = this.doctorRepository
       .createQueryBuilder('doctor')
       .leftJoinAndSelect('doctor.clinics', 'clinic')
       .leftJoinAndSelect('doctor.services', 'service');
 
-    if (name) {
-      query.andWhere('doctor.firstName LIKE :name', { name: `%${name}%` });
+    if (firstName) {
+      query.andWhere('doctor.firstName LIKE :firstName', {
+        firstName: `%${firstName}%`,
+      });
     }
-    if (surname) {
-      query.andWhere('doctor.lastName LIKE :surname', {
-        surname: `%${surname}%`,
+    if (lastName) {
+      query.andWhere('doctor.lastName LIKE :lastName', {
+        lastName: `%${lastName}%`,
       });
     }
     if (email) {
@@ -52,12 +55,14 @@ export class DoctorService {
     if (sortBy) {
       const orderDirection = sortOrder === 'DESC' ? 'DESC' : 'ASC';
 
-      if (sortBy === 'name') {
+      if (sortBy === 'firstName') {
         query.orderBy('doctor.firstName', orderDirection);
-      } else if (sortBy === 'surname') {
+      } else if (sortBy === 'lastName') {
         query.orderBy('doctor.lastName', orderDirection);
       } else if (sortBy === 'email') {
         query.orderBy('doctor.email', orderDirection);
+      } else if (sortBy === 'phone') {
+        query.orderBy('doctor.phone', orderDirection);
       }
     }
 

@@ -1,24 +1,38 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Clinic } from './clinic.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CreateClinicDto } from './dto/create-clinic.dto';
 import { FilterClinicDto } from './dto/filter-clinic.dto';
+import { UpdateClinicDto } from './dto/update-clinic.dto';
+import { Doctor } from '../doctors/doctor.entity';
+import { Service } from '../services/service.entity';
 
 @Injectable()
 export class ClinicService {
   constructor(
     @InjectRepository(Clinic)
     private clinicRepository: Repository<Clinic>,
+    @InjectRepository(Doctor)
+    private doctorRepository: Repository<Doctor>,
+    @InjectRepository(Service)
+    private serviceRepository: Repository<Service>,
   ) {}
 
   async createClinic(dto: CreateClinicDto): Promise<Clinic> {
     const clinic = this.clinicRepository.create(dto);
+    if (dto.doctorIds && dto.doctorIds.length > 0) {
+      clinic.doctors = await this.doctorRepository.findBy({
+        id: In(dto.doctorIds),
+      });
+    } else {
+      clinic.doctors = [];
+    }
     return this.clinicRepository.save(clinic);
   }
 
-  async getAllClinics(filter?: FilterClinicDto): Promise<Clinic[]> {
-    const { name, sortBy, serviceIds, doctorIds } = filter || {};
+  async getAllClinics(filterDto?: FilterClinicDto): Promise<Clinic[]> {
+    const { name, serviceIds, doctorIds, sortBy, sortOrder } = filterDto || {};
 
     const query = this.clinicRepository
       .createQueryBuilder('clinic')
@@ -44,8 +58,11 @@ export class ClinicService {
         .distinct(true);
     }
 
-    if (sortBy === 'name') {
-      query.orderBy('clinic.name', 'ASC');
+    if (sortBy) {
+      const orderDirection = sortOrder === 'DESC' ? 'DESC' : 'ASC';
+      if (sortBy === 'name') {
+        query.orderBy('clinic.name', orderDirection);
+      }
     }
 
     return query.getMany();
@@ -58,6 +75,29 @@ export class ClinicService {
     });
     if (!clinic) throw new NotFoundException('Clinic not found');
     return clinic;
+  }
+
+  async updateClinic(id: number, dto: UpdateClinicDto): Promise<Clinic> {
+    const clinic = await this.clinicRepository.preload({
+      id,
+      ...dto,
+    });
+
+    if (!clinic) {
+      throw new NotFoundException(`Clinic with ID ${id} not found`);
+    }
+
+    if (dto.doctorIds !== undefined) {
+      if (dto.doctorIds.length > 0) {
+        clinic.doctors = await this.doctorRepository.findBy({
+          id: In(dto.doctorIds),
+        });
+      } else {
+        clinic.doctors = [];
+      }
+    }
+
+    return this.clinicRepository.save(clinic);
   }
 
   async deleteClinic(id: number): Promise<void> {

@@ -5,12 +5,12 @@ export class FilterDoctorDto {
   @ApiPropertyOptional({ description: "Фільтр за ім'ям лікаря" })
   @IsOptional()
   @IsString()
-  name?: string;
+  firstName?: string;
 
   @ApiPropertyOptional({ description: 'Фільтр за прізвищем лікаря' })
   @IsOptional()
   @IsString()
-  surname?: string;
+  lastName?: string;
 
   @ApiPropertyOptional({ description: 'Фільтр за email лікаря' })
   @IsOptional()
@@ -24,12 +24,12 @@ export class FilterDoctorDto {
 
   @ApiPropertyOptional({
     description: 'Поле для сортування',
-    enum: ['name', 'surname'],
+    enum: ['firstName', 'lastName', 'email', 'phone'],
   })
   @IsOptional()
   @IsString()
-  @IsIn(['name', 'surname'])
-  sortBy?: 'name' | 'surname';
+  @IsIn(['firstName', 'lastName', 'email', 'phone'])
+  sortBy?: 'firstName' | 'lastName' | 'email' | 'phone';
 
   @ApiPropertyOptional({
     description: 'Порядок сортування ("ASC" або "DESC")',
