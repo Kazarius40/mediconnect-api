@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { setupSwagger } from './swagger.config';
 
 bootstrap().catch((err) => {
   console.error('Error during bootstrap:', err);
@@ -19,15 +19,12 @@ async function bootstrap(): Promise<void> {
     }),
   );
 
-  const config = new DocumentBuilder()
-    .setTitle('Clinic API')
-    .setDescription('API documentation for the Clinic management system')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
+  setupSwagger(app);
 
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
-
-  await app.listen(process.env.PORT ?? 3000);
+  // await app.listen(process.env.PORT ?? 3000);
+  const port = process.env.PORT;
+  if (!port) {
+    throw new Error('PORT is not defined in environment variables');
+  }
+  await app.listen(port);
 }

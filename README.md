@@ -14,7 +14,7 @@ Make sure you have the following software installed:
 
 ---
 
-## ⚙️ Initial Setup & Running the Application
+## ⚙️ Initial Setup & Running the Application (Standard)
 
 1.  **Clone the repository:**
 
@@ -53,20 +53,93 @@ Make sure you have the following software installed:
     docker-compose up --build
     ```
 
-    This will build the images, apply migrations, and start the NestJS API. The administrator account will be automatically created on the first run if it doesn't already exist.
+---
+
+## 🚨 First-Time Setup (From Scratch) & Initial Migration Generation
+
+If you have already successfully run the project (by following the steps in the "Initial Setup & Running the Application (Standard)" section), and all migrations have been applied, you **do not need** to repeat these steps.
+
+1.  **Full Docker Environment Cleanup:**
+    ```bash
+    docker-compose down --volumes --rmi all
+    ```
+    * **Important:** After this command, **manually delete any existing migration files** from your local `backend/src/database/migrations/` directory.
+
+2.  **Start only the database service (`db`):**
+    ```bash
+    docker-compose up -d db
+    ```
+    Wait until the `mediconnect-db` container becomes `healthy`. You can check its status with the command `docker-compose ps`.
+
+3.  **Prepare `docker-compose.yml` for migration generation:**
+    * Open your `docker-compose.yml` file.
+    * **Comment out the `depends_on` sections** for the `migration` and `api` services. They should look approximately like this:
+
+        ```yaml
+        # ... other services ...
+
+        migration:
+          # ...
+          # depends_on:
+          #   db:
+          #     condition: service_healthy
+
+        api:
+          # ...
+          # depends_on:
+          #   migration:
+          #     condition: service_completed_successfully
+          # ...
+        ```
+    * **Save `docker-compose.yml`**.
+
+4.  **Start the `api` service (temporarily):**
+    ```bash
+    docker-compose up -d api
+    ```
+
+5.  **Generate the initial migration:**
+    Ensure you are in the root directory of your project (`mediconnect-api`).
+    ```bash
+    docker-compose exec api npm run typeorm -- migration:generate -d ./src/data-source.ts ./src/database/migrations/InitialMigration
+    ```
+
+6.  **Restore `docker-compose.yml` and launch the full stack:**
+    * **Stop the `api` container**:
+        ```bash
+        docker-compose stop api
+        ```
+    * **Uncomment the `depends_on` sections** back in your `docker-compose.yml` for the `migration` and `api` services, returning them to their original state.
+    * **Save `docker-compose.yml`**.
+    * Now, launch the entire Docker stack.
+        ```bash
+        docker-compose down
+        docker-compose up --build
+        ```
 
 ---
 
-## 🛠 Generating New Migrations
+## 🛠 Generating & Applying New Migrations
 
-After changing entities:
+This procedure is used when you make changes to your TypeORM entities (data models) and need to create and apply new migrations.
 
-```bash
-cd mediconnect-api/backend
-npm run migration:generate -- ./src/database/migrations/YourMigrationName
-```
+1.  **Make changes to your TypeORM entities**.
+2.  **Generate a new migration:**
+    Ensure your Docker stack (at least `db` and `api` containers) is running (`docker-compose ps`).
+    * **There is NO need to comment out `depends_on`** at this stage. They should remain active.
+    ```bash
+    docker-compose exec api npm run typeorm -- migration:generate -d ./src/data-source.ts ./src/database/migrations/YourNewFeatureMigrationName
+    ```
+    🔧 Replace `YourNewFeatureMigrationName` with a descriptive name, e.g., `AddClinicEmailField`.
 
-🔧 Replace YourMigrationName with something descriptive, for example AddClinicEmailField.
+3.  **Apply the new migration and restart services:**
+    To apply new migrations to the database, you need to restart the Docker stack.
+    ```bash
+    docker-compose down
+    docker-compose up --build
+    ```
+
+---
 
 🌐 API Endpoints
 Base URL: http://localhost:3000
@@ -84,7 +157,7 @@ JSON
 ```bash
 {
 "email": "patient@example.com",
-"password": "StrongPassword123"
+"password": "StrongPassword123!"
 }
 ```
 
@@ -99,7 +172,7 @@ JSON
 ```bash
 {
     "email": "test@example.com",
-    "password": "StrongPassword123"
+    "password": "StrongPassword123!"
 }
 ```
 Returns accessToken and refreshToken.
@@ -131,6 +204,41 @@ JSON
 }
 ```
 
+## 🛠️ User Management (Admin Only)
+🔒 These endpoints require an accessToken from a user with the ADMIN role.
+
+Update User Role:
+
+HTTP
+```bash
+PATCH /auth/users/:id/role
+```
+JSON
+```bash
+{
+    "role": "DOCTOR"
+}
+```
+Possible roles: ADMIN, DOCTOR, PATIENT.
+
+Delete User:
+
+HTTP
+```bash
+DELETE /auth/users/:id
+```
+Password Recovery:
+
+HTTP
+```bash
+POST /auth/forgot-password
+```
+JSON
+```bash
+{
+    "email": "registered@example.com"
+}
+```
 ## 👩‍⚕️ Doctors
 🔒 Admin endpoints require an accessToken from a user with the ADMIN role.
 

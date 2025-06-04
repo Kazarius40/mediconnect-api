@@ -12,13 +12,13 @@ import { ApiProperty } from '@nestjs/swagger';
 export class RegisterDto {
   @ApiProperty({
     example: 'test@example.com',
-    description: 'Електронна пошта користувача',
+    description: 'User email address',
   })
   @IsEmail()
   @IsNotEmpty()
   email: string;
 
-  @ApiProperty({ example: 'Password123!', description: 'Пароль користувача' })
+  @ApiProperty({ example: 'Password123!', description: 'User password' })
   @IsString()
   @IsNotEmpty()
   @MinLength(8, { message: 'Password must be at least 8 characters long' })
@@ -29,8 +29,10 @@ export class RegisterDto {
   password: string;
 
   @ApiProperty({
-    example: 'Іван',
-    description: 'Ім`я користувача (необов`язково)',
+    example: 'Ivan',
+    description: 'User first name (optional)',
+    nullable: true,
+    required: false,
   })
   @IsOptional()
   @IsString()
@@ -41,20 +43,24 @@ export class RegisterDto {
   firstName?: string;
 
   @ApiProperty({
-    example: 'Іван',
-    description: 'Прізвище користувача (необов`язково)',
+    example: 'Petrov',
+    description: 'User last name (optional)',
+    nullable: true,
+    required: false,
   })
   @IsOptional()
   @IsString()
   @MaxLength(50)
   @Matches(/^[A-Za-zА-Яа-яЇїІіЄєҐґ\s-]*$/, {
-    message: 'First name must contain only letters, spaces, and hyphens',
+    message: 'Last name must contain only letters, spaces, and hyphens',
   })
   lastName?: string;
 
   @ApiProperty({
     example: '+380501234567',
-    description: 'Номер телефону (необов`язково)',
+    description: 'Phone number (optional)',
+    nullable: true,
+    required: false,
   })
   @IsOptional()
   @IsString()
@@ -62,16 +68,4 @@ export class RegisterDto {
     message: 'Phone number must be valid',
   })
   phone?: string;
-
-  // @ApiProperty({
-  //   example: UserRole.PATIENT,
-  //   enum: UserRole,
-  //   description:
-  //     'Роль користувача (ADMIN, DOCTOR, PATIENT). За замовчуванням PATIENT.',
-  // })
-  // @IsOptional()
-  // @IsEnum(UserRole, {
-  //   message: `role must be one of the following values: ${Object.values(UserRole).join(', ')}`,
-  // })
-  // role?: UserRole;
 }

@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Token } from './entities/token.entity';
 import { Repository } from 'typeorm';
-import { Cron } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class TokenCleanupService {
@@ -12,11 +12,11 @@ export class TokenCleanupService {
     @InjectRepository(Token)
     private readonly tokenRepository: Repository<Token>,
   ) {
-    const schedule = '0 * * * *';
-    this.logger.log(`Заплановане очищення токенів: ${schedule}`);
+    const schedule = CronExpression.EVERY_HOUR;
+    this.logger.log(`Scheduled token cleanup: ${schedule}`);
   }
 
-  @Cron('0 * * * *')
+  @Cron(CronExpression.EVERY_HOUR)
   async handleCron() {
     const now = new Date();
 
@@ -29,6 +29,6 @@ export class TokenCleanupService {
       })
       .execute();
 
-    this.logger.log(`Видалено токенів: ${deleteResult.affected || 0}`);
+    this.logger.log(`Cleaned up tokens: ${deleteResult.affected || 0}`);
   }
 }

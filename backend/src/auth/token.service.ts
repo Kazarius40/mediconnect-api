@@ -28,6 +28,12 @@ export class TokenService {
     this.refreshTokenExpiresIn = this.configService.get<number>(
       'REFRESH_TOKEN_EXPIRATION_TIME',
     )!;
+
+    if (isNaN(this.accessTokenExpiresIn) || isNaN(this.refreshTokenExpiresIn)) {
+      throw new Error(
+        'Token expiration times are not configured correctly. Ensure ACCESS_TOKEN_EXPIRATION_TIME and REFRESH_TOKEN_EXPIRATION_TIME are set to numbers in .env',
+      );
+    }
   }
 
   async generateAndSaveTokens(user: User): Promise<ITokens> {
@@ -40,7 +46,7 @@ export class TokenService {
     }
 
     const jti = this.generateJti();
-    const payload = this.createPayload(user.id, user.email, jti);
+    const payload = this.createPayload(user.id, user.email, user.role, jti);
 
     const accessToken = this.jwtService.sign(payload, {
       expiresIn: `${this.accessTokenExpiresIn}s`,
@@ -64,22 +70,41 @@ export class TokenService {
   async refresh(refreshTokenDto: RefreshTokenDto): Promise<ITokens> {
     const { refreshToken } = refreshTokenDto;
 
+    let payload: IJWTPayload;
     try {
-      this.jwtService.verify<IJWTPayload>(refreshToken);
-    } catch {
+      payload = this.jwtService.verify<IJWTPayload>(refreshToken);
+    } catch (error: unknown) {
+      let errorMessage = 'Unknown error';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      this.logger.warn(`Failed to verify refresh token: ${errorMessage}`);
       throw new UnauthorizedException('Invalid or expired token');
     }
 
+    if (!payload.jti) {
+      throw new UnauthorizedException(
+        'Invalid refresh token payload: jti missing',
+      );
+    }
+
     const tokenEntity = await this.tokenRepository.findOne({
-      where: { refreshToken, isBlocked: false },
+      where: { refreshToken, jti: payload.jti, isBlocked: false },
       relations: ['user'],
     });
 
-    if (!tokenEntity || tokenEntity.refreshTokenExpiresAt < new Date()) {
+    if (
+      !tokenEntity ||
+      tokenEntity.isBlocked ||
+      !tokenEntity.user ||
+      tokenEntity.refreshTokenExpiresAt < new Date()
+    ) {
       this.logger.warn(
-        `Attempt to use invalid or expired refresh token: ${refreshToken}`,
+        `Attempt to use invalid, blocked or expired refresh token: ${refreshToken}`,
       );
-      throw new UnauthorizedException('Invalid or expired refresh token');
+      throw new UnauthorizedException(
+        'Invalid, blocked or expired refresh token',
+      );
     }
 
     await this.blockToken(tokenEntity);
@@ -98,14 +123,17 @@ export class TokenService {
       relations: ['user'],
     });
 
-    if (tokenEntity) {
-      await this.blockToken(tokenEntity);
-      this.logger.log(`User logged out: ${tokenEntity.user.email}`);
-    } else {
+    if (!tokenEntity) {
       this.logger.warn(
         `Attempted to log out with non-existent or blocked token: ${refreshToken}`,
       );
+      throw new UnauthorizedException(
+        'Invalid or already logged out refresh token',
+      );
     }
+
+    await this.blockToken(tokenEntity);
+    this.logger.log(`User logged out: ${tokenEntity.user.email}`);
   }
 
   private async blockToken(token: Token): Promise<void> {
@@ -119,11 +147,12 @@ export class TokenService {
   }
 
   private createPayload(
-    userId: number,
+    sub: number,
     email: string,
+    role: string,
     jti: string,
   ): IJWTPayload {
-    return { userId, email, jti };
+    return { sub, email, role, jti };
   }
 
   private async saveTokens(

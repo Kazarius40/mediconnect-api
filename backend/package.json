@@ -14,10 +14,11 @@
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs}/**/*.ts\" --fix",
     "typeorm": "ts-node -r tsconfig-paths/register -r dotenv/config ./node_modules/typeorm/cli.js",
-    "migration:generate": "cross-env DB_HOST_CLI=localhost DB_PORT_CLI=3307 npm run typeorm -- migration:generate -d ./src/data-source.ts",
-    "migration:create": "cross-env DB_HOST_CLI=localhost DB_PORT_CLI=3307 npm run typeorm -- migration:create -d ./src/data-source.ts",
-    "migration:run": "npm run typeorm -- migration:run -d ./src/data-source.ts",
-    "migration:revert": "npm run typeorm -- migration:revert -d ./src/data-source.ts"
+    "migration:run": "cross-env DB_HOST_CLI=db DB_PORT_CLI=3306 npm run typeorm -- migration:run -d ./src/data-source.ts",
+    "migration:generate": "cross-env DB_HOST_CLI=db DB_PORT_CLI=3306 npm run typeorm -- migration:generate -d ./src/data-source.ts",
+    "migration:create": "cross-env DB_HOST_CLI=db DB_PORT_CLI=3306 npm run typeorm -- migration:create -d ./src/data-source.ts",
+    "migration:revert": "cross-env DB_HOST_CLI=db DB_PORT_CLI=3306 npm run typeorm -- migration:revert -d ./src/data-source.ts"
+
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

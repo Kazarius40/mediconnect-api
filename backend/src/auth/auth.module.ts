@@ -12,6 +12,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TokenCleanupService } from './token-cleanup.service';
 import { TokenService } from './token.service';
 import { ProfileService } from './profile.service';
+import { JwtRefreshStrategy } from './jwt-refresh.strategy';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { ProfileService } from './profile.service';
   providers: [
     AuthService,
     JwtStrategy,
+    JwtRefreshStrategy,
     TokenCleanupService,
     TokenService,
     ProfileService,

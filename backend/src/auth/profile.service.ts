@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { UserRequest } from './interfaces/user-request.interface';
+import { UserProfileResponse } from './swagger/auth-response.swagger';
 
 @Injectable()
 export class ProfileService {
   constructor() {}
 
-  getProfile(user: UserRequest['user']) {
+  getProfile(user: UserProfileResponse): UserProfileResponse {
     return user;
   }
 }
