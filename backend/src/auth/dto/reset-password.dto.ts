@@ -18,7 +18,7 @@ export class ResetPasswordDto {
   @ApiProperty({
     description:
       'New password for the user. Must be at least 6 characters long and contain at least one uppercase letter and one number.',
-    example: 'NewPassword123',
+    example: 'NewPassword123!',
   })
   password: string;
 }

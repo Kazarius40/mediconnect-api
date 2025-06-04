@@ -5,6 +5,7 @@ import {
   NotFoundException,
   OnModuleInit,
   UnauthorizedException,
+  ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
@@ -90,7 +91,7 @@ export class AuthService implements OnModuleInit {
       email: registerDto.email,
     });
     if (existingUser) {
-      throw new BadRequestException('Email already in use');
+      throw new ConflictException('Email already in use');
     }
 
     const user = this.userRepository.create({
@@ -106,10 +107,10 @@ export class AuthService implements OnModuleInit {
     return safeUser;
   }
 
-  async updateUserRole(id: number, newRole: UserRole): Promise<SafeUser> {
-    const user = await this.userRepository.findOneBy({ id });
+  async updateUserRole(userId: number, newRole: UserRole): Promise<SafeUser> {
+    const user = await this.userRepository.findOneBy({ id: userId });
     if (!user) {
-      throw new NotFoundException(`User with ID "${id}" not found`);
+      throw new NotFoundException(`User with ID "${userId}" not found`);
     }
 
     user.role = newRole;
@@ -119,6 +120,16 @@ export class AuthService implements OnModuleInit {
     const { password, ...safeUser } = user;
     this.logger.log(`User role updated: ${user.email} to ${newRole}`);
     return safeUser;
+  }
+
+  async deleteUser(userId: number): Promise<void> {
+    const user = await this.userRepository.findOneBy({ id: userId });
+    if (!user) {
+      throw new NotFoundException(`User with ID "${userId}" not found`);
+    }
+
+    await this.userRepository.remove(user);
+    this.logger.log(`User with ID ${userId} deleted.`);
   }
 
   async login(loginDto: LoginDto): Promise<ITokens> {
@@ -138,7 +149,7 @@ export class AuthService implements OnModuleInit {
       this.logger.warn(
         `Attempted password reset for non-existent email: ${email}`,
       );
-      throw new NotFoundException('User with this email not found.');
+      return;
     }
 
     const resetToken = crypto.randomBytes(32).toString('hex');

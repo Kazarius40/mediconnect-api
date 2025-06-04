@@ -12,7 +12,6 @@ import { ClinicsModule } from './clinics/clinics.module';
   imports: [
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({
-      // envFilePath: '../../.env',
       isGlobal: true,
       validationSchema: Joi.object({
         ACCESS_TOKEN_EXPIRATION_TIME: Joi.number().required(),

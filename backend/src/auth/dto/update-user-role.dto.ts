@@ -6,7 +6,7 @@ export class UpdateUserRoleDto {
   @ApiProperty({
     example: UserRole.DOCTOR,
     enum: UserRole,
-    description: 'Нова роль користувача',
+    description: 'The new role for the user',
   })
   @IsEnum(UserRole)
   @IsNotEmpty()

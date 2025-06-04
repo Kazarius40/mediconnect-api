@@ -2,13 +2,13 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsString, IsIn } from 'class-validator';
 
 export class FilterServiceDto {
-  @ApiPropertyOptional({ description: 'Фільтр за назвою послуги' })
+  @ApiPropertyOptional({ description: 'Filter by service name' })
   @IsOptional()
   @IsString()
   name?: string;
 
   @ApiPropertyOptional({
-    description: 'Поле для сортування',
+    description: 'Field for sorting',
     enum: ['name'],
   })
   @IsOptional()
@@ -17,7 +17,7 @@ export class FilterServiceDto {
   sortBy?: 'name';
 
   @ApiPropertyOptional({
-    description: 'Порядок сортування ("ASC" або "DESC")',
+    description: 'Sort order ("ASC" or "DESC")',
     enum: ['ASC', 'DESC'],
     default: 'ASC',
   })
