@@ -42,6 +42,11 @@ export class AuthService implements OnModuleInit {
     const adminEmail = this.configService.get<string>('ADMIN_EMAIL');
     const adminPassword = this.configService.get<string>('ADMIN_PASSWORD');
 
+    this.logger.debug(`[DEBUG] ADMIN_EMAIL from .env: '${adminEmail}'`);
+    this.logger.debug(
+      `[DEBUG] ADMIN_PASSWORD from .env: '${adminPassword}' (Length: ${adminPassword?.length})`,
+    );
+
     if (!adminEmail || !adminPassword) {
       this.logger.warn(
         'ADMIN_EMAIL or ADMIN_PASSWORD not set in environment variables. Initial admin will not be created automatically.',
@@ -68,10 +73,9 @@ export class AuthService implements OnModuleInit {
     });
     if (!existingAdmin) {
       this.logger.log('No admin user found. Creating initial admin...');
-      const hashedPassword = await bcrypt.hash(adminPassword, 10);
       const adminUser = this.userRepository.create({
         email: adminEmail,
-        password: hashedPassword,
+        password: adminPassword,
         role: UserRole.ADMIN,
       });
       await this.userRepository.save(adminUser);
