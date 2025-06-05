@@ -2,7 +2,6 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
-  Logger,
   InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -14,8 +13,6 @@ import { FilterServiceDto } from './dto/filter-service.dto';
 
 @Injectable()
 export class ServiceService {
-  private readonly logger = new Logger(ServiceService.name);
-
   constructor(
     @InjectRepository(Service)
     private serviceRepository: Repository<Service>,
@@ -74,17 +71,8 @@ export class ServiceService {
     });
 
     try {
-      const savedService = await this.serviceRepository.save(service);
-      this.logger.log(
-        `Service with ID ${savedService.id} created successfully.`,
-      );
-      return savedService;
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        this.logger.error(`Error creating service: ${error.message}`);
-      } else {
-        this.logger.error('Unknown error creating service');
-      }
+      return await this.serviceRepository.save(service);
+    } catch {
       throw new InternalServerErrorException(
         'An unexpected error occurred during service creation.',
       );
@@ -106,7 +94,6 @@ export class ServiceService {
         query.orderBy('service.name', orderDirection);
       }
     }
-
     return query.getMany();
   }
 
@@ -131,19 +118,8 @@ export class ServiceService {
         : updateServiceDto.description;
 
     try {
-      const updatedService = await this.serviceRepository.save(service);
-      this.logger.log(
-        `Service with ID ${updatedService.id} updated successfully.`,
-      );
-      return updatedService;
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        this.logger.error(
-          `Error updating service with ID ${id}: ${error.message}`,
-        );
-      } else {
-        this.logger.error('Unknown error updating service with ID ${id}');
-      }
+      return await this.serviceRepository.save(service);
+    } catch {
       throw new InternalServerErrorException(
         'An unexpected error occurred during service update.',
       );
@@ -163,21 +139,8 @@ export class ServiceService {
     Object.assign(service, updateServiceDto);
 
     try {
-      const updatedService = await this.serviceRepository.save(service);
-      this.logger.log(
-        `Service with ID ${updatedService.id} partially updated successfully.`,
-      );
-      return updatedService;
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        this.logger.error(
-          `Error partially updating service with ID ${id}: ${error.message}`,
-        );
-      } else {
-        this.logger.error(
-          'Unknown error partially updating service with ID ${id}',
-        );
-      }
+      return await this.serviceRepository.save(service);
+    } catch {
       throw new InternalServerErrorException(
         'An unexpected error occurred during partial service update.',
       );
@@ -189,6 +152,5 @@ export class ServiceService {
     if (result.affected === 0) {
       throw new NotFoundException(`Service with ID ${id} not found.`);
     }
-    this.logger.log(`Service with ID ${id} deleted successfully.`);
   }
 }

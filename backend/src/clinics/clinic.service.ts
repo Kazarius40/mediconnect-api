@@ -2,7 +2,6 @@ import {
   ConflictException,
   Injectable,
   InternalServerErrorException,
-  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -14,8 +13,6 @@ import { FilterClinicDto } from './dto/filter-clinic.dto';
 
 @Injectable()
 export class ClinicService {
-  private readonly logger = new Logger(ClinicService.name);
-
   constructor(
     @InjectRepository(Clinic)
     private clinicRepository: Repository<Clinic>,
@@ -69,27 +66,16 @@ export class ClinicService {
   }
   private async handleDatabaseOperation<T>(
     operation: () => Promise<T>,
-    successMessage: string,
-    errorMessage: string,
     context: string,
   ): Promise<T> {
     try {
-      const result = await operation();
-      this.logger.log(successMessage);
-      return result;
+      return await operation();
     } catch (error: unknown) {
       if (
         error instanceof NotFoundException ||
         error instanceof ConflictException
       ) {
         throw error;
-      }
-      if (error instanceof Error) {
-        this.logger.error(`${errorMessage}: ${error.message}`, error.stack);
-      } else {
-        this.logger.error(
-          `Unknown error during ${context}. Error: ${JSON.stringify(error)}`,
-        );
       }
       throw new InternalServerErrorException(
         `An unexpected error occurred during ${context}.`,
@@ -104,8 +90,6 @@ export class ClinicService {
 
     return this.handleDatabaseOperation(
       async () => await this.clinicRepository.save(clinic),
-      `Clinic with ID ${clinic.id} created successfully.`,
-      `Error creating clinic`,
       'clinic creation',
     );
   }
@@ -151,8 +135,6 @@ export class ClinicService {
 
     return this.handleDatabaseOperation(
       async () => await this.clinicRepository.save(clinic),
-      `Clinic with ID ${id} updated successfully.`,
-      `Error updating clinic with ID ${id}`,
       'clinic update',
     );
   }
@@ -179,8 +161,6 @@ export class ClinicService {
 
     return this.handleDatabaseOperation(
       async () => await this.clinicRepository.save(clinic),
-      `Clinic with ID ${id} partially updated successfully.`,
-      `Error partially updating clinic with ID ${id}`,
       'Partial clinic update',
     );
   }
@@ -190,6 +170,5 @@ export class ClinicService {
     if (!result.affected) {
       throw new NotFoundException(`Clinic with ID ${id} not found.`);
     }
-    this.logger.log(`Clinic with ID ${id} deleted successfully.`);
   }
 }
