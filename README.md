@@ -16,15 +16,7 @@ Make sure you have the following software installed:
 
 ## ⚙️ Initial Setup & Running the Application (Standard)
 
-1.  **Clone the repository:**
-
-    ```bash
-    git clone [https://github.com/Kazarius40/mediconnect-api.git](https://github.com/Kazarius40/mediconnect-api.git)
-    cd mediconnect-api
-    ```
-
-2.  **Create a `.env` file in the root directory:**
-
+    **Create a `.env` file in the root directory:**
     ```env
     # JWT Configuration
     JWT_SECRET=6f2d71035cefcefc5390dc1edc912f09a6738668d917bc87f75e07e5a01607d5ebd7945aa4e73564
@@ -45,9 +37,11 @@ Make sure you have the following software installed:
     ADMIN_PASSWORD=Qwerty1!
     ```
 
-    ❗ `DB_HOST` must be `db` as this is the service name in `docker-compose.yml`.
+`DB_HOST` must be `db` as this is the service name in `docker-compose.yml`.
 
-3.  **Start the Docker containers:**
+###  Initial Admin User: When the database is first initialized (i.e., if no data exists), an admin user with the credentials specified in ADMIN_EMAIL and ADMIN_PASSWORD in your .env file will be automatically created. This admin user has full control: they can assign the admin role to others, delete any user (including other admins), but cannot delete their own account.
+
+     **Start the Docker containers:**
 
     ```bash
     docker-compose up --build
@@ -60,86 +54,29 @@ Make sure you have the following software installed:
 If you have already successfully run the project (by following the steps in the "Initial Setup & Running the Application (Standard)" section), and all migrations have been applied, you **do not need** to repeat these steps.
 
 1.  **Full Docker Environment Cleanup:**
+    Ensure you are in the root directory of your project.
     ```bash
     docker-compose down --volumes --rmi all
     ```
-    * **Important:** After this command, **manually delete any existing migration files** from your local `backend/src/database/migrations/` directory.
-
 2.  **Start only the database service (`db`):**
     ```bash
     docker-compose up -d db
     ```
     Wait until the `mediconnect-db` container becomes `healthy`. You can check its status with the command `docker-compose ps`.
 
-3.  **Prepare `docker-compose.yml` for migration generation:**
-    * Open your `docker-compose.yml` file.
-    * **Comment out the `depends_on` sections** for the `migration` and `api` services. They should look approximately like this:
-
-        ```yaml
-        # ... other services ...
-
-        migration:
-          # ...
-          # depends_on:
-          #   db:
-          #     condition: service_healthy
-
-        api:
-          # ...
-          # depends_on:
-          #   migration:
-          #     condition: service_completed_successfully
-          # ...
-        ```
-    * **Save `docker-compose.yml`**.
-
-4.  **Start the `api` service (temporarily):**
+3.  **Generate the initial migration:**
     ```bash
-    docker-compose up -d api
+    docker-compose run --rm \
+    --entrypoint "npm" \
+    migration run migration:generate -- ./src/database/migrations/InitialMigration
     ```
-
-5.  **Generate the initial migration:**
-    Ensure you are in the root directory of your project (`mediconnect-api`).
+4.  **Launch the entire Docker stack:**
     ```bash
-    docker-compose exec api npm run typeorm -- migration:generate -d ./src/data-source.ts ./src/database/migrations/InitialMigration
-    ```
-
-6.  **Restore `docker-compose.yml` and launch the full stack:**
-    * **Stop the `api` container**:
-        ```bash
-        docker-compose stop api
-        ```
-    * **Uncomment the `depends_on` sections** back in your `docker-compose.yml` for the `migration` and `api` services, returning them to their original state.
-    * **Save `docker-compose.yml`**.
-    * Now, launch the entire Docker stack.
-        ```bash
-        docker-compose down
-        docker-compose up --build
-        ```
-
----
-
-## 🛠 Generating & Applying New Migrations
-
-This procedure is used when you make changes to your TypeORM entities (data models) and need to create and apply new migrations.
-
-1.  **Make changes to your TypeORM entities**.
-2.  **Generate a new migration:**
-    Ensure your Docker stack (at least `db` and `api` containers) is running (`docker-compose ps`).
-    * **There is NO need to comment out `depends_on`** at this stage. They should remain active.
-    ```bash
-    docker-compose exec api npm run typeorm -- migration:generate -d ./src/data-source.ts ./src/database/migrations/YourNewFeatureMigrationName
-    ```
-    🔧 Replace `YourNewFeatureMigrationName` with a descriptive name, e.g., `AddClinicEmailField`.
-
-3.  **Apply the new migration and restart services:**
-    To apply new migrations to the database, you need to restart the Docker stack.
-    ```bash
-    docker-compose down
     docker-compose up --build
     ```
 
 ---
+
 
 🌐 API Endpoints
 Base URL: http://localhost:3000
@@ -242,9 +179,9 @@ JSON
 ## 👩‍⚕️ Doctors
 🔒 Admin endpoints require an accessToken from a user with the ADMIN role.
 
-    Create Doctor – POST /doctors
-    Get All Doctors – GET /doctors
-    Filter/Sort Doctors – GET /doctors?firstName=...
+    Create – POST /doctors
+    Get All – GET /doctors
+    Filter/Sort – GET /doctors?firstName=...
     Get by ID – GET /doctors/:id
     Update Completely – PUT /doctors/:id
     Update Partially – PATCH /doctors/:id
@@ -253,8 +190,8 @@ JSON
 ## 🏥 Clinics
 🔒 Admin endpoints require an accessToken from a user with the ADMIN role.
 
-    Create Clinic – POST /clinics
-    Get All Clinics – GET /clinics
+    Create – POST /clinics
+    Get All – GET /clinics
     Filter/Sort – GET /clinics?name=...
     Get by ID – GET /clinics/:id
     Update Completely – PUT /clinics/:id
@@ -264,8 +201,8 @@ JSON
 ## 🧰 Services
 🔒 Admin endpoints require an accessToken from a user with the ADMIN role.
 
-    Create Service – POST /services
-    Get All Services – GET /services
+    Create – POST /services
+    Get All – GET /services
     Filter/Sort – GET /services?name=...
     Get by ID – GET /services/:id
     Update Completely – PUT /services/:id
@@ -274,7 +211,8 @@ JSON
 
 ## 📄 API Documentation (Swagger UI)
     After starting, it's available at:
-    http://localhost:3000/api
+
+    http://localhost:3000/api/docs
 
 ✅ Authorize via the "Authorize" button, inserting the token in the format:
 Bearer YOUR_ACCESS_TOKEN
