@@ -43,11 +43,6 @@ export class AuthService implements OnModuleInit {
     const adminEmail = this.configService.get<string>('ADMIN_EMAIL');
     const adminPassword = this.configService.get<string>('ADMIN_PASSWORD');
 
-    this.logger.debug(`[DEBUG] ADMIN_EMAIL from .env: '${adminEmail}'`);
-    this.logger.debug(
-      `[DEBUG] ADMIN_PASSWORD from .env: '${adminPassword}' (Length: ${adminPassword?.length})`,
-    );
-
     if (!adminEmail || !adminPassword) {
       this.logger.warn(
         'ADMIN_EMAIL or ADMIN_PASSWORD not set in environment variables. Initial admin will not be created automatically.',
@@ -65,7 +60,6 @@ export class AuthService implements OnModuleInit {
       this.logger.warn(
         'Initial admin was NOT created due to invalid ADMIN_EMAIL or ADMIN_PASSWORD format. Check your .env file.',
       );
-      this.logger.debug(errors);
       return;
     }
 

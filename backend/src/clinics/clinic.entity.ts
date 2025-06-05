@@ -17,8 +17,14 @@ export class Clinic {
   @Column()
   name: string;
 
+  @Column()
+  address: string;
+
+  @Column()
+  phone: string;
+
   @Column({ nullable: true })
-  address?: string;
+  email?: string;
 
   @ManyToMany(() => Doctor, (doctor) => doctor.clinics)
   @JoinTable()

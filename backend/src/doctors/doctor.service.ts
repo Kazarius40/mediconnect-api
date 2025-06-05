@@ -1,7 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  Logger,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Doctor } from './doctor.entity';
-import { In, Repository } from 'typeorm';
+import { In, Repository, Not, FindOptionsWhere } from 'typeorm';
 import { Clinic } from 'src/clinics/clinic.entity';
 import { Service } from 'src/services/service.entity';
 import { FilterDoctorDto } from './dto/filter-doctor.dto';
@@ -10,6 +16,8 @@ import { UpdateDoctorDto } from './dto/update-doctor';
 
 @Injectable()
 export class DoctorService {
+  private readonly logger = new Logger(DoctorService.name);
+
   constructor(
     @InjectRepository(Doctor)
     private doctorRepository: Repository<Doctor>,
@@ -21,9 +29,106 @@ export class DoctorService {
     private serviceRepository: Repository<Service>,
   ) {}
 
-  async create(dto: CreateDoctorDto): Promise<Doctor> {
-    const doctor = await this.prepareDoctorEntity(dto);
-    return this.doctorRepository.save(doctor);
+  private async getDoctorOrThrow(id: number): Promise<Doctor> {
+    const doctor = await this.doctorRepository.findOne({
+      where: { id },
+      relations: ['clinics', 'services'],
+    });
+    if (!doctor) {
+      throw new NotFoundException(`Doctor with ID ${id} not found.`);
+    }
+    return doctor;
+  }
+
+  private async validateUniqueEmailAndPhone(
+    email: string | undefined,
+    phone: string | undefined,
+    currentId?: number,
+  ): Promise<void> {
+    if (email === undefined && phone === undefined) {
+      return;
+    }
+
+    const whereConditions: FindOptionsWhere<Doctor>[] = [];
+
+    if (email !== undefined) {
+      whereConditions.push({ email });
+    }
+    if (phone !== undefined) {
+      whereConditions.push({ phone });
+    }
+    if (whereConditions.length === 0) {
+      return;
+    }
+
+    const conditionsWithNotCurrentId: FindOptionsWhere<Doctor>[] =
+      whereConditions.map((condition) => {
+        if (currentId) {
+          return { ...condition, id: Not(currentId) };
+        }
+        return condition;
+      });
+
+    const existingDoctor = await this.doctorRepository.findOne({
+      where: conditionsWithNotCurrentId,
+    });
+
+    if (existingDoctor) {
+      if (email !== undefined && existingDoctor.email === email) {
+        throw new ConflictException(
+          `Doctor with email '${email}' already exists.`,
+        );
+      }
+      if (phone !== undefined && existingDoctor.phone === phone) {
+        throw new ConflictException(
+          `Doctor with phone '${phone}' already exists.`,
+        );
+      }
+    }
+  }
+
+  private async handleDatabaseOperation<T>(
+    operation: () => Promise<T>,
+    successMessage: string,
+    errorMessage: string,
+    context: string,
+  ): Promise<T> {
+    try {
+      const result = await operation();
+      this.logger.log(successMessage);
+      return result;
+    } catch (error: unknown) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof ConflictException
+      ) {
+        throw error;
+      }
+      if (error instanceof Error) {
+        this.logger.error(`${errorMessage}: ${error.message}`, error.stack);
+      } else {
+        this.logger.error(`Unknown error during ${context}.`);
+      }
+      throw new InternalServerErrorException(
+        `An unexpected error occurred during ${context}.`,
+      );
+    }
+  }
+
+  async create(createDoctorDto: CreateDoctorDto): Promise<Doctor> {
+    await this.validateUniqueEmailAndPhone(
+      createDoctorDto.email,
+      createDoctorDto.phone,
+    );
+
+    const doctor = await this.prepareDoctorEntity(createDoctorDto);
+
+    return this.handleDatabaseOperation(
+      async () => await this.doctorRepository.save(doctor),
+      `Doctor with ID ${doctor.id} created successfully.`,
+      `Error creating doctor`,
+      'Doctor creation',
+    );
   }
 
   async findAll(filter?: FilterDoctorDto): Promise<Doctor[]> {
@@ -36,17 +141,19 @@ export class DoctorService {
       .leftJoinAndSelect('doctor.services', 'service');
 
     if (firstName) {
-      query.andWhere('doctor.firstName LIKE :firstName', {
+      query.andWhere('LOWER(doctor.firstName) LIKE LOWER(:firstName)', {
         firstName: `%${firstName}%`,
       });
     }
     if (lastName) {
-      query.andWhere('doctor.lastName LIKE :lastName', {
+      query.andWhere('LOWER(doctor.lastName) LIKE LOWER(:lastName)', {
         lastName: `%${lastName}%`,
       });
     }
     if (email) {
-      query.andWhere('doctor.email LIKE :email', { email: `%${email}%` });
+      query.andWhere('LOWER(doctor.email) LIKE LOWER(:email)', {
+        email: `%${email}%`,
+      });
     }
     if (phone) {
       query.andWhere('doctor.phone LIKE :phone', { phone: `%${phone}%` });
@@ -54,50 +161,55 @@ export class DoctorService {
 
     if (sortBy) {
       const orderDirection = sortOrder === 'DESC' ? 'DESC' : 'ASC';
-
-      if (sortBy === 'firstName') {
-        query.orderBy('doctor.firstName', orderDirection);
-      } else if (sortBy === 'lastName') {
-        query.orderBy('doctor.lastName', orderDirection);
-      } else if (sortBy === 'email') {
-        query.orderBy('doctor.email', orderDirection);
-      } else if (sortBy === 'phone') {
-        query.orderBy('doctor.phone', orderDirection);
-      }
+      const orderByField = `doctor.${sortBy}`;
+      query.orderBy(orderByField, orderDirection);
+    } else {
+      query.orderBy('doctor.id', 'ASC');
     }
-
-    return query.getMany();
+    return await query.getMany();
   }
 
   async findOne(id: number): Promise<Doctor> {
-    const doctor = await this.doctorRepository.findOne({
-      where: { id },
-      relations: ['clinics', 'services'],
-    });
-
-    if (!doctor) {
-      throw new NotFoundException(`Doctor with ID ${id} not found`);
-    }
-
-    return doctor;
+    return this.getDoctorOrThrow(id);
   }
 
-  async update(id: number, dto: UpdateDoctorDto): Promise<Doctor> {
-    const doctor = await this.doctorRepository.findOne({ where: { id } });
-    if (!doctor) {
-      throw new NotFoundException(`Doctor with ID ${id} not found`);
-    }
+  async update(id: number, updateDoctorDto: UpdateDoctorDto): Promise<Doctor> {
+    const updatedDoctor = await this.prepareAndValidateDoctorUpdate(
+      id,
+      updateDoctorDto,
+    );
 
-    const updatedDoctor = await this.prepareDoctorEntity(dto, doctor);
-    return this.doctorRepository.save(updatedDoctor);
+    return this.handleDatabaseOperation(
+      async () => await this.doctorRepository.save(updatedDoctor),
+      `Doctor with ID ${id} updated successfully.`,
+      `Error updating doctor with ID ${id}`,
+      'doctor update',
+    );
+  }
+
+  async partialUpdate(
+    id: number,
+    updateDoctorDto: UpdateDoctorDto,
+  ): Promise<Doctor> {
+    const updatedDoctor = await this.prepareAndValidateDoctorUpdate(
+      id,
+      updateDoctorDto,
+    );
+
+    return this.handleDatabaseOperation(
+      async () => await this.doctorRepository.save(updatedDoctor),
+      `Doctor with ID ${id} partially updated successfully.`,
+      `Error partially updating doctor with ID ${id}`,
+      'partial doctor update',
+    );
   }
 
   async remove(id: number): Promise<void> {
-    const doctor = await this.findOne(id);
-    if (!doctor) {
-      throw new NotFoundException(`Doctor with ID ${id} not found`);
+    const result = await this.doctorRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Doctor with ID ${id} not found.`);
     }
-    await this.doctorRepository.remove(doctor);
+    this.logger.log(`Doctor with ID ${id} deleted successfully.`);
   }
 
   private async prepareDoctorEntity(
@@ -106,29 +218,44 @@ export class DoctorService {
   ): Promise<Doctor> {
     doctor.firstName = dto.firstName ?? doctor.firstName;
     doctor.lastName = dto.lastName ?? doctor.lastName;
-    doctor.email = dto.email ?? doctor.email;
-    doctor.phone = dto.phone ?? doctor.phone;
+
+    if (Object.prototype.hasOwnProperty.call(dto, 'email')) {
+      doctor.email = dto.email;
+    }
+    if (Object.prototype.hasOwnProperty.call(dto, 'phone')) {
+      doctor.phone = dto.phone;
+    }
 
     if (dto.clinics !== undefined) {
-      if (dto.clinics.length) {
-        doctor.clinics = await this.clinicRepository.findBy({
-          id: In(dto.clinics),
-        });
-      } else {
-        doctor.clinics = [];
-      }
+      doctor.clinics = dto.clinics.length
+        ? await this.clinicRepository.findBy({ id: In(dto.clinics) })
+        : [];
     }
 
     if (dto.services !== undefined) {
-      if (dto.services.length) {
-        doctor.services = await this.serviceRepository.findBy({
-          id: In(dto.services),
-        });
-      } else {
-        doctor.services = [];
-      }
+      doctor.services = dto.services.length
+        ? await this.serviceRepository.findBy({ id: In(dto.services) })
+        : [];
     }
 
     return doctor;
+  }
+
+  private async prepareAndValidateDoctorUpdate(
+    id: number,
+    dto: UpdateDoctorDto,
+  ): Promise<Doctor> {
+    const doctor = await this.getDoctorOrThrow(id);
+
+    const emailToValidate = dto.email !== undefined ? dto.email : doctor.email;
+    const phoneToValidate = dto.phone !== undefined ? dto.phone : doctor.phone;
+
+    await this.validateUniqueEmailAndPhone(
+      emailToValidate,
+      phoneToValidate,
+      id,
+    );
+
+    return this.prepareDoctorEntity(dto, doctor);
   }
 }

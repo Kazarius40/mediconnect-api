@@ -20,7 +20,6 @@ interface ReturnedUserPayload {
   resetPasswordExpires?: Date | null;
   createdAt: Date;
   updatedAt: Date;
-  // tokens?: Token[];
   jti: string;
 }
 

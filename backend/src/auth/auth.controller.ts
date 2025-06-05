@@ -42,8 +42,8 @@ import {
   ResetPasswordMessageResponse,
   UserResponse,
   UserRoleUpdateResponse,
-  MessageResponse,
 } from './swagger/auth-response.swagger';
+import { MessageResponse } from '../swagger/common-responses.swagger';
 
 @ApiTags('Auth')
 @Controller('auth')

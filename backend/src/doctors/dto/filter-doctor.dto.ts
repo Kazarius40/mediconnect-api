@@ -2,28 +2,28 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsIn, IsOptional, IsString } from 'class-validator';
 
 export class FilterDoctorDto {
-  @ApiPropertyOptional({ description: "Фільтр за ім'ям лікаря" })
+  @ApiPropertyOptional({ description: "Filter by doctor's first name" })
   @IsOptional()
   @IsString()
   firstName?: string;
 
-  @ApiPropertyOptional({ description: 'Фільтр за прізвищем лікаря' })
+  @ApiPropertyOptional({ description: "Filter by doctor's last name" })
   @IsOptional()
   @IsString()
   lastName?: string;
 
-  @ApiPropertyOptional({ description: 'Фільтр за email лікаря' })
+  @ApiPropertyOptional({ description: "Filter by doctor's email" })
   @IsOptional()
   @IsString()
   email?: string;
 
-  @ApiPropertyOptional({ description: 'Фільтр за телефоном лікаря' })
+  @ApiPropertyOptional({ description: "Filter by doctor's phone number" })
   @IsOptional()
   @IsString()
   phone?: string;
 
   @ApiPropertyOptional({
-    description: 'Поле для сортування',
+    description: 'Field to sort by',
     enum: ['firstName', 'lastName', 'email', 'phone'],
   })
   @IsOptional()
@@ -32,7 +32,7 @@ export class FilterDoctorDto {
   sortBy?: 'firstName' | 'lastName' | 'email' | 'phone';
 
   @ApiPropertyOptional({
-    description: 'Порядок сортування ("ASC" або "DESC")',
+    description: 'Sort order ("ASC" or "DESC")',
     enum: ['ASC', 'DESC'],
     default: 'ASC',
   })

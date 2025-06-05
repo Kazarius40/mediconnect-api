@@ -34,11 +34,3 @@ export class ServiceListResponse {
   @ApiProperty({ type: [ServiceResponse], description: 'List of services' })
   items: ServiceResponse[];
 }
-
-export class MessageResponse {
-  @ApiProperty({
-    description: 'A message indicating the outcome of the operation',
-    example: 'Service successfully deleted.',
-  })
-  message: string;
-}

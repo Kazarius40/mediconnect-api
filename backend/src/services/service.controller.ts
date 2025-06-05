@@ -31,10 +31,10 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/user-role.enum';
 import { FilterServiceDto } from './dto/filter-service.dto';
 import {
-  MessageResponse,
   ServiceListResponse,
   ServiceResponse,
 } from './swagger/service-response.swagger';
+import { MessageResponse } from '../swagger/common-responses.swagger';
 
 @ApiTags('Services')
 @Controller('services')
