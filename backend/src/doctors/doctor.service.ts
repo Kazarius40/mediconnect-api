@@ -2,7 +2,6 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
-  Logger,
   InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -16,8 +15,6 @@ import { UpdateDoctorDto } from './dto/update-doctor';
 
 @Injectable()
 export class DoctorService {
-  private readonly logger = new Logger(DoctorService.name);
-
   constructor(
     @InjectRepository(Doctor)
     private doctorRepository: Repository<Doctor>,
@@ -89,14 +86,9 @@ export class DoctorService {
 
   private async handleDatabaseOperation<T>(
     operation: () => Promise<T>,
-    successMessage: string,
-    errorMessage: string,
-    context: string,
   ): Promise<T> {
     try {
-      const result = await operation();
-      this.logger.log(successMessage);
-      return result;
+      return await operation();
     } catch (error: unknown) {
       if (
         error instanceof NotFoundException ||
@@ -104,13 +96,8 @@ export class DoctorService {
       ) {
         throw error;
       }
-      if (error instanceof Error) {
-        this.logger.error(`${errorMessage}: ${error.message}`, error.stack);
-      } else {
-        this.logger.error(`Unknown error during ${context}.`);
-      }
       throw new InternalServerErrorException(
-        `An unexpected error occurred during ${context}.`,
+        `An unexpected error occurred during database operation.`,
       );
     }
   }
@@ -125,9 +112,6 @@ export class DoctorService {
 
     return this.handleDatabaseOperation(
       async () => await this.doctorRepository.save(doctor),
-      `Doctor with ID ${doctor.id} created successfully.`,
-      `Error creating doctor`,
-      'Doctor creation',
     );
   }
 
@@ -181,9 +165,6 @@ export class DoctorService {
 
     return this.handleDatabaseOperation(
       async () => await this.doctorRepository.save(updatedDoctor),
-      `Doctor with ID ${id} updated successfully.`,
-      `Error updating doctor with ID ${id}`,
-      'doctor update',
     );
   }
 
@@ -198,9 +179,6 @@ export class DoctorService {
 
     return this.handleDatabaseOperation(
       async () => await this.doctorRepository.save(updatedDoctor),
-      `Doctor with ID ${id} partially updated successfully.`,
-      `Error partially updating doctor with ID ${id}`,
-      'partial doctor update',
     );
   }
 
@@ -209,7 +187,6 @@ export class DoctorService {
     if (result.affected === 0) {
       throw new NotFoundException(`Doctor with ID ${id} not found.`);
     }
-    this.logger.log(`Doctor with ID ${id} deleted successfully.`);
   }
 
   private async prepareDoctorEntity(
