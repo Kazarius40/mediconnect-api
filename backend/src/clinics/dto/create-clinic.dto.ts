@@ -3,26 +3,27 @@ import {
   IsEmail,
   IsNotEmpty,
   IsOptional,
-  IsString,
   IsPhoneNumber,
-  IsArray,
-  IsNumber,
+  IsString,
 } from 'class-validator';
 
 export class CreateClinicDto {
-  @ApiProperty({ description: 'Назва клініки', example: 'Kyiv General Clinic' })
+  @ApiProperty({ description: "Clinic's name", example: 'Healthy Paws Clinic' })
   @IsString()
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({ description: 'Адреса клініки', example: 'вул. Хрещатик, 10' })
+  @ApiProperty({
+    description: "Clinic's address",
+    example: '123 Main St, Anytown',
+  })
   @IsString()
   @IsNotEmpty()
   address: string;
 
   @ApiProperty({
-    description: 'Номер телефону клініки',
-    example: '+380441234567',
+    description: "Clinic's phone number",
+    example: '+380671234567',
   })
   @IsPhoneNumber(undefined)
   @IsNotEmpty()
@@ -32,18 +33,7 @@ export class CreateClinicDto {
     description: 'Email клініки',
     example: 'info@clinic.com',
   })
-  @IsEmail()
+  @IsEmail({}, { message: 'Invalid email format' })
   @IsOptional()
   email?: string;
-
-  @ApiProperty({
-    description: 'Список ID лікарів, що працюють у клініці',
-    type: [Number],
-    example: [1, 2],
-    required: false,
-  })
-  @IsOptional()
-  @IsArray()
-  @IsNumber({}, { each: true })
-  doctorIds?: number[];
 }

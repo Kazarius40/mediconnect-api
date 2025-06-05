@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UserRole } from '../../users/user-role.enum';
+import { MessageResponse } from '../../swagger/common-responses.swagger';
 
 export class TokensResponse {
   @ApiProperty({
@@ -70,14 +71,6 @@ export class UserProfileResponse {
     description: 'Unique identifier for the current JWT session (JTI)',
   })
   jti: string;
-}
-
-export class MessageResponse {
-  @ApiProperty({
-    example: 'Operation completed successfully.',
-    description: 'Operation result message',
-  })
-  message: string;
 }
 
 export class LogoutMessageResponse extends MessageResponse {
