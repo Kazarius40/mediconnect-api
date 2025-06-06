@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   Injectable,
-  Logger,
   NotFoundException,
   OnModuleInit,
   UnauthorizedException,
@@ -26,8 +25,6 @@ import { validate } from 'class-validator';
 
 @Injectable()
 export class AuthService implements OnModuleInit {
-  private readonly logger = new Logger(AuthService.name);
-
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -44,9 +41,6 @@ export class AuthService implements OnModuleInit {
     const adminPassword = this.configService.get<string>('ADMIN_PASSWORD');
 
     if (!adminEmail || !adminPassword) {
-      this.logger.warn(
-        'ADMIN_EMAIL or ADMIN_PASSWORD not set in environment variables. Initial admin will not be created automatically.',
-      );
       return;
     }
 
@@ -57,9 +51,6 @@ export class AuthService implements OnModuleInit {
 
     const errors = await validate(tempDto);
     if (errors.length > 0) {
-      this.logger.warn(
-        'Initial admin was NOT created due to invalid ADMIN_EMAIL or ADMIN_PASSWORD format. Check your .env file.',
-      );
       return;
     }
 
@@ -67,16 +58,12 @@ export class AuthService implements OnModuleInit {
       role: UserRole.ADMIN,
     });
     if (!existingAdmin) {
-      this.logger.log('No admin user found. Creating initial admin...');
       const adminUser = this.userRepository.create({
         email: adminEmail,
         password: adminPassword,
         role: UserRole.ADMIN,
       });
       await this.userRepository.save(adminUser);
-      this.logger.log(`Initial admin user created with email: ${adminEmail}`);
-    } else {
-      this.logger.log('Admin user already exists.');
     }
   }
 
@@ -97,7 +84,6 @@ export class AuthService implements OnModuleInit {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...safeUser } = user;
-    this.logger.log(`User registered: ${user.email}`);
     return safeUser;
   }
 
@@ -112,8 +98,16 @@ export class AuthService implements OnModuleInit {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...safeUser } = user;
-    this.logger.log(`User role updated: ${user.email} to ${newRole}`);
     return safeUser;
+  }
+
+  async findAllUsers(): Promise<SafeUser[]> {
+    const users = await this.userRepository.find();
+    return users.map((user) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password, ...safeUser } = user;
+      return safeUser;
+    });
   }
 
   async deleteUser(userId: number): Promise<void> {
@@ -123,16 +117,12 @@ export class AuthService implements OnModuleInit {
     }
 
     await this.userRepository.remove(user);
-    this.logger.log(`User with ID ${userId} deleted.`);
   }
 
   async login(loginDto: LoginDto): Promise<ITokens> {
     const user = await this.validateUser(loginDto.email, loginDto.password);
 
-    const tokens = await this.tokenService.generateAndSaveTokens(user);
-
-    this.logger.log(`User logged in: ${user.email}`);
-    return tokens;
+    return await this.tokenService.generateAndSaveTokens(user);
   }
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<void> {
@@ -140,9 +130,6 @@ export class AuthService implements OnModuleInit {
     const user = await this.userRepository.findOneBy({ email });
 
     if (!user) {
-      this.logger.warn(
-        `Attempted password reset for non-existent email: ${email}`,
-      );
       return;
     }
 
@@ -153,8 +140,6 @@ export class AuthService implements OnModuleInit {
     user.resetPasswordExpires = resetTokenExpires;
 
     await this.userRepository.save(user);
-
-    this.logger.log(`Password reset token generated for user: ${email}`);
   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<void> {
@@ -168,7 +153,6 @@ export class AuthService implements OnModuleInit {
     });
 
     if (!user) {
-      this.logger.warn(`Invalid or expired password reset token: ${token}`);
       throw new BadRequestException('Invalid or expired password reset token');
     }
 
@@ -177,18 +161,14 @@ export class AuthService implements OnModuleInit {
     user.resetPasswordExpires = null;
 
     await this.userRepository.save(user);
-
-    this.logger.log(`Password reset successfully for user: ${user.email}`);
   }
 
   private async validateUser(email: string, password: string): Promise<User> {
     const user = await this.userRepository.findOneBy({ email });
 
     if (!user || !(await user.validatePassword(password))) {
-      this.logger.warn(`Failed login attempt for email: ${email}`);
       throw new UnauthorizedException('Invalid credentials');
     }
-
     return user;
   }
 }

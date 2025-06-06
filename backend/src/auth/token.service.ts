@@ -1,4 +1,4 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
@@ -11,8 +11,6 @@ import { IJWTPayload } from './interfaces/jwt-payload.interface';
 
 @Injectable()
 export class TokenService {
-  private readonly logger = new Logger(TokenService.name);
-
   private readonly accessTokenExpiresIn: number;
   private readonly refreshTokenExpiresIn: number;
 
@@ -73,12 +71,7 @@ export class TokenService {
     let payload: IJWTPayload;
     try {
       payload = this.jwtService.verify<IJWTPayload>(refreshToken);
-    } catch (error: unknown) {
-      let errorMessage = 'Unknown error';
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      }
-      this.logger.warn(`Failed to verify refresh token: ${errorMessage}`);
+    } catch {
       throw new UnauthorizedException('Invalid or expired token');
     }
 
@@ -99,9 +92,6 @@ export class TokenService {
       !tokenEntity.user ||
       tokenEntity.refreshTokenExpiresAt < new Date()
     ) {
-      this.logger.warn(
-        `Attempt to use invalid, blocked or expired refresh token: ${refreshToken}`,
-      );
       throw new UnauthorizedException(
         'Invalid, blocked or expired refresh token',
       );
@@ -109,12 +99,7 @@ export class TokenService {
 
     await this.blockToken(tokenEntity);
 
-    const tokens = await this.generateAndSaveTokens(tokenEntity.user);
-
-    this.logger.log(
-      `Refresh token rotated for user: ${tokenEntity.user.email}`,
-    );
-    return tokens;
+    return await this.generateAndSaveTokens(tokenEntity.user);
   }
 
   async logOut(refreshToken: string): Promise<void> {
@@ -124,22 +109,17 @@ export class TokenService {
     });
 
     if (!tokenEntity) {
-      this.logger.warn(
-        `Attempted to log out with non-existent or blocked token: ${refreshToken}`,
-      );
       throw new UnauthorizedException(
         'Invalid or already logged out refresh token',
       );
     }
 
     await this.blockToken(tokenEntity);
-    this.logger.log(`User logged out: ${tokenEntity.user.email}`);
   }
 
   private async blockToken(token: Token): Promise<void> {
     token.isBlocked = true;
     await this.tokenRepository.save(token);
-    this.logger.log(`Token ${token.jti} blocked.`);
   }
 
   private generateJti(): string {
@@ -175,6 +155,5 @@ export class TokenService {
       isBlocked: false,
     });
     await this.tokenRepository.save(tokenEntity);
-    this.logger.log(`New token saved for user ${user.email} with jti: ${jti}`);
   }
 }

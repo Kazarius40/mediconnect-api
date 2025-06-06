@@ -157,6 +157,8 @@ export class AuthController {
       'If a user with that email exists, a password reset link has been sent.',
     type: ForgotPasswordMessageResponse,
   })
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
     await this.authService.forgotPassword(forgotPasswordDto);
     return {
@@ -180,6 +182,31 @@ export class AuthController {
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     await this.authService.resetPassword(resetPasswordDto);
     return { message: 'Password has been successfully reset.' };
+  }
+
+  @Get('users')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'Get a list of all users (Admin only)',
+    description: 'Returns all registered users without sensitive information.',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'List of users successfully retrieved.',
+    type: [UserResponse],
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Unauthorized access',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Access denied',
+  })
+  async getAllUsers() {
+    return await this.authService.findAllUsers();
   }
 
   @Get('users/:id')
