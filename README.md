@@ -18,9 +18,9 @@ JWT_SECRET=6f2d71035cefcefc5390dc1edc912f09a6738668d917bc87f75e07e5a01607d5ebd79
 ACCESS_TOKEN_EXPIRATION_TIME=3600
 REFRESH_TOKEN_EXPIRATION_TIME=86400
 
-# MySQL Database Configuration (for Railway)
+# MySQL Database Configuration
 DB_TYPE=mysql
-DB_HOST=nozomi.proxy.rlwy.net # Railway Host
+DB_HOST=nozomi.proxy.rlwy.net
 DB_PORT=46656
 DB_USERNAME=root
 DB_PASSWORD=YbNjosCCNXgjETkHtStNfblYuCqdIESu
