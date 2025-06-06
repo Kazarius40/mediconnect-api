@@ -83,6 +83,8 @@ export class ServiceService {
     const { name, sortBy, sortOrder } = filterDto || {};
 
     const query = this.serviceRepository.createQueryBuilder('service');
+    query.leftJoinAndSelect('service.doctors', 'doctor');
+    query.leftJoinAndSelect('doctor.clinics', 'clinic');
 
     if (name) {
       query.andWhere('service.name LIKE :name', { name: `%${name}%` });
@@ -98,7 +100,14 @@ export class ServiceService {
   }
 
   async findOne(id: number): Promise<Service> {
-    return this.getServiceOrThrow(id);
+    const service = await this.serviceRepository.findOne({
+      where: { id },
+      relations: ['doctors', 'doctors.clinics'],
+    });
+    if (!service) {
+      throw new NotFoundException(`Service with ID ${id} not found.`);
+    }
+    return service;
   }
 
   async update(
