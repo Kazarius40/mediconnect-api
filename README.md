@@ -5,16 +5,10 @@
 Make sure you have the following software installed:
 
 -   **Docker Desktop** – [Download and Install](https://www.docker.com/products/docker-desktop/) (includes Docker Compose)
--   **Node.js (v18.x or higher)** – [Download](https://nodejs.org/)
--   **npm** (included with Node.js):
-    Update to the latest version:
-    ```bash
-    npm install -g npm@latest
-    ```
 
 ---
 
-## ⚙️ Initial Setup & Running the Application (Standard)
+## ⚙️ Initial Setup & Running the Application
 
     **Create a `.env` file in the root directory:**
     ```env
@@ -39,8 +33,8 @@ Make sure you have the following software installed:
 
 `DB_HOST` must be `db` as this is the service name in `docker-compose.yml`.
 
-Clean up previous Docker instances and start the application:
-Navigate to the root directory of your project in your terminal and run the following commands:
+    Start the Docker environment and initialize the database:
+    Navigate to the root directory of your project in your terminal and run the following commands:
 
 # Stop and remove all previous containers, networks, and volumes (for a clean start)
 ```bash
@@ -60,9 +54,8 @@ docker cp ./db_dumps/mediconnect_db_dump.sql.gz mediconnect-db:/tmp/mediconnect_
 ```bash
 docker exec mediconnect-db sh -c 'gunzip < /tmp/mediconnect_db_dump.sql.gz | mysql -u root -psuperpass mediconnect'
 ```
-Initial Admin User:
-When the database is first initialized (from the dump or if no data exists), an admin user with the credentials specified in ADMIN_EMAIL and ADMIN_PASSWORD in your .env file will be automatically created. This admin user has full control: they can assign the admin role to others, delete any user (including other admins), but cannot delete their own account.
-
+    Initial Admin User:
+    The provided mediconnect_db_dump.sql.gz file contains an admin user with the credentials from your .env file (ADMIN_EMAIL and ADMIN_PASSWORD). This ensures an admin account is available upon successful database initialization.
 ---
 
 
