@@ -22,9 +22,9 @@ async function bootstrap(): Promise<void> {
   setupSwagger(app);
 
   // await app.listen(process.env.PORT ?? 3000);
-  const port = process.env.PORT;
-  if (!port) {
-    throw new Error('PORT is not defined in environment variables');
-  }
-  await app.listen(port);
+  // const port = process.env.PORT;
+  // if (!port) {
+  //   throw new Error('PORT is not defined in environment variables');
+  // }
+  await app.listen(process.env.PORT ?? 3000);
 }

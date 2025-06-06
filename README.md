@@ -39,41 +39,29 @@ Make sure you have the following software installed:
 
 `DB_HOST` must be `db` as this is the service name in `docker-compose.yml`.
 
-###  Initial Admin User: When the database is first initialized (i.e., if no data exists), an admin user with the credentials specified in ADMIN_EMAIL and ADMIN_PASSWORD in your .env file will be automatically created. This admin user has full control: they can assign the admin role to others, delete any user (including other admins), but cannot delete their own account.
+Clean up previous Docker instances and start the application:
+Navigate to the root directory of your project in your terminal and run the following commands:
 
-     **Start the Docker containers:**
+# Stop and remove all previous containers, networks, and volumes (for a clean start)
+```bash
+docker-compose down -v
+```
+# Build and start all services in detached mode
+```bash
+docker-compose up -d --build
+```
 
-    ```bash
-    docker-compose up --build
-    ```
+# Copy the database dump into the running MySQL container
+```bash
+docker cp ./db_dumps/mediconnect_db_dump.sql.gz mediconnect-db:/tmp/mediconnect_db_dump.sql.gz
+```
 
----
-
-## 🚨 First-Time Setup (From Scratch) & Initial Migration Generation
-
-If you have already successfully run the project (by following the steps in the "Initial Setup & Running the Application (Standard)" section), and all migrations have been applied, you **do not need** to repeat these steps.
-
-1.  **Full Docker Environment Cleanup:**
-    Ensure you are in the root directory of your project.
-    ```bash
-    docker-compose down --volumes --rmi all
-    ```
-2.  **Start only the database service (`db`):**
-    ```bash
-    docker-compose up -d db
-    ```
-    Wait until the `mediconnect-db` container becomes `healthy`. You can check its status with the command `docker-compose ps`.
-
-3.  **Generate the initial migration:**
-    ```bash
-    docker-compose run --rm \
-    --entrypoint "npm" \
-    migration run migration:generate -- ./src/database/migrations/InitialMigration
-    ```
-4.  **Launch the entire Docker stack:**
-    ```bash
-    docker-compose up --build
-    ```
+#   Import the database dump into the MySQL database
+```bash
+docker exec mediconnect-db sh -c 'gunzip < /tmp/mediconnect_db_dump.sql.gz | mysql -u root -psuperpass mediconnect'
+```
+Initial Admin User:
+When the database is first initialized (from the dump or if no data exists), an admin user with the credentials specified in ADMIN_EMAIL and ADMIN_PASSWORD in your .env file will be automatically created. This admin user has full control: they can assign the admin role to others, delete any user (including other admins), but cannot delete their own account.
 
 ---
 
