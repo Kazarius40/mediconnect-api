@@ -10,52 +10,37 @@ Make sure you have the following software installed:
 
 ## ⚙️ Initial Setup & Running the Application
 
-    **Create a `.env` file in the root directory:**
-    ```env
-    # JWT Configuration
-    JWT_SECRET=6f2d71035cefcefc5390dc1edc912f09a6738668d917bc87f75e07e5a01607d5ebd7945aa4e73564
-    ACCESS_TOKEN_EXPIRATION_TIME=3600
-    REFRESH_TOKEN_EXPIRATION_TIME=86400
+**Create a `.env` file in the root directory:**
 
-    # MySQL Database Configuration
-    DB_TYPE=mysql
-    DB_HOST=db
-    DB_PORT=3306
-    DB_USERNAME=user
-    DB_PASSWORD=user
-    DB_ROOT_PASSWORD=superpass
-    DB_DATABASE=mediconnect
+```env
+# JWT Configuration
+JWT_SECRET=6f2d71035cefcefc5390dc1edc912f09a6738668d917bc87f75e07e5a01607d5ebd7945aa4e73564
+ACCESS_TOKEN_EXPIRATION_TIME=3600
+REFRESH_TOKEN_EXPIRATION_TIME=86400
 
-    # Admin Account (automatically created if it doesn't exist)
-    ADMIN_EMAIL=test@example.com
-    ADMIN_PASSWORD=Qwerty1!
-    ```
+# MySQL Database Configuration (for Railway)
+DB_TYPE=mysql
+DB_HOST=nozomi.proxy.rlwy.net # Railway Host
+DB_PORT=46656
+DB_USERNAME=root
+DB_PASSWORD=YbNjosCCNXgjETkHtStNfblYuCqdIESu
+DB_ROOT_PASSWORD=YbNjosCCNXgjETkHtStNfblYuCqdIESu
+DB_DATABASE=railway
 
-`DB_HOST` must be `db` as this is the service name in `docker-compose.yml`.
+# Admin Account
+ADMIN_EMAIL=test@example.com
+ADMIN_PASSWORD=Qwerty1!
 
-    Start the Docker environment and initialize the database:
-    Navigate to the root directory of your project in your terminal and run the following commands:
-
-# Stop and remove all previous containers, networks, and volumes (for a clean start)
-```bash
-docker-compose down -v
+PORT=3000
 ```
+
+## Start the Docker environment and initialize the database:
+## Navigate to the root directory of your project in your terminal and run the following commands:
+
 # Build and start all services in detached mode
 ```bash
 docker-compose up -d --build
 ```
-
-# Copy the database dump into the running MySQL container
-```bash
-docker cp ./db_dumps/mediconnect_db_dump.sql.gz mediconnect-db:/tmp/mediconnect_db_dump.sql.gz
-```
-
-#   Import the database dump into the MySQL database
-```bash
-docker exec mediconnect-db sh -c 'gunzip < /tmp/mediconnect_db_dump.sql.gz | mysql -u root -psuperpass mediconnect'
-```
-    Initial Admin User:
-    The provided mediconnect_db_dump.sql.gz file contains an admin user with the credentials from your .env file (ADMIN_EMAIL and ADMIN_PASSWORD). This ensures an admin account is available upon successful database initialization.
 ---
 
 
