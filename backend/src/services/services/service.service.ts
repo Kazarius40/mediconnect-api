@@ -5,11 +5,11 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Service } from './service.entity';
+import { Service } from '../entities/service.entity';
 import { Repository, Not, FindOptionsWhere } from 'typeorm';
-import { CreateServiceDto } from './dto/create-service.dto';
-import { UpdateServiceDto } from './dto/update-service.dto';
-import { FilterServiceDto } from './dto/filter-service.dto';
+import { CreateServiceDto } from '../dto/create-service.dto';
+import { UpdateServiceDto } from '../dto/update-service.dto';
+import { FilterServiceDto } from '../dto/filter-service.dto';
 
 @Injectable()
 export class ServiceService {

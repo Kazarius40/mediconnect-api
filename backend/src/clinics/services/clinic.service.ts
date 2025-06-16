@@ -6,10 +6,10 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
-import { Clinic } from './clinic.entity';
-import { CreateClinicDto } from './dto/create-clinic.dto';
-import { UpdateClinicDto } from './dto/update-clinic.dto';
-import { FilterClinicDto } from './dto/filter-clinic.dto';
+import { Clinic } from '../entities/clinic.entity';
+import { CreateClinicDto } from '../dto/create-clinic.dto';
+import { UpdateClinicDto } from '../dto/update-clinic.dto';
+import { FilterClinicDto } from '../dto/filter-clinic.dto';
 
 @Injectable()
 export class ClinicService {

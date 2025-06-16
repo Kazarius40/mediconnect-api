@@ -14,10 +14,10 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
-import { DoctorService } from './doctor.service';
-import { CreateDoctorDto } from './dto/create-doctor.dto';
-import { Doctor } from './doctor.entity';
-import { FilterDoctorDto } from './dto/filter-doctor.dto';
+import { DoctorService } from '../services/doctor.service';
+import { CreateDoctorDto } from '../dto/create-doctor.dto';
+import { Doctor } from '../entities/doctor.entity';
+import { FilterDoctorDto } from '../dto/filter-doctor.dto';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -26,15 +26,15 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { UserRole } from '../users/user-role.enum';
+import { RolesGuard } from '../../auth/guards/roles.guard';
+import { Roles } from '../../auth/decorators/roles.decorator';
+import { UserRole } from '../../users/user-role.enum';
 import {
   DoctorListResponse,
   DoctorResponse,
-} from './swagger/doctor-response.swagger';
-import { UpdateDoctorDto } from './dto/update-doctor';
-import { MessageResponse } from '../swagger/common-responses.swagger';
+} from '../swagger/doctor-response.swagger';
+import { UpdateDoctorDto } from '../dto/update-doctor';
+import { MessageResponse } from '../../swagger/common-responses.swagger';
 
 @ApiTags('Doctors')
 @Controller('doctors')

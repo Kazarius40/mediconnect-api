@@ -7,8 +7,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Clinic } from '../clinics/clinic.entity';
-import { Service } from '../services/service.entity';
+import { Clinic } from '../../clinics/entities/clinic.entity';
+import { Service } from '../../services/entities/service.entity';
 
 @Entity()
 export class Doctor {
