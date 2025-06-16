@@ -1,10 +1,10 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
   OnModuleInit,
   UnauthorizedException,
-  ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
@@ -16,7 +16,6 @@ import { SafeUser } from './interfaces/safe-user.interface';
 import { TokenService } from './token.service';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import * as crypto from 'crypto';
-import * as bcrypt from 'bcrypt';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { UserRole } from '../users/user-role.enum';
 import { ConfigService } from '@nestjs/config';
@@ -156,7 +155,7 @@ export class AuthService implements OnModuleInit {
       throw new BadRequestException('Invalid or expired password reset token');
     }
 
-    user.password = await bcrypt.hash(password, 10);
+    user.password = password;
     user.resetPasswordToken = null;
     user.resetPasswordExpires = null;
 

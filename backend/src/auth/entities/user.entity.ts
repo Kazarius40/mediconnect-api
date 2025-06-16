@@ -1,5 +1,6 @@
 import {
   BeforeInsert,
+  BeforeUpdate,
   Column,
   CreateDateColumn,
   Entity,
@@ -52,10 +53,9 @@ export class User {
   updatedAt: Date;
 
   @BeforeInsert()
+  @BeforeUpdate()
   async hashPassword(): Promise<void> {
-    if (!this.password) {
-      throw new Error('Password is missing during insert');
-    }
+    if (this.password.startsWith('$2b$')) return;
     this.password = await bcrypt.hash(this.password, 10);
   }
 
