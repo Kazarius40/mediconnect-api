@@ -4,15 +4,18 @@ import { PassportModule } from '@nestjs/passport';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { AuthController } from './auth.controller';
-import { JwtStrategy } from './jwt.strategy';
+import { AuthController } from './controllers/auth.controller';
+import { JwtStrategy } from './strategies/jwt.strategy';
 import { Token } from './entities/token.entity';
-import { AuthService } from './auth.service';
+import { AuthService } from './services/auth.service';
 import { ScheduleModule } from '@nestjs/schedule';
-import { TokenCleanupService } from './token-cleanup.service';
-import { TokenService } from './token.service';
-import { ProfileService } from './profile.service';
-import { JwtRefreshStrategy } from './jwt-refresh.strategy';
+import { TokenCleanupService } from './services/token-cleanup.service';
+import { TokenService } from './services/token.service';
+import { ProfileService } from './services/profile.service';
+import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
+import { ProfileController } from './controllers/profile.controller';
+import { AdminController } from './controllers/admin.controller';
+import { PasswordController } from './controllers/password.controller';
 
 @Module({
   imports: [
@@ -31,7 +34,12 @@ import { JwtRefreshStrategy } from './jwt-refresh.strategy';
     }),
     TypeOrmModule.forFeature([User, Token]),
   ],
-  controllers: [AuthController],
+  controllers: [
+    AuthController,
+    ProfileController,
+    AdminController,
+    PasswordController,
+  ],
   providers: [
     AuthService,
     JwtStrategy,

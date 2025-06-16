@@ -7,17 +7,17 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
+import { User } from '../entities/user.entity';
 import { MoreThan, Repository } from 'typeorm';
-import { RegisterDto } from './dto/register.dto';
-import { LoginDto } from './dto/login.dto';
-import { ITokens } from './interfaces/tokens.interface';
-import { SafeUser } from './interfaces/safe-user.interface';
+import { RegisterDto } from '../dto/register.dto';
+import { LoginDto } from '../dto/login.dto';
+import { ITokens } from '../interfaces/tokens.interface';
+import { SafeUser } from '../interfaces/safe-user.interface';
 import { TokenService } from './token.service';
-import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ForgotPasswordDto } from '../dto/forgot-password.dto';
 import * as crypto from 'crypto';
-import { ResetPasswordDto } from './dto/reset-password.dto';
-import { UserRole } from '../users/user-role.enum';
+import { ResetPasswordDto } from '../dto/reset-password.dto';
+import { UserRole } from '../../users/user-role.enum';
 import { ConfigService } from '@nestjs/config';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';

@@ -4,10 +4,10 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Strategy, ExtractJwt } from 'passport-jwt';
-import { UserRole } from '../users/user-role.enum';
-import { Token } from './entities/token.entity';
-import { User } from './entities/user.entity';
-import { IJWTPayload } from './interfaces/jwt-payload.interface';
+import { UserRole } from '../../users/user-role.enum';
+import { Token } from '../entities/token.entity';
+import { User } from '../entities/user.entity';
+import { IJWTPayload } from '../interfaces/jwt-payload.interface';
 
 interface ReturnedUserPayload {
   id: number;
