@@ -39,8 +39,7 @@ services:
       - DB_DATABASE=${DB_DATABASE}
     env_file:
       - .env
-    command: >
-      sh -c "sleep 15 && npm run migration:run"
+    command: npm run migration:run
 
   api:
     build:
