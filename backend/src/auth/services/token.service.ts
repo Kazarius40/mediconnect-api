@@ -3,11 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { Token } from './entities/token.entity';
-import { User } from './entities/user.entity';
-import { ITokens } from './interfaces/tokens.interface';
-import { RefreshTokenDto } from './dto/refresh-token.dto';
-import { IJWTPayload } from './interfaces/jwt-payload.interface';
+import { Token } from '../entities/token.entity';
+import { User } from '../entities/user.entity';
+import { ITokens } from '../interfaces/tokens.interface';
+import { RefreshTokenDto } from '../dto/refresh-token.dto';
+import { IJWTPayload } from '../interfaces/jwt-payload.interface';
 
 @Injectable()
 export class TokenService {
