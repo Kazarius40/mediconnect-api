@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Clinic } from './clinic.entity';
-import { ClinicService } from './clinic.service';
-import { ClinicController } from './clinic.controller';
-import { Doctor } from '../doctors/doctor.entity';
-import { Service } from '../services/service.entity';
+import { Clinic } from './entities/clinic.entity';
+import { ClinicService } from './services/clinic.service';
+import { ClinicController } from './controllers/clinic.controller';
+import { Doctor } from '../doctors/entities/doctor.entity';
+import { Service } from '../services/entities/service.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Clinic, Doctor, Service])],

@@ -14,10 +14,10 @@ import {
   UseGuards,
   Logger,
 } from '@nestjs/common';
-import { ClinicService } from './clinic.service';
-import { CreateClinicDto } from './dto/create-clinic.dto';
-import { Clinic } from './clinic.entity';
-import { FilterClinicDto } from './dto/filter-clinic.dto';
+import { ClinicService } from '../services/clinic.service';
+import { CreateClinicDto } from '../dto/create-clinic.dto';
+import { Clinic } from '../entities/clinic.entity';
+import { FilterClinicDto } from '../dto/filter-clinic.dto';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -25,16 +25,16 @@ import {
   ApiTags,
   ApiBody,
 } from '@nestjs/swagger';
-import { UpdateClinicDto } from './dto/update-clinic.dto';
+import { UpdateClinicDto } from '../dto/update-clinic.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { UserRole } from '../users/user-role.enum';
+import { RolesGuard } from '../../auth/guards/roles.guard';
+import { Roles } from '../../auth/decorators/roles.decorator';
+import { UserRole } from '../../users/user-role.enum';
 import {
   ClinicListResponse,
   ClinicResponse,
-} from './swagger/clinic-response.swagger';
-import { MessageResponse } from '../swagger/common-responses.swagger';
+} from '../swagger/clinic-response.swagger';
+import { MessageResponse } from '../../swagger/common-responses.swagger';
 
 @ApiTags('Clinics')
 @Controller('clinics')

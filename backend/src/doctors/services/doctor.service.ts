@@ -5,13 +5,13 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Doctor } from './doctor.entity';
+import { Doctor } from '../entities/doctor.entity';
 import { In, Repository, Not, FindOptionsWhere } from 'typeorm';
-import { Clinic } from 'src/clinics/clinic.entity';
-import { Service } from 'src/services/service.entity';
-import { FilterDoctorDto } from './dto/filter-doctor.dto';
-import { CreateDoctorDto } from './dto/create-doctor.dto';
-import { UpdateDoctorDto } from './dto/update-doctor';
+import { Clinic } from 'src/clinics/entities/clinic.entity';
+import { Service } from 'src/services/entities/service.entity';
+import { FilterDoctorDto } from '../dto/filter-doctor.dto';
+import { CreateDoctorDto } from '../dto/create-doctor.dto';
+import { UpdateDoctorDto } from '../dto/update-doctor';
 
 @Injectable()
 export class DoctorService {

@@ -14,10 +14,10 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
-import { ServiceService } from './service.service';
-import { CreateServiceDto } from './dto/create-service.dto';
-import { UpdateServiceDto } from './dto/update-service.dto';
-import { Service } from './service.entity';
+import { ServiceService } from '../services/service.service';
+import { CreateServiceDto } from '../dto/create-service.dto';
+import { UpdateServiceDto } from '../dto/update-service.dto';
+import { Service } from '../entities/service.entity';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -26,15 +26,15 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { UserRole } from '../users/user-role.enum';
-import { FilterServiceDto } from './dto/filter-service.dto';
+import { RolesGuard } from '../../auth/guards/roles.guard';
+import { Roles } from '../../auth/decorators/roles.decorator';
+import { UserRole } from '../../users/user-role.enum';
+import { FilterServiceDto } from '../dto/filter-service.dto';
 import {
   ServiceListResponse,
   ServiceResponse,
-} from './swagger/service-response.swagger';
-import { MessageResponse } from '../swagger/common-responses.swagger';
+} from '../swagger/service-response.swagger';
+import { MessageResponse } from '../../swagger/common-responses.swagger';
 
 @ApiTags('Services')
 @Controller('services')
