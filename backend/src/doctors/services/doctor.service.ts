@@ -26,7 +26,148 @@ export class DoctorService {
     private serviceRepository: Repository<Service>,
   ) {}
 
-  private async getDoctorOrThrow(id: number): Promise<Doctor> {
+  private async handleDatabaseOperation<T>(
+    operation: () => Promise<T>,
+  ): Promise<T> {
+    try {
+      return await operation();
+    } catch (error: unknown) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof ConflictException
+      ) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `An unexpected error occurred during database operation.`,
+      );
+    }
+  }
+
+  async create(dto: CreateDoctorDto): Promise<Doctor> {
+    await this.validateUniqueEmailAndPhone(dto.email, dto.phone);
+
+    const doctor = await this.prepareDoctorEntity(dto);
+
+    return this.handleDatabaseOperation(() =>
+      this.doctorRepository.save(doctor),
+    );
+  }
+
+  async findAll(filter?: FilterDoctorDto): Promise<Doctor[]> {
+    const query = this.doctorRepository
+      .createQueryBuilder('doctor')
+      .leftJoinAndSelect('doctor.clinics', 'clinic')
+      .leftJoinAndSelect('doctor.services', 'service');
+
+    if (filter) {
+      Object.entries(filter).forEach(([key, value]) => {
+        if (
+          value === undefined ||
+          value === null ||
+          key === 'sortBy' ||
+          key === 'sortOrder'
+        ) {
+          return;
+        }
+
+        if (typeof value === 'string') {
+          query.andWhere(`LOWER(doctor.${key}) LIKE LOWER(:${key})`, {
+            [key]: `%${value}%`,
+          });
+        } else if (typeof value === 'number' || typeof value === 'boolean') {
+          query.andWhere(`doctor.${key} = :${key}`, { [key]: value });
+        }
+      });
+    }
+
+    if (filter?.sortBy) {
+      const orderDirection = filter.sortOrder === 'DESC' ? 'DESC' : 'ASC';
+      const orderByField = `doctor.${filter.sortBy}`;
+      query.orderBy(orderByField, orderDirection);
+    } else {
+      query.orderBy('doctor.id', 'ASC');
+    }
+
+    return query.getMany();
+  }
+
+  async findOne(id: number): Promise<Doctor> {
+    return this.findOneOrFail(id);
+  }
+
+  async put(id: number, dto: UpdateDoctorDto): Promise<Doctor> {
+    const updatedDoctor = await this.prepareAndValidateDoctorUpdate(id, dto);
+
+    return this.handleDatabaseOperation(() =>
+      this.doctorRepository.save(updatedDoctor),
+    );
+  }
+
+  async patch(id: number, dto: UpdateDoctorDto): Promise<Doctor> {
+    const updatedDoctor = await this.prepareAndValidateDoctorUpdate(id, dto);
+
+    return this.handleDatabaseOperation(() =>
+      this.doctorRepository.save(updatedDoctor),
+    );
+  }
+
+  async delete(id: number): Promise<void> {
+    const result = await this.doctorRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Doctor with ID ${id} not found.`);
+    }
+  }
+
+  private async prepareDoctorEntity(
+    dto: CreateDoctorDto | UpdateDoctorDto,
+    doctor: Doctor = new Doctor(),
+  ): Promise<Doctor> {
+    doctor.firstName = dto.firstName ?? doctor.firstName;
+    doctor.lastName = dto.lastName ?? doctor.lastName;
+
+    if (dto.email !== undefined) {
+      doctor.email = dto.email;
+    }
+
+    if (dto.phone !== undefined) {
+      doctor.phone = dto.phone;
+    }
+
+    if (dto.clinics !== undefined) {
+      doctor.clinics = dto.clinics.length
+        ? await this.clinicRepository.findBy({ id: In(dto.clinics) })
+        : [];
+    }
+
+    if (dto.services !== undefined) {
+      doctor.services = dto.services.length
+        ? await this.serviceRepository.findBy({ id: In(dto.services) })
+        : [];
+    }
+
+    return doctor;
+  }
+
+  private async prepareAndValidateDoctorUpdate(
+    id: number,
+    dto: UpdateDoctorDto,
+  ): Promise<Doctor> {
+    const doctor = await this.findOneOrFail(id);
+
+    const emailToValidate = dto.email !== undefined ? dto.email : doctor.email;
+    const phoneToValidate = dto.phone !== undefined ? dto.phone : doctor.phone;
+
+    await this.validateUniqueEmailAndPhone(
+      emailToValidate,
+      phoneToValidate,
+      id,
+    );
+
+    return this.prepareDoctorEntity(dto, doctor);
+  }
+
+  private async findOneOrFail(id: number): Promise<Doctor> {
     const doctor = await this.doctorRepository.findOne({
       where: { id },
       relations: ['clinics', 'services'],
@@ -82,157 +223,5 @@ export class DoctorService {
         );
       }
     }
-  }
-
-  private async handleDatabaseOperation<T>(
-    operation: () => Promise<T>,
-  ): Promise<T> {
-    try {
-      return await operation();
-    } catch (error: unknown) {
-      if (
-        error instanceof NotFoundException ||
-        error instanceof ConflictException
-      ) {
-        throw error;
-      }
-      throw new InternalServerErrorException(
-        `An unexpected error occurred during database operation.`,
-      );
-    }
-  }
-
-  async create(createDoctorDto: CreateDoctorDto): Promise<Doctor> {
-    await this.validateUniqueEmailAndPhone(
-      createDoctorDto.email,
-      createDoctorDto.phone,
-    );
-
-    const doctor = await this.prepareDoctorEntity(createDoctorDto);
-
-    return this.handleDatabaseOperation(
-      async () => await this.doctorRepository.save(doctor),
-    );
-  }
-
-  async findAll(filter?: FilterDoctorDto): Promise<Doctor[]> {
-    const { firstName, lastName, email, phone, sortBy, sortOrder } =
-      filter || {};
-
-    const query = this.doctorRepository
-      .createQueryBuilder('doctor')
-      .leftJoinAndSelect('doctor.clinics', 'clinic')
-      .leftJoinAndSelect('doctor.services', 'service');
-
-    if (firstName) {
-      query.andWhere('LOWER(doctor.firstName) LIKE LOWER(:firstName)', {
-        firstName: `%${firstName}%`,
-      });
-    }
-    if (lastName) {
-      query.andWhere('LOWER(doctor.lastName) LIKE LOWER(:lastName)', {
-        lastName: `%${lastName}%`,
-      });
-    }
-    if (email) {
-      query.andWhere('LOWER(doctor.email) LIKE LOWER(:email)', {
-        email: `%${email}%`,
-      });
-    }
-    if (phone) {
-      query.andWhere('doctor.phone LIKE :phone', { phone: `%${phone}%` });
-    }
-
-    if (sortBy) {
-      const orderDirection = sortOrder === 'DESC' ? 'DESC' : 'ASC';
-      const orderByField = `doctor.${sortBy}`;
-      query.orderBy(orderByField, orderDirection);
-    } else {
-      query.orderBy('doctor.id', 'ASC');
-    }
-    return await query.getMany();
-  }
-
-  async findOne(id: number): Promise<Doctor> {
-    return this.getDoctorOrThrow(id);
-  }
-
-  async update(id: number, updateDoctorDto: UpdateDoctorDto): Promise<Doctor> {
-    const updatedDoctor = await this.prepareAndValidateDoctorUpdate(
-      id,
-      updateDoctorDto,
-    );
-
-    return this.handleDatabaseOperation(
-      async () => await this.doctorRepository.save(updatedDoctor),
-    );
-  }
-
-  async partialUpdate(
-    id: number,
-    updateDoctorDto: UpdateDoctorDto,
-  ): Promise<Doctor> {
-    const updatedDoctor = await this.prepareAndValidateDoctorUpdate(
-      id,
-      updateDoctorDto,
-    );
-
-    return this.handleDatabaseOperation(
-      async () => await this.doctorRepository.save(updatedDoctor),
-    );
-  }
-
-  async remove(id: number): Promise<void> {
-    const result = await this.doctorRepository.delete(id);
-    if (result.affected === 0) {
-      throw new NotFoundException(`Doctor with ID ${id} not found.`);
-    }
-  }
-
-  private async prepareDoctorEntity(
-    dto: CreateDoctorDto | UpdateDoctorDto,
-    doctor: Doctor = new Doctor(),
-  ): Promise<Doctor> {
-    doctor.firstName = dto.firstName ?? doctor.firstName;
-    doctor.lastName = dto.lastName ?? doctor.lastName;
-
-    if (Object.prototype.hasOwnProperty.call(dto, 'email')) {
-      doctor.email = dto.email;
-    }
-    if (Object.prototype.hasOwnProperty.call(dto, 'phone')) {
-      doctor.phone = dto.phone;
-    }
-
-    if (dto.clinics !== undefined) {
-      doctor.clinics = dto.clinics.length
-        ? await this.clinicRepository.findBy({ id: In(dto.clinics) })
-        : [];
-    }
-
-    if (dto.services !== undefined) {
-      doctor.services = dto.services.length
-        ? await this.serviceRepository.findBy({ id: In(dto.services) })
-        : [];
-    }
-
-    return doctor;
-  }
-
-  private async prepareAndValidateDoctorUpdate(
-    id: number,
-    dto: UpdateDoctorDto,
-  ): Promise<Doctor> {
-    const doctor = await this.getDoctorOrThrow(id);
-
-    const emailToValidate = dto.email !== undefined ? dto.email : doctor.email;
-    const phoneToValidate = dto.phone !== undefined ? dto.phone : doctor.phone;
-
-    await this.validateUniqueEmailAndPhone(
-      emailToValidate,
-      phoneToValidate,
-      id,
-    );
-
-    return this.prepareDoctorEntity(dto, doctor);
   }
 }

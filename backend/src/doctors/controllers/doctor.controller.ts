@@ -155,11 +155,11 @@ export class DoctorController {
     description: 'Internal server error.',
   })
   @HttpCode(HttpStatus.OK)
-  async update(
+  async put(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateDoctorDto: CreateDoctorDto,
   ): Promise<Doctor> {
-    return this.doctorService.update(id, updateDoctorDto);
+    return this.doctorService.put(id, updateDoctorDto);
   }
 
   @Patch(':id')
@@ -197,11 +197,11 @@ export class DoctorController {
     description: 'Internal server error.',
   })
   @HttpCode(HttpStatus.OK)
-  async partialUpdate(
+  async patch(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateDoctorDto: UpdateDoctorDto,
   ): Promise<Doctor> {
-    return this.doctorService.partialUpdate(id, updateDoctorDto);
+    return this.doctorService.patch(id, updateDoctorDto);
   }
 
   @Delete(':id')
@@ -229,6 +229,6 @@ export class DoctorController {
   })
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
-    await this.doctorService.remove(id);
+    await this.doctorService.delete(id);
   }
 }
