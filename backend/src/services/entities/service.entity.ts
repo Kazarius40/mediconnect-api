@@ -21,7 +21,7 @@ export class Service {
 
   @ApiPropertyOptional({ description: 'Optional description of the service' })
   @Column({ type: 'text', nullable: true })
-  description?: string | null;
+  description: string | null;
 
   @ManyToMany(() => Doctor, (doctor) => doctor.services)
   doctors: Doctor[];

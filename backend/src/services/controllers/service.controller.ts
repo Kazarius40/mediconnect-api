@@ -159,7 +159,7 @@ export class ServiceController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateServiceDto: CreateServiceDto,
   ): Promise<Service> {
-    return this.serviceService.update(id, updateServiceDto);
+    return this.serviceService.put(id, updateServiceDto);
   }
 
   @Patch(':id')
@@ -201,7 +201,7 @@ export class ServiceController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateServiceDto: UpdateServiceDto,
   ): Promise<Service> {
-    return this.serviceService.partialUpdate(id, updateServiceDto);
+    return this.serviceService.patch(id, updateServiceDto);
   }
 
   @Delete(':id')
@@ -228,7 +228,7 @@ export class ServiceController {
     description: 'Internal server error.',
   })
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
-    await this.serviceService.remove(id);
+  async delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    await this.serviceService.delete(id);
   }
 }
