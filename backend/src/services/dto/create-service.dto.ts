@@ -12,5 +12,5 @@ export class CreateServiceDto {
   })
   @IsOptional()
   @IsString()
-  description?: string;
+  description?: string | null;
 }
