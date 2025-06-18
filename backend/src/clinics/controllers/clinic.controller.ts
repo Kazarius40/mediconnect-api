@@ -99,7 +99,7 @@ export class ClinicController {
   })
   @HttpCode(HttpStatus.OK)
   async findAll(@Query() filterDto: FilterClinicDto): Promise<Clinic[]> {
-    return this.clinicService.getAll(filterDto);
+    return this.clinicService.findAll(filterDto);
   }
 
   @Get(':id')
@@ -119,7 +119,7 @@ export class ClinicController {
   })
   @HttpCode(HttpStatus.OK)
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<Clinic> {
-    return this.clinicService.getById(id);
+    return this.clinicService.findOne(id);
   }
 
   @Put(':id')
@@ -166,7 +166,7 @@ export class ClinicController {
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: CreateClinicDto,
   ): Promise<Clinic> {
-    const clinic = await this.clinicService.update(id, dto);
+    const clinic = await this.clinicService.put(id, dto);
     this.logger.log(`Clinic with ID ${clinic.id} updated successfully.`);
     return clinic;
   }
@@ -217,7 +217,7 @@ export class ClinicController {
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateClinicDto,
   ): Promise<Clinic> {
-    const clinic = await this.clinicService.partialUpdate(id, dto);
+    const clinic = await this.clinicService.patch(id, dto);
     this.logger.log(
       `Clinic with ID ${clinic.id} partially updated successfully.`,
     );

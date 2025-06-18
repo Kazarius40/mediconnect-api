@@ -7,6 +7,7 @@ import {
   IsString,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
 export class CreateDoctorDto {
   @ApiProperty({ description: "Doctor's first name", example: 'Oleksandr' })
@@ -42,6 +43,7 @@ export class CreateDoctorDto {
   })
   @IsOptional()
   @IsArray()
+  @Type(() => Number)
   clinics?: number[];
 
   @ApiPropertyOptional({
@@ -51,5 +53,6 @@ export class CreateDoctorDto {
   })
   @IsOptional()
   @IsArray()
+  @Type(() => Number)
   services?: number[];
 }

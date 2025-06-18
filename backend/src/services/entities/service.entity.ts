@@ -11,6 +11,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 @Entity()
 export class Service {
+  // ------------------------------------------------------ Main fields ------------------------------------------------------------
   @ApiProperty({ description: 'Unique identifier of the service' })
   @PrimaryGeneratedColumn()
   id: number;
@@ -23,9 +24,7 @@ export class Service {
   @Column({ type: 'text', nullable: true })
   description: string | null;
 
-  @ManyToMany(() => Doctor, (doctor) => doctor.services)
-  doctors: Doctor[];
-
+  // ------------------------------------------------------ Timestamps ------------------------------------------------------------
   @ApiProperty({ description: 'Date and time when the service was created' })
   @CreateDateColumn()
   createdAt: Date;
@@ -35,4 +34,7 @@ export class Service {
   })
   @UpdateDateColumn()
   updatedAt: Date;
+
+  // ------------------------------------------------------ Relations ------------------------------------------------------------
+  @ManyToMany(() => Doctor, (doctor) => doctor.services) doctors: Doctor[];
 }

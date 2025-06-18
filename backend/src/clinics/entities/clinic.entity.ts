@@ -11,28 +11,19 @@ import { Doctor } from '../../doctors/entities/doctor.entity';
 
 @Entity()
 export class Clinic {
-  @PrimaryGeneratedColumn()
-  id: number;
+  // ------------------------------------------------------ Main fields ------------------------------------------------------------
+  @PrimaryGeneratedColumn() id: number;
+  @Column() name: string;
+  @Column() address: string;
+  @Column() phone: string;
+  @Column({ nullable: true }) email?: string;
 
-  @Column()
-  name: string;
+  // ------------------------------------------------------ Timestamps ------------------------------------------------------------
+  @CreateDateColumn() createdAt: Date;
+  @UpdateDateColumn() updatedAt: Date;
 
-  @Column()
-  address: string;
-
-  @Column()
-  phone: string;
-
-  @Column({ nullable: true })
-  email?: string;
-
+  // ------------------------------------------------------ Relations ------------------------------------------------------------
   @ManyToMany(() => Doctor, (doctor) => doctor.clinics)
   @JoinTable()
   doctors: Doctor[];
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
 }

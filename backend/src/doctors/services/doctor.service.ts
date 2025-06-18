@@ -26,32 +26,10 @@ export class DoctorService {
     private serviceRepository: Repository<Service>,
   ) {}
 
-  private async handleDatabaseOperation<T>(
-    operation: () => Promise<T>,
-  ): Promise<T> {
-    try {
-      return await operation();
-    } catch (error: unknown) {
-      if (
-        error instanceof NotFoundException ||
-        error instanceof ConflictException
-      ) {
-        throw error;
-      }
-      throw new InternalServerErrorException(
-        `An unexpected error occurred during database operation.`,
-      );
-    }
-  }
-
   async create(dto: CreateDoctorDto): Promise<Doctor> {
-    await this.validateUniqueEmailAndPhone(dto.email, dto.phone);
-
-    const doctor = await this.prepareDoctorEntity(dto);
-
-    return this.handleDatabaseOperation(() =>
-      this.doctorRepository.save(doctor),
-    );
+    await this.validateUniqueness(dto.email, dto.phone);
+    const doctor = await this.buildDoctor(dto);
+    return this.handleDb(() => this.doctorRepository.save(doctor));
   }
 
   async findAll(filter?: FilterDoctorDto): Promise<Doctor[]> {
@@ -93,23 +71,17 @@ export class DoctorService {
   }
 
   async findOne(id: number): Promise<Doctor> {
-    return this.findOneOrFail(id);
+    return this.findOrFail(id);
   }
 
   async put(id: number, dto: UpdateDoctorDto): Promise<Doctor> {
-    const updatedDoctor = await this.prepareAndValidateDoctorUpdate(id, dto);
-
-    return this.handleDatabaseOperation(() =>
-      this.doctorRepository.save(updatedDoctor),
-    );
+    const updatedDoctor = await this.updateDoctor(id, dto);
+    return this.handleDb(() => this.doctorRepository.save(updatedDoctor));
   }
 
   async patch(id: number, dto: UpdateDoctorDto): Promise<Doctor> {
-    const updatedDoctor = await this.prepareAndValidateDoctorUpdate(id, dto);
-
-    return this.handleDatabaseOperation(() =>
-      this.doctorRepository.save(updatedDoctor),
-    );
+    const updatedDoctor = await this.updateDoctor(id, dto);
+    return this.handleDb(() => this.doctorRepository.save(updatedDoctor));
   }
 
   async delete(id: number): Promise<void> {
@@ -119,7 +91,7 @@ export class DoctorService {
     }
   }
 
-  private async prepareDoctorEntity(
+  private async buildDoctor(
     dto: CreateDoctorDto | UpdateDoctorDto,
     doctor: Doctor = new Doctor(),
   ): Promise<Doctor> {
@@ -149,36 +121,21 @@ export class DoctorService {
     return doctor;
   }
 
-  private async prepareAndValidateDoctorUpdate(
+  private async updateDoctor(
     id: number,
     dto: UpdateDoctorDto,
   ): Promise<Doctor> {
-    const doctor = await this.findOneOrFail(id);
+    const doctor = await this.findOrFail(id);
 
     const emailToValidate = dto.email !== undefined ? dto.email : doctor.email;
     const phoneToValidate = dto.phone !== undefined ? dto.phone : doctor.phone;
 
-    await this.validateUniqueEmailAndPhone(
-      emailToValidate,
-      phoneToValidate,
-      id,
-    );
+    await this.validateUniqueness(emailToValidate, phoneToValidate, id);
 
-    return this.prepareDoctorEntity(dto, doctor);
+    return this.buildDoctor(dto, doctor);
   }
 
-  private async findOneOrFail(id: number): Promise<Doctor> {
-    const doctor = await this.doctorRepository.findOne({
-      where: { id },
-      relations: ['clinics', 'services'],
-    });
-    if (!doctor) {
-      throw new NotFoundException(`Doctor with ID ${id} not found.`);
-    }
-    return doctor;
-  }
-
-  private async validateUniqueEmailAndPhone(
+  private async validateUniqueness(
     email: string | undefined,
     phone: string | undefined,
     currentId?: number,
@@ -222,6 +179,33 @@ export class DoctorService {
           `Doctor with phone '${phone}' already exists.`,
         );
       }
+    }
+  }
+
+  private async findOrFail(id: number): Promise<Doctor> {
+    const doctor = await this.doctorRepository.findOne({
+      where: { id },
+      relations: ['clinics', 'services'],
+    });
+    if (!doctor) {
+      throw new NotFoundException(`Doctor with ID ${id} not found.`);
+    }
+    return doctor;
+  }
+
+  private async handleDb<T>(operation: () => Promise<T>): Promise<T> {
+    try {
+      return await operation();
+    } catch (error: unknown) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof ConflictException
+      ) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `An unexpected error occurred during database operation.`,
+      );
     }
   }
 }
