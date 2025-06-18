@@ -27,17 +27,16 @@ export class User {
     type: 'enum',
     enum: UserRole,
     default: 'patient',
-    nullable: true,
   })
   role: UserRole;
 
-  @Column({ nullable: true, default: null })
+  @Column({ nullable: true })
   firstName?: string;
 
-  @Column({ nullable: true, default: null })
+  @Column({ nullable: true })
   lastName?: string;
 
-  @Column({ nullable: true, default: null })
+  @Column({ nullable: true })
   phone?: string;
 
   @Column({ nullable: true, type: 'varchar', length: 255 })

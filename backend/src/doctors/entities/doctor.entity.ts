@@ -12,31 +12,21 @@ import { Service } from '../../services/entities/service.entity';
 
 @Entity()
 export class Doctor {
-  @PrimaryGeneratedColumn()
-  id: number;
+  // ------------------------------------------------------ Main fields ------------------------------------------------------------
+  @PrimaryGeneratedColumn() id: number;
+  @Column() firstName: string;
+  @Column() lastName: string;
+  @Column({ nullable: true }) email?: string;
+  @Column({ nullable: true }) phone?: string;
 
-  @Column()
-  firstName: string;
+  // ------------------------------------------------------ Timestamps ------------------------------------------------------------
+  @CreateDateColumn() createdAt: Date;
+  @UpdateDateColumn() updatedAt: Date;
 
-  @Column()
-  lastName: string;
-
-  @Column({ nullable: true })
-  email?: string;
-
-  @Column({ nullable: true })
-  phone?: string;
-
-  @ManyToMany(() => Clinic, (clinic) => clinic.doctors)
-  clinics: Clinic[];
+  // ------------------------------------------------------ Relations ------------------------------------------------------------
+  @ManyToMany(() => Clinic, (clinic) => clinic.doctors) clinics: Clinic[];
 
   @ManyToMany(() => Service, (service) => service.doctors)
   @JoinTable()
   services: Service[];
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
 }

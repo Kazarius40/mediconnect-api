@@ -19,7 +19,7 @@ export class ServiceService {
   ) {}
 
   async create(dto: CreateServiceDto): Promise<Service> {
-    await this.validateUniqueName(dto.name);
+    await this.validateUniqueness(dto.name);
 
     const service = this.serviceRepository.create(dto);
 
@@ -55,46 +55,34 @@ export class ServiceService {
   }
 
   async findOne(id: number): Promise<Service> {
-    return this.findOneOrFail(id, true);
+    return this.findOrFail(id, true);
   }
 
   async put(id: number, dto: UpdateServiceDto): Promise<Service> {
-    const service = await this.findOneOrFail(id);
+    const service = await this.findOrFail(id);
 
     if (dto.name !== undefined && dto.name !== service.name) {
-      await this.validateUniqueName(dto.name, id);
+      await this.validateUniqueness(dto.name, id);
       service.name = dto.name;
     }
 
     service.description = dto.description ?? null;
 
-    try {
-      return await this.serviceRepository.save(service);
-    } catch {
-      throw new InternalServerErrorException(
-        'An unexpected error occurred during service update.',
-      );
-    }
+    return this.saveAndReturn(service);
   }
 
   async patch(id: number, dto: UpdateServiceDto): Promise<Service> {
-    const service = await this.findOneOrFail(id);
+    const service = await this.findOrFail(id);
 
     if (dto.name !== undefined && dto.name !== service.name) {
-      await this.validateUniqueName(dto.name, id);
+      await this.validateUniqueness(dto.name, id);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { name, ...rest } = dto;
     Object.assign(service, rest);
 
-    try {
-      return await this.serviceRepository.save(service);
-    } catch {
-      throw new InternalServerErrorException(
-        'An unexpected error occurred during partial service update.',
-      );
-    }
+    return this.saveAndReturn(service);
   }
 
   async delete(id: number): Promise<void> {
@@ -104,7 +92,23 @@ export class ServiceService {
     }
   }
 
-  private async findOneOrFail(
+  private async validateUniqueness(
+    name: string,
+    currentId?: number,
+  ): Promise<void> {
+    const where: FindOptionsWhere<Service> = currentId
+      ? { name, id: Not(currentId) }
+      : { name };
+
+    const existing = await this.serviceRepository.findOne({ where });
+    if (existing) {
+      throw new ConflictException(
+        `Service with name '${name}' already exists.`,
+      );
+    }
+  }
+
+  private async findOrFail(
     id: number,
     withRelations = false,
   ): Promise<Service> {
@@ -122,18 +126,12 @@ export class ServiceService {
     return service;
   }
 
-  private async validateUniqueName(
-    name: string,
-    currentId?: number,
-  ): Promise<void> {
-    const where: FindOptionsWhere<Service> = currentId
-      ? { name, id: Not(currentId) }
-      : { name };
-
-    const existing = await this.serviceRepository.findOne({ where });
-    if (existing) {
-      throw new ConflictException(
-        `Service with name '${name}' already exists.`,
+  private async saveAndReturn(service: Service): Promise<Service> {
+    try {
+      return await this.serviceRepository.save(service);
+    } catch {
+      throw new InternalServerErrorException(
+        'An unexpected error occurred during saving service.',
       );
     }
   }
