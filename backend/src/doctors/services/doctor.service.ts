@@ -6,12 +6,13 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Doctor } from '../entities/doctor.entity';
-import { In, Repository, Not, FindOptionsWhere } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Clinic } from 'src/clinics/entities/clinic.entity';
 import { Service } from 'src/services/entities/service.entity';
 import { FilterDoctorDto } from '../dto/filter-doctor.dto';
 import { CreateDoctorDto } from '../dto/create-doctor.dto';
 import { UpdateDoctorDto } from '../dto/update-doctor';
+import { validateUniqueness } from '../../shared/validators/validate-unique-field.util';
 
 @Injectable()
 export class DoctorService {
@@ -27,7 +28,10 @@ export class DoctorService {
   ) {}
 
   async create(dto: CreateDoctorDto): Promise<Doctor> {
-    await this.validateUniqueness(dto.email, dto.phone);
+    await validateUniqueness(this.doctorRepository, {
+      email: dto.email,
+      phone: dto.phone,
+    });
     const doctor = await this.buildDoctor(dto);
     return this.handleDb(() => this.doctorRepository.save(doctor));
   }
@@ -127,59 +131,13 @@ export class DoctorService {
   ): Promise<Doctor> {
     const doctor = await this.findOrFail(id);
 
-    const emailToValidate = dto.email !== undefined ? dto.email : doctor.email;
-    const phoneToValidate = dto.phone !== undefined ? dto.phone : doctor.phone;
-
-    await this.validateUniqueness(emailToValidate, phoneToValidate, id);
+    await validateUniqueness(
+      this.doctorRepository,
+      { email: dto.email, phone: dto.phone },
+      id,
+    );
 
     return this.buildDoctor(dto, doctor);
-  }
-
-  private async validateUniqueness(
-    email: string | undefined,
-    phone: string | undefined,
-    currentId?: number,
-  ): Promise<void> {
-    if (email === undefined && phone === undefined) {
-      return;
-    }
-
-    const whereConditions: FindOptionsWhere<Doctor>[] = [];
-
-    if (email !== undefined) {
-      whereConditions.push({ email });
-    }
-    if (phone !== undefined) {
-      whereConditions.push({ phone });
-    }
-    if (whereConditions.length === 0) {
-      return;
-    }
-
-    const conditionsWithNotCurrentId: FindOptionsWhere<Doctor>[] =
-      whereConditions.map((condition) => {
-        if (currentId) {
-          return { ...condition, id: Not(currentId) };
-        }
-        return condition;
-      });
-
-    const existingDoctor = await this.doctorRepository.findOne({
-      where: conditionsWithNotCurrentId,
-    });
-
-    if (existingDoctor) {
-      if (email !== undefined && existingDoctor.email === email) {
-        throw new ConflictException(
-          `Doctor with email '${email}' already exists.`,
-        );
-      }
-      if (phone !== undefined && existingDoctor.phone === phone) {
-        throw new ConflictException(
-          `Doctor with phone '${phone}' already exists.`,
-        );
-      }
-    }
   }
 
   private async findOrFail(id: number): Promise<Doctor> {

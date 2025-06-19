@@ -5,11 +5,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Not, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Clinic } from '../entities/clinic.entity';
 import { CreateClinicDto } from '../dto/create-clinic.dto';
 import { UpdateClinicDto } from '../dto/update-clinic.dto';
 import { FilterClinicDto } from '../dto/filter-clinic.dto';
+import { validateUniqueness } from '../../shared/validators/validate-unique-field.util';
 
 @Injectable()
 export class ClinicService {
@@ -19,7 +20,11 @@ export class ClinicService {
   ) {}
 
   async create(dto: CreateClinicDto): Promise<Clinic> {
-    await this.validateUniqueness(dto.name, dto.email, dto.phone);
+    await validateUniqueness(this.clinicRepository, {
+      name: dto.name,
+      email: dto.email,
+      phone: dto.phone,
+    });
 
     const clinic = this.clinicRepository.create(dto);
 
@@ -60,11 +65,11 @@ export class ClinicService {
   async put(id: number, dto: CreateClinicDto): Promise<Clinic> {
     const clinic = await this.findOrFail(id);
 
-    const name = dto.name;
-    const email = dto.email !== undefined ? dto.email : clinic.email;
-    const phone = dto.phone;
-
-    await this.validateUniqueness(name, email, phone, id);
+    await validateUniqueness(
+      this.clinicRepository,
+      { name: dto.name, email: dto.email, phone: dto.phone },
+      id,
+    );
 
     Object.assign(clinic, dto);
 
@@ -77,17 +82,11 @@ export class ClinicService {
   async patch(id: number, dto: UpdateClinicDto): Promise<Clinic> {
     const clinic = await this.findOrFail(id);
 
-    const name: string = dto.name ?? clinic.name;
-    const email = dto.email ?? clinic.email;
-    const phone: string = dto.phone ?? clinic.phone;
-
-    if (phone === null || phone === undefined) {
-      throw new InternalServerErrorException(
-        'Phone number cannot be null or undefined for unique validation.',
-      );
-    }
-
-    await this.validateUniqueness(name, email, phone, id);
+    await validateUniqueness(
+      this.clinicRepository,
+      { name: dto.name, email: dto.email, phone: dto.phone },
+      id,
+    );
 
     if (dto.name !== undefined) clinic.name = dto.name;
     if (dto.address !== undefined) clinic.address = dto.address;
@@ -104,42 +103,6 @@ export class ClinicService {
     const result = await this.clinicRepository.delete(id);
     if (!result.affected) {
       throw new NotFoundException(`Clinic with ID ${id} not found.`);
-    }
-  }
-
-  private async validateUniqueness(
-    name: string,
-    email: string | undefined,
-    phone: string,
-    currentId?: number,
-  ): Promise<void> {
-    const notCurrentIdCondition = currentId ? { id: Not(currentId) } : {};
-
-    const existingByName = await this.clinicRepository.findOne({
-      where: { name, ...notCurrentIdCondition },
-    });
-    if (existingByName) {
-      throw new ConflictException(`Clinic with name '${name}' already exists.`);
-    }
-
-    if (email !== undefined && email !== null) {
-      const existingByEmail = await this.clinicRepository.findOne({
-        where: { email, ...notCurrentIdCondition },
-      });
-      if (existingByEmail) {
-        throw new ConflictException(
-          `Clinic with email '${email}' already exists.`,
-        );
-      }
-    }
-
-    const existingByPhone = await this.clinicRepository.findOne({
-      where: { phone, ...notCurrentIdCondition },
-    });
-    if (existingByPhone) {
-      throw new ConflictException(
-        `Clinic with phone '${phone}' already exists.`,
-      );
     }
   }
 

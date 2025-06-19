@@ -1,15 +1,15 @@
 import {
-  ConflictException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Service } from '../entities/service.entity';
-import { FindOptionsWhere, Not, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CreateServiceDto } from '../dto/create-service.dto';
 import { UpdateServiceDto } from '../dto/update-service.dto';
 import { FilterServiceDto } from '../dto/filter-service.dto';
+import { validateUniqueness } from '../../shared/validators/validate-unique-field.util';
 
 @Injectable()
 export class ServiceService {
@@ -19,7 +19,7 @@ export class ServiceService {
   ) {}
 
   async create(dto: CreateServiceDto): Promise<Service> {
-    await this.validateUniqueness(dto.name);
+    await validateUniqueness(this.serviceRepository, { name: dto.name });
 
     const service = this.serviceRepository.create(dto);
 
@@ -62,7 +62,7 @@ export class ServiceService {
     const service = await this.findOrFail(id);
 
     if (dto.name !== undefined && dto.name !== service.name) {
-      await this.validateUniqueness(dto.name, id);
+      await validateUniqueness(this.serviceRepository, { name: dto.name }, id);
       service.name = dto.name;
     }
 
@@ -75,12 +75,10 @@ export class ServiceService {
     const service = await this.findOrFail(id);
 
     if (dto.name !== undefined && dto.name !== service.name) {
-      await this.validateUniqueness(dto.name, id);
+      await validateUniqueness(this.serviceRepository, { name: dto.name }, id);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { name, ...rest } = dto;
-    Object.assign(service, rest);
+    Object.assign(service, dto);
 
     return this.saveAndReturn(service);
   }
@@ -89,22 +87,6 @@ export class ServiceService {
     const result = await this.serviceRepository.delete(id);
     if (result.affected === 0) {
       throw new NotFoundException(`Service with ID ${id} not found.`);
-    }
-  }
-
-  private async validateUniqueness(
-    name: string,
-    currentId?: number,
-  ): Promise<void> {
-    const where: FindOptionsWhere<Service> = currentId
-      ? { name, id: Not(currentId) }
-      : { name };
-
-    const existing = await this.serviceRepository.findOne({ where });
-    if (existing) {
-      throw new ConflictException(
-        `Service with name '${name}' already exists.`,
-      );
     }
   }
 
