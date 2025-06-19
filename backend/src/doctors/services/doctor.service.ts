@@ -13,6 +13,7 @@ import { FilterDoctorDto } from '../dto/filter-doctor.dto';
 import { CreateDoctorDto } from '../dto/create-doctor.dto';
 import { UpdateDoctorDto } from '../dto/update-doctor';
 import { validateUniqueness } from '../../shared/validators/validate-unique-field.util';
+import { findOrFail } from '../../shared/utils/find-or-fail.util';
 
 @Injectable()
 export class DoctorService {
@@ -75,7 +76,9 @@ export class DoctorService {
   }
 
   async findOne(id: number): Promise<Doctor> {
-    return this.findOrFail(id);
+    return findOrFail(this.doctorRepository, id, {
+      relations: ['clinics', 'services'],
+    });
   }
 
   async put(id: number, dto: UpdateDoctorDto): Promise<Doctor> {
@@ -129,7 +132,9 @@ export class DoctorService {
     id: number,
     dto: UpdateDoctorDto,
   ): Promise<Doctor> {
-    const doctor = await this.findOrFail(id);
+    const doctor = await findOrFail(this.doctorRepository, id, {
+      relations: ['clinics', 'services'],
+    });
 
     await validateUniqueness(
       this.doctorRepository,
@@ -138,17 +143,6 @@ export class DoctorService {
     );
 
     return this.buildDoctor(dto, doctor);
-  }
-
-  private async findOrFail(id: number): Promise<Doctor> {
-    const doctor = await this.doctorRepository.findOne({
-      where: { id },
-      relations: ['clinics', 'services'],
-    });
-    if (!doctor) {
-      throw new NotFoundException(`Doctor with ID ${id} not found.`);
-    }
-    return doctor;
   }
 
   private async handleDb<T>(operation: () => Promise<T>): Promise<T> {
