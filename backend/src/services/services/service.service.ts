@@ -10,6 +10,7 @@ import { CreateServiceDto } from '../dto/create-service.dto';
 import { UpdateServiceDto } from '../dto/update-service.dto';
 import { FilterServiceDto } from '../dto/filter-service.dto';
 import { validateUniqueness } from '../../shared/validators/validate-unique-field.util';
+import { findOrFail } from '../../shared/utils/find-or-fail.util';
 
 @Injectable()
 export class ServiceService {
@@ -55,11 +56,15 @@ export class ServiceService {
   }
 
   async findOne(id: number): Promise<Service> {
-    return this.findOrFail(id, true);
+    return findOrFail(this.serviceRepository, id, {
+      relations: ['doctors', 'doctors.clinics'],
+    });
   }
 
   async put(id: number, dto: UpdateServiceDto): Promise<Service> {
-    const service = await this.findOrFail(id);
+    const service = await findOrFail(this.serviceRepository, id, {
+      relations: ['doctors', 'doctors.clinics'],
+    });
 
     if (dto.name !== undefined && dto.name !== service.name) {
       await validateUniqueness(this.serviceRepository, { name: dto.name }, id);
@@ -72,7 +77,9 @@ export class ServiceService {
   }
 
   async patch(id: number, dto: UpdateServiceDto): Promise<Service> {
-    const service = await this.findOrFail(id);
+    const service = await findOrFail(this.serviceRepository, id, {
+      relations: ['doctors', 'doctors.clinics'],
+    });
 
     if (dto.name !== undefined && dto.name !== service.name) {
       await validateUniqueness(this.serviceRepository, { name: dto.name }, id);
@@ -88,24 +95,6 @@ export class ServiceService {
     if (result.affected === 0) {
       throw new NotFoundException(`Service with ID ${id} not found.`);
     }
-  }
-
-  private async findOrFail(
-    id: number,
-    withRelations = false,
-  ): Promise<Service> {
-    const service = withRelations
-      ? await this.serviceRepository.findOne({
-          where: { id },
-          relations: ['doctors', 'doctors.clinics'],
-        })
-      : await this.serviceRepository.findOneBy({ id });
-
-    if (!service) {
-      throw new NotFoundException(`Service with ID ${id} not found.`);
-    }
-
-    return service;
   }
 
   private async saveAndReturn(service: Service): Promise<Service> {

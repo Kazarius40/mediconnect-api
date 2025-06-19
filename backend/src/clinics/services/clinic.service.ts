@@ -11,6 +11,7 @@ import { CreateClinicDto } from '../dto/create-clinic.dto';
 import { UpdateClinicDto } from '../dto/update-clinic.dto';
 import { FilterClinicDto } from '../dto/filter-clinic.dto';
 import { validateUniqueness } from '../../shared/validators/validate-unique-field.util';
+import { findOrFail } from 'src/shared/utils/find-or-fail.util';
 
 @Injectable()
 export class ClinicService {
@@ -59,11 +60,15 @@ export class ClinicService {
   }
 
   async findOne(id: number): Promise<Clinic> {
-    return this.findOrFail(id);
+    return findOrFail(this.clinicRepository, id, {
+      relations: ['doctors', 'doctors.services'],
+    });
   }
 
   async put(id: number, dto: CreateClinicDto): Promise<Clinic> {
-    const clinic = await this.findOrFail(id);
+    const clinic = await findOrFail(this.clinicRepository, id, {
+      relations: ['doctors', 'doctors.services'],
+    });
 
     await validateUniqueness(
       this.clinicRepository,
@@ -80,7 +85,9 @@ export class ClinicService {
   }
 
   async patch(id: number, dto: UpdateClinicDto): Promise<Clinic> {
-    const clinic = await this.findOrFail(id);
+    const clinic = await findOrFail(this.clinicRepository, id, {
+      relations: ['doctors', 'doctors.services'],
+    });
 
     await validateUniqueness(
       this.clinicRepository,
@@ -104,17 +111,6 @@ export class ClinicService {
     if (!result.affected) {
       throw new NotFoundException(`Clinic with ID ${id} not found.`);
     }
-  }
-
-  private async findOrFail(id: number): Promise<Clinic> {
-    const clinic = await this.clinicRepository.findOne({
-      where: { id },
-      relations: ['doctors', 'doctors.services'],
-    });
-    if (!clinic) {
-      throw new NotFoundException(`Clinic with ID ${id} not found.`);
-    }
-    return clinic;
   }
 
   private async handleDb<T>(
