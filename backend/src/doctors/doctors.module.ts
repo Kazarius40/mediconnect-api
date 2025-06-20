@@ -2,10 +2,11 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Doctor } from './entities/doctor.entity';
 import { DoctorService } from './services/doctor.service';
-import { DoctorController } from './controllers/doctor.controller';
 import { Service } from '../services/entities/service.entity';
 import { ClinicsModule } from '../clinics/clinics.module';
 import { ServiceModule } from '../services/service.module';
+import { DoctorAdminController } from './controllers/doctor-admin.controller';
+import { DoctorPublicController } from './controllers/doctor-public.controller';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { ServiceModule } from '../services/service.module';
     ServiceModule,
   ],
   providers: [DoctorService],
-  controllers: [DoctorController],
+  controllers: [DoctorAdminController, DoctorPublicController],
   exports: [DoctorService],
 })
 export class DoctorsModule {}

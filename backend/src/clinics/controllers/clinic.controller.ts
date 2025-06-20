@@ -34,7 +34,7 @@ import {
   ClinicListResponse,
   ClinicResponse,
 } from '../swagger/clinic-response.swagger';
-import { MessageResponse } from '../../swagger/common-responses.swagger';
+import { MessageResponse } from '../../swagger/responses/common-responses.swagger';
 
 @ApiTags('Clinics')
 @Controller('clinics')

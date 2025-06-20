@@ -3,6 +3,7 @@ import {
   NotFoundException,
   ConflictException,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Doctor } from '../entities/doctor.entity';
@@ -17,6 +18,8 @@ import { findOrFail } from '../../shared/utils/find-or-fail.util';
 
 @Injectable()
 export class DoctorService {
+  private readonly logger = new Logger(DoctorService.name);
+
   constructor(
     @InjectRepository(Doctor)
     private doctorRepository: Repository<Doctor>,
@@ -34,6 +37,7 @@ export class DoctorService {
       phone: dto.phone,
     });
     const doctor = await this.buildDoctor(dto);
+    this.logger.log(`Doctor with ID ${doctor.id} created successfully.`);
     return this.handleDb(() => this.doctorRepository.save(doctor));
   }
 
@@ -83,11 +87,13 @@ export class DoctorService {
 
   async put(id: number, dto: UpdateDoctorDto): Promise<Doctor> {
     const updatedDoctor = await this.updateDoctor(id, dto);
+    this.logger.log(`Doctor with ID ${id} updated successfully.`);
     return this.handleDb(() => this.doctorRepository.save(updatedDoctor));
   }
 
   async patch(id: number, dto: UpdateDoctorDto): Promise<Doctor> {
     const updatedDoctor = await this.updateDoctor(id, dto);
+    this.logger.log(`Doctor with ID ${id} patched successfully.`);
     return this.handleDb(() => this.doctorRepository.save(updatedDoctor));
   }
 
@@ -96,6 +102,7 @@ export class DoctorService {
     if (result.affected === 0) {
       throw new NotFoundException(`Doctor with ID ${id} not found.`);
     }
+    this.logger.log(`Doctor with ID ${id} deleted successfully.`);
   }
 
   private async buildDoctor(

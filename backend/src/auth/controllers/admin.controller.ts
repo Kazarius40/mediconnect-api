@@ -29,7 +29,7 @@ import {
   UserResponse,
   UserRoleUpdateResponse,
 } from '../swagger/auth-response.swagger';
-import { MessageResponse } from '../../swagger/common-responses.swagger';
+import { MessageResponse } from '../../swagger/responses/common-responses.swagger';
 import { AuthService } from '../services/auth.service';
 
 @ApiTags('Auth')
