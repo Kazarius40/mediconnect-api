@@ -34,7 +34,7 @@ import {
   ServiceListResponse,
   ServiceResponse,
 } from '../swagger/service-response.swagger';
-import { MessageResponse } from '../../swagger/common-responses.swagger';
+import { MessageResponse } from '../../swagger/responses/common-responses.swagger';
 
 @ApiTags('Services')
 @Controller('services')

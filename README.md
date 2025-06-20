@@ -183,9 +183,15 @@ JSON
 ✅ Authorize via the "Authorize" button, inserting the token in the format:
 Bearer YOUR_ACCESS_TOKEN
 
-## 💾 Database Dump
-A database dump in .sql format will be provided separately. It can be imported into:
+## 🧹 Code Quality & Architecture
 
-    DBeaver
-    MySQL Workbench
-    phpMyAdmin
+This project follows modern backend best practices:
+
+- ✅ Modular architecture with clearly separated features (auth, doctors, clinics, etc.)
+- ✅ Clean folder structure (controllers, services, DTOs, guards, swagger)
+- ✅ DTO validation and transformation via `class-validator` / `class-transformer`
+- ✅ Full Swagger documentation for all endpoints
+- ✅ Role-based access control (RBAC) with guards
+- ✅ Typed responses using custom Swagger DTOs
+- ✅ RESTful conventions across all routes
+- ✅ Designed for easy extension and maintenance

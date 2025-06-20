@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UserRole } from '../../users/user-role.enum';
-import { MessageResponse } from '../../swagger/common-responses.swagger';
+import { MessageResponse } from '../../swagger/responses/common-responses.swagger';
 
 export class TokensResponse {
   @ApiProperty({
