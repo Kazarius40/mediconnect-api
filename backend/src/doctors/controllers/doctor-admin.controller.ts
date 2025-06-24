@@ -50,7 +50,7 @@ export class DoctorAdminController {
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateDoctorDto,
   ): Promise<Doctor> {
-    return this.doctorService.put(id, dto);
+    return this.doctorService.update(id, dto, 'put');
   }
 
   @Patch(':id')
@@ -60,7 +60,7 @@ export class DoctorAdminController {
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateDoctorDto,
   ): Promise<Doctor> {
-    return this.doctorService.patch(id, dto);
+    return this.doctorService.update(id, dto, 'patch');
   }
 
   @Delete(':id')

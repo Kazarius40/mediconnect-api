@@ -12,6 +12,9 @@ import { findOrFail } from '../../shared/utils/typeorm/find-or-fail.util';
 import { applyFilters } from '../../shared/utils/query/apply-filters.util';
 import { QUERY_ALIASES } from '../../shared/utils/query/query-aliases';
 import { handleDb } from '../../shared/utils/db/handle-db.util';
+import { updateEntityFields } from '../../shared/utils/entity/update-entity-fields.util';
+import { resolveRelations } from '../../shared/utils/entity/resolve-relations.util';
+import { buildEntity } from '../../shared/utils/entity/build-entity.util';
 
 @Injectable()
 export class DoctorService {
@@ -27,6 +30,7 @@ export class DoctorService {
     @InjectRepository(Service)
     private serviceRepository: Repository<Service>,
   ) {}
+  private readonly RELATIONS = ['clinics', 'services'];
 
   async create(dto: CreateDoctorDto): Promise<Doctor> {
     await validateUniqueness(this.doctorRepository, {
@@ -54,20 +58,42 @@ export class DoctorService {
 
   async findOne(id: number): Promise<Doctor> {
     return findOrFail(this.doctorRepository, id, {
-      relations: ['clinics', 'services'],
+      relations: this.RELATIONS,
     });
   }
 
-  async put(id: number, dto: UpdateDoctorDto): Promise<Doctor> {
-    const updatedDoctor = await this.updateDoctor(id, dto);
-    this.logger.log(`Doctor with ID ${id} updated successfully.`);
-    return handleDb(() => this.doctorRepository.save(updatedDoctor));
-  }
+  async update(
+    id: number,
+    dto: UpdateDoctorDto,
+    mode: 'put' | 'patch',
+  ): Promise<Doctor> {
+    const doctor = await findOrFail(this.doctorRepository, id, {
+      relations: this.RELATIONS,
+    });
 
-  async patch(id: number, dto: UpdateDoctorDto): Promise<Doctor> {
-    const updatedDoctor = await this.updateDoctor(id, dto);
-    this.logger.log(`Doctor with ID ${id} patched successfully.`);
-    return handleDb(() => this.doctorRepository.save(updatedDoctor));
+    await validateUniqueness(
+      this.doctorRepository,
+      { email: dto.email, phone: dto.phone },
+      id,
+    );
+
+    const cleanDto: Partial<Omit<UpdateDoctorDto, 'clinics' | 'services'>> = {
+      ...dto,
+    };
+
+    updateEntityFields(doctor, cleanDto, mode, ['firstName', 'lastName']);
+
+    const clinics = await resolveRelations(this.clinicRepository, dto.clinics);
+    if (clinics !== undefined) doctor.clinics = clinics;
+
+    const services = await resolveRelations(
+      this.serviceRepository,
+      dto.services,
+    );
+    if (services !== undefined) doctor.services = services;
+
+    this.logger.log(`Doctor with ID ${id} updated via ${mode}.`);
+    return handleDb(() => this.doctorRepository.save(doctor));
   }
 
   async delete(id: number): Promise<void> {
@@ -79,19 +105,14 @@ export class DoctorService {
   }
 
   private async buildDoctor(
-    dto: CreateDoctorDto | UpdateDoctorDto,
+    dto: CreateDoctorDto,
     doctor: Doctor = new Doctor(),
   ): Promise<Doctor> {
-    doctor.firstName = dto.firstName ?? doctor.firstName;
-    doctor.lastName = dto.lastName ?? doctor.lastName;
+    const cleanDto: Partial<Omit<CreateDoctorDto, 'clinics' | 'services'>> = {
+      ...dto,
+    };
 
-    if (dto.email !== undefined) {
-      doctor.email = dto.email;
-    }
-
-    if (dto.phone !== undefined) {
-      doctor.phone = dto.phone;
-    }
+    buildEntity(doctor, cleanDto);
 
     if (dto.clinics !== undefined) {
       doctor.clinics = dto.clinics.length
@@ -106,22 +127,5 @@ export class DoctorService {
     }
 
     return doctor;
-  }
-
-  private async updateDoctor(
-    id: number,
-    dto: UpdateDoctorDto,
-  ): Promise<Doctor> {
-    const doctor = await findOrFail(this.doctorRepository, id, {
-      relations: ['clinics', 'services'],
-    });
-
-    await validateUniqueness(
-      this.doctorRepository,
-      { email: dto.email, phone: dto.phone },
-      id,
-    );
-
-    return this.buildDoctor(dto, doctor);
   }
 }
