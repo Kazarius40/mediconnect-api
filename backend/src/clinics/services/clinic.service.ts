@@ -11,7 +11,7 @@ import { CreateClinicDto } from '../dto/create-clinic.dto';
 import { UpdateClinicDto } from '../dto/update-clinic.dto';
 import { FilterClinicDto } from '../dto/filter-clinic.dto';
 import { validateUniqueness } from '../../shared/validators/validate-unique-field.util';
-import { findOrFail } from 'src/shared/utils/find-or-fail.util';
+import { findOrFail } from 'src/shared/utils/typeorm/find-or-fail.util';
 
 @Injectable()
 export class ClinicService {
