@@ -10,7 +10,7 @@ import { CreateServiceDto } from '../dto/create-service.dto';
 import { UpdateServiceDto } from '../dto/update-service.dto';
 import { FilterServiceDto } from '../dto/filter-service.dto';
 import { validateUniqueness } from '../../shared/validators/validate-unique-field.util';
-import { findOrFail } from '../../shared/utils/find-or-fail.util';
+import { findOrFail } from '../../shared/utils/typeorm/find-or-fail.util';
 
 @Injectable()
 export class ServiceService {

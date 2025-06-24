@@ -32,7 +32,7 @@ export const CreateDoctorDocs = [
   }),
 ];
 
-export const UpdateDoctorDocs = [
+export const PutDoctorDocs = [
   ApiOperation({ summary: 'Fully update doctor by ID (Admin only)' }),
   ApiBody({ type: CreateDoctorDto }),
   ApiResponse({

@@ -25,7 +25,7 @@ import {
   CreateDoctorDocs,
   DeleteDoctorDocs,
   PatchDoctorDocs,
-  UpdateDoctorDocs,
+  PutDoctorDocs,
 } from '../../swagger/methods/doctor/admin-docs.swagger';
 
 @ApiTags('Doctors (Admin)')
@@ -45,7 +45,7 @@ export class DoctorAdminController {
 
   @Put(':id')
   @HttpCode(HttpStatus.OK)
-  @applyDecorators(...UpdateDoctorDocs)
+  @applyDecorators(...PutDoctorDocs)
   async put(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateDoctorDto,

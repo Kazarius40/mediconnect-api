@@ -1,10 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  ConflictException,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Doctor } from '../entities/doctor.entity';
 import { In, Repository } from 'typeorm';
@@ -14,7 +8,10 @@ import { FilterDoctorDto } from '../dto/filter-doctor.dto';
 import { CreateDoctorDto } from '../dto/create-doctor.dto';
 import { UpdateDoctorDto } from '../dto/update-doctor';
 import { validateUniqueness } from '../../shared/validators/validate-unique-field.util';
-import { findOrFail } from '../../shared/utils/find-or-fail.util';
+import { findOrFail } from '../../shared/utils/typeorm/find-or-fail.util';
+import { applyFilters } from '../../shared/utils/query/apply-filters.util';
+import { QUERY_ALIASES } from '../../shared/utils/query/query-aliases';
+import { handleDb } from '../../shared/utils/db/handle-db.util';
 
 @Injectable()
 export class DoctorService {
@@ -38,42 +35,18 @@ export class DoctorService {
     });
     const doctor = await this.buildDoctor(dto);
     this.logger.log(`Doctor with ID ${doctor.id} created successfully.`);
-    return this.handleDb(() => this.doctorRepository.save(doctor));
+    return handleDb(() => this.doctorRepository.save(doctor));
   }
 
   async findAll(filter?: FilterDoctorDto): Promise<Doctor[]> {
+    const { DOCTOR, CLINIC, SERVICE } = QUERY_ALIASES;
     const query = this.doctorRepository
-      .createQueryBuilder('doctor')
-      .leftJoinAndSelect('doctor.clinics', 'clinic')
-      .leftJoinAndSelect('doctor.services', 'service');
+      .createQueryBuilder(DOCTOR)
+      .leftJoinAndSelect(`${DOCTOR}.clinics`, CLINIC)
+      .leftJoinAndSelect(`${DOCTOR}.services`, SERVICE);
 
     if (filter) {
-      Object.entries(filter).forEach(([key, value]) => {
-        if (
-          value === undefined ||
-          value === null ||
-          key === 'sortBy' ||
-          key === 'sortOrder'
-        ) {
-          return;
-        }
-
-        if (typeof value === 'string') {
-          query.andWhere(`LOWER(doctor.${key}) LIKE LOWER(:${key})`, {
-            [key]: `%${value}%`,
-          });
-        } else if (typeof value === 'number' || typeof value === 'boolean') {
-          query.andWhere(`doctor.${key} = :${key}`, { [key]: value });
-        }
-      });
-    }
-
-    if (filter?.sortBy) {
-      const orderDirection = filter.sortOrder === 'DESC' ? 'DESC' : 'ASC';
-      const orderByField = `doctor.${filter.sortBy}`;
-      query.orderBy(orderByField, orderDirection);
-    } else {
-      query.orderBy('doctor.id', 'ASC');
+      applyFilters(query, filter, DOCTOR);
     }
 
     return query.getMany();
@@ -88,13 +61,13 @@ export class DoctorService {
   async put(id: number, dto: UpdateDoctorDto): Promise<Doctor> {
     const updatedDoctor = await this.updateDoctor(id, dto);
     this.logger.log(`Doctor with ID ${id} updated successfully.`);
-    return this.handleDb(() => this.doctorRepository.save(updatedDoctor));
+    return handleDb(() => this.doctorRepository.save(updatedDoctor));
   }
 
   async patch(id: number, dto: UpdateDoctorDto): Promise<Doctor> {
     const updatedDoctor = await this.updateDoctor(id, dto);
     this.logger.log(`Doctor with ID ${id} patched successfully.`);
-    return this.handleDb(() => this.doctorRepository.save(updatedDoctor));
+    return handleDb(() => this.doctorRepository.save(updatedDoctor));
   }
 
   async delete(id: number): Promise<void> {
@@ -150,21 +123,5 @@ export class DoctorService {
     );
 
     return this.buildDoctor(dto, doctor);
-  }
-
-  private async handleDb<T>(operation: () => Promise<T>): Promise<T> {
-    try {
-      return await operation();
-    } catch (error: unknown) {
-      if (
-        error instanceof NotFoundException ||
-        error instanceof ConflictException
-      ) {
-        throw error;
-      }
-      throw new InternalServerErrorException(
-        `An unexpected error occurred during database operation.`,
-      );
-    }
   }
 }
