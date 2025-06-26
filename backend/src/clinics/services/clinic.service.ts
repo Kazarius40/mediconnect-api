@@ -10,8 +10,8 @@ import { Clinic } from '../entities/clinic.entity';
 import { CreateClinicDto } from '../dto/create-clinic.dto';
 import { UpdateClinicDto } from '../dto/update-clinic.dto';
 import { FilterClinicDto } from '../dto/filter-clinic.dto';
-import { validateUniqueness } from '../../shared/validators/validate-unique-field.util';
 import { findOrFail } from 'src/shared/utils/typeorm/find-or-fail.util';
+import { validateEntityUniqueness } from '../../shared/validators/validate-entity-uniqueness.util';
 
 @Injectable()
 export class ClinicService {
@@ -21,7 +21,7 @@ export class ClinicService {
   ) {}
 
   async create(dto: CreateClinicDto): Promise<Clinic> {
-    await validateUniqueness(this.clinicRepository, {
+    await validateEntityUniqueness(this.clinicRepository, {
       name: dto.name,
       email: dto.email,
       phone: dto.phone,
@@ -70,7 +70,7 @@ export class ClinicService {
       relations: ['doctors', 'doctors.services'],
     });
 
-    await validateUniqueness(
+    await validateEntityUniqueness(
       this.clinicRepository,
       { name: dto.name, email: dto.email, phone: dto.phone },
       id,
@@ -89,7 +89,7 @@ export class ClinicService {
       relations: ['doctors', 'doctors.services'],
     });
 
-    await validateUniqueness(
+    await validateEntityUniqueness(
       this.clinicRepository,
       { name: dto.name, email: dto.email, phone: dto.phone },
       id,

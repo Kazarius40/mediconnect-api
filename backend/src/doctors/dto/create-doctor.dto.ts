@@ -8,8 +8,11 @@ import {
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import { RelationProperty } from '../../shared/utils/decorators/relation-property.decorator';
 
 export class CreateDoctorDto {
+  [key: string]: unknown;
+
   @ApiProperty({ description: "Doctor's first name", example: 'Oleksandr' })
   @IsNotEmpty()
   @IsString()
@@ -44,6 +47,7 @@ export class CreateDoctorDto {
   @IsOptional()
   @IsArray()
   @Type(() => Number)
+  @RelationProperty()
   clinics?: number[];
 
   @ApiPropertyOptional({
@@ -54,5 +58,6 @@ export class CreateDoctorDto {
   @IsOptional()
   @IsArray()
   @Type(() => Number)
+  @RelationProperty()
   services?: number[];
 }

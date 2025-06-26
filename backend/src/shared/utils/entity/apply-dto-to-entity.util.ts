@@ -1,4 +1,4 @@
-export function buildEntity<T extends object>(
+export function applyDtoToEntity<T extends object>(
   entity: T,
   dto: Partial<T>,
   options: {

@@ -9,8 +9,8 @@ import { Repository } from 'typeorm';
 import { CreateServiceDto } from '../dto/create-service.dto';
 import { UpdateServiceDto } from '../dto/update-service.dto';
 import { FilterServiceDto } from '../dto/filter-service.dto';
-import { validateUniqueness } from '../../shared/validators/validate-unique-field.util';
 import { findOrFail } from '../../shared/utils/typeorm/find-or-fail.util';
+import { validateEntityUniqueness } from '../../shared/validators/validate-entity-uniqueness.util';
 
 @Injectable()
 export class ServiceService {
@@ -20,7 +20,7 @@ export class ServiceService {
   ) {}
 
   async create(dto: CreateServiceDto): Promise<Service> {
-    await validateUniqueness(this.serviceRepository, { name: dto.name });
+    await validateEntityUniqueness(this.serviceRepository, { name: dto.name });
 
     const service = this.serviceRepository.create(dto);
 
@@ -67,7 +67,11 @@ export class ServiceService {
     });
 
     if (dto.name !== undefined && dto.name !== service.name) {
-      await validateUniqueness(this.serviceRepository, { name: dto.name }, id);
+      await validateEntityUniqueness(
+        this.serviceRepository,
+        { name: dto.name },
+        id,
+      );
       service.name = dto.name;
     }
 
@@ -82,7 +86,11 @@ export class ServiceService {
     });
 
     if (dto.name !== undefined && dto.name !== service.name) {
-      await validateUniqueness(this.serviceRepository, { name: dto.name }, id);
+      await validateEntityUniqueness(
+        this.serviceRepository,
+        { name: dto.name },
+        id,
+      );
     }
 
     Object.assign(service, dto);
