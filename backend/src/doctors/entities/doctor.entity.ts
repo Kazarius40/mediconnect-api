@@ -9,10 +9,9 @@ import {
 } from 'typeorm';
 import { Clinic } from '../../clinics/entities/clinic.entity';
 import { Service } from '../../services/entities/service.entity';
-import { IBaseEntity } from '../../shared/utils/entity/base-entity';
 
 @Entity()
-export class Doctor implements IBaseEntity {
+export class Doctor {
   // ------------------------------------------------------ Main fields ------------------------------------------------------------
   @PrimaryGeneratedColumn() id: number;
   @Column() firstName: string;
