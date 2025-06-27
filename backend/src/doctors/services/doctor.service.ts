@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Doctor } from '../entities/doctor.entity';
 import { Repository } from 'typeorm';
@@ -11,16 +11,16 @@ import { validateEntityUniqueness } from '../../shared/validators/validate-entit
 import { findOrFail } from '../../shared/utils/typeorm/find-or-fail.util';
 import { applyFilters } from '../../shared/utils/query/apply-filters.util';
 import { handleDb } from '../../shared/utils/db/handle-db.util';
-import { updateEntityFields } from '../../shared/utils/entity/update-entity-fields.util';
 import { getRelationProperties } from '../../shared/utils/decorators/relation-property.decorator';
 import {
-  buildRelationRepositoriesMap,
-  composeEntity,
-  getDtoWithoutRelations,
+  buildReposMap,
+  cleanDto,
+  compose,
   getRequiredScalarFields,
   RepositoriesMap,
   setEntityRelations,
 } from '../../shared/utils/entity/entity-composition.util';
+import { updateEntityFields } from '../../shared/utils/entity/update-entity-fields.util';
 
 @Injectable()
 export class DoctorService {
@@ -28,19 +28,19 @@ export class DoctorService {
   private readonly relationKeys = getRelationProperties(CreateDoctorDto);
   private readonly reposByKey: RepositoriesMap<CreateDoctorDto>;
 
-  @InjectRepository(Doctor)
-  private readonly doctorRepository: Repository<Doctor>;
+  constructor(
+    @InjectRepository(Doctor)
+    private readonly doctorRepository: Repository<Doctor>,
 
-  @InjectRepository(Clinic)
-  private readonly clinicRepository: Repository<Clinic>;
+    @InjectRepository(Clinic)
+    private readonly clinicRepository: Repository<Clinic>,
 
-  @InjectRepository(Service)
-  private readonly serviceRepository: Repository<Service>;
-
-  constructor() {
+    @InjectRepository(Service)
+    private readonly serviceRepository: Repository<Service>,
+  ) {
     const relationEntities = [Clinic, Service] as const;
 
-    this.reposByKey = buildRelationRepositoriesMap(relationEntities, {
+    this.reposByKey = buildReposMap(relationEntities, {
       clinicRepository: this.clinicRepository,
       serviceRepository: this.serviceRepository,
     });
@@ -52,21 +52,22 @@ export class DoctorService {
       this.doctorRepository,
       this.getCleanDto(dto),
     );
+
+    await handleDb(() => this.doctorRepository.save(doctor));
     this.logger.log(`Doctor with ID ${doctor.id} created successfully.`);
-    return handleDb(() => this.doctorRepository.save(doctor));
+    return await findOrFail(this.doctorRepository, doctor.id, {
+      relations: this.relationKeys as string[],
+    });
   }
 
   async findAll(dto?: FilterDoctorDto): Promise<Doctor[]> {
     const query = this.doctorRepository.createQueryBuilder('doctor');
-
     for (const relation of this.relationKeys) {
       query.leftJoinAndSelect(`doctor.${relation}`, relation as string);
     }
-
     if (dto) {
-      applyFilters(query, dto, 'doctor');
+      applyFilters(query, dto, 'doctor', this.relationKeys as string[]);
     }
-
     return query.getMany();
   }
 
@@ -86,9 +87,9 @@ export class DoctorService {
     });
 
     const cleanDto = this.getCleanDto(dto);
-    await validateEntityUniqueness(this.doctorRepository, cleanDto, id);
 
-    const requiredFields = this.getRequiredNonRelationFields();
+    const requiredFields = this.getFilteredFields();
+
     updateEntityFields(
       doctor,
       cleanDto,
@@ -96,38 +97,64 @@ export class DoctorService {
       requiredFields as (keyof Doctor)[],
     );
 
-    await this.setRelations(doctor, dto);
+    await this.setRelations(doctor, dto, mode);
 
+    await handleDb(() => this.doctorRepository.save(doctor));
     this.logger.log(`Doctor with ID ${id} updated via ${mode}.`);
-    return handleDb(() => this.doctorRepository.save(doctor));
+
+    return await findOrFail(this.doctorRepository, id, {
+      relations: this.relationKeys as string[],
+    });
   }
 
   async delete(id: number): Promise<void> {
-    const result = await this.doctorRepository.delete(id);
-    if (result.affected === 0) {
-      throw new NotFoundException(`Doctor with ID ${id} not found.`);
-    }
+    await handleDb(() => this.doctorRepository.delete(id), {
+      requireAffected: true,
+    });
     this.logger.log(`Doctor with ID ${id} deleted successfully.`);
   }
 
+  /**
+   * Composes a Doctor entity instance from the DTO,
+   * resolving relations based on the relation keys.
+   */
   private async composeDoctor(dto: CreateDoctorDto): Promise<Doctor> {
-    return composeEntity(Doctor, dto, this.relationKeys, this.reposByKey);
+    return compose(Doctor, dto, this.relationKeys, this.reposByKey);
   }
 
+  /**
+   * Cleans the DTO by removing relational properties,
+   * leaving only scalar fields.
+   */
   private getCleanDto<T extends CreateDoctorDto | UpdateDoctorDto>(
     dto: T,
   ): Omit<T, (typeof this.relationKeys)[number]> {
-    return getDtoWithoutRelations(dto, this.relationKeys);
+    return cleanDto(dto, this.relationKeys);
   }
 
-  private getRequiredNonRelationFields(): Array<keyof CreateDoctorDto> {
+  /**
+   * Returns an array of required scalar field keys
+   * that must be considered during updates.
+   */
+  private getFilteredFields(): Array<keyof CreateDoctorDto> {
     return getRequiredScalarFields(CreateDoctorDto, this.relationKeys);
   }
 
+  /**
+   * Sets relational links on the Doctor entity
+   * based on the provided DTO data.
+   */
   private async setRelations<T extends CreateDoctorDto | UpdateDoctorDto>(
     doctor: Doctor,
     dto: T,
+    mode: 'put' | 'patch',
   ): Promise<void> {
-    await setEntityRelations(doctor, dto, this.relationKeys, this.reposByKey);
+    await setEntityRelations(
+      doctor,
+      dto,
+      this.relationKeys,
+      this.reposByKey,
+      mode,
+    );
   }
 }

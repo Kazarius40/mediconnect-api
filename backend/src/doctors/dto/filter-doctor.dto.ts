@@ -1,41 +1,59 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsIn, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsIn, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  DoctorClinicIdsSwagger,
+  DoctorEmailSwagger,
+  DoctorFirstNameSwagger,
+  DoctorLastNameSwagger,
+  DoctorPhoneSwagger,
+  DoctorServiceIdsSwagger,
+  DoctorSortBySwagger,
+  DoctorSortOrderSwagger,
+} from '../../swagger/methods/doctor/filter-doctor-dto.swagger';
+import { getFilteredFields } from '../../shared/validators/get-required-fields.util';
+import { CreateDoctorDto } from './create-doctor.dto';
+
+const scalarFields = getFilteredFields(CreateDoctorDto, true);
 
 export class FilterDoctorDto {
-  @ApiPropertyOptional({ description: "Filter by doctor's first name" })
+  @DoctorFirstNameSwagger()
   @IsOptional()
   @IsString()
   firstName?: string;
 
-  @ApiPropertyOptional({ description: "Filter by doctor's last name" })
+  @DoctorLastNameSwagger()
   @IsOptional()
   @IsString()
   lastName?: string;
 
-  @ApiPropertyOptional({ description: "Filter by doctor's email" })
+  @DoctorEmailSwagger()
   @IsOptional()
   @IsString()
   email?: string;
 
-  @ApiPropertyOptional({ description: "Filter by doctor's phone number" })
+  @DoctorPhoneSwagger()
   @IsOptional()
   @IsString()
   phone?: string;
 
-  @ApiPropertyOptional({
-    description: 'Field to sort by',
-    enum: ['firstName', 'lastName', 'email', 'phone'],
-  })
+  @DoctorClinicIdsSwagger()
+  @IsOptional()
+  @IsArray()
+  @IsNumber({}, { each: true })
+  clinicIds?: number[];
+
+  @DoctorServiceIdsSwagger()
+  @IsOptional()
+  @IsArray()
+  @IsNumber({}, { each: true })
+  serviceIds?: number[];
+
+  @DoctorSortBySwagger()
   @IsOptional()
   @IsString()
-  @IsIn(['firstName', 'lastName', 'email', 'phone'])
-  sortBy?: 'firstName' | 'lastName' | 'email' | 'phone';
+  @IsIn(scalarFields)
+  sortBy?: string;
 
-  @ApiPropertyOptional({
-    description: 'Sort order ("ASC" or "DESC")',
-    enum: ['ASC', 'DESC'],
-    default: 'ASC',
-  })
+  @DoctorSortOrderSwagger()
   @IsOptional()
   @IsString()
   @IsIn(['ASC', 'DESC'])

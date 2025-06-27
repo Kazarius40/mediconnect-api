@@ -6,12 +6,28 @@ export function applyFilters<T extends ObjectLiteral>(
     Record<keyof T | 'sortBy' | 'sortOrder', string | number | boolean>
   >,
   alias: string,
+  relationKeys?: string[],
 ): void {
   const excludedKeys = ['sortBy', 'sortOrder'];
 
   Object.entries(filter).forEach(([key, value]) => {
     if (value === undefined || value === null || excludedKeys.includes(key)) {
       return;
+    }
+
+    if (
+      relationKeys &&
+      key.endsWith('Ids') &&
+      Array.isArray(value) &&
+      value.length > 0
+    ) {
+      const relationName = key.slice(0, -3);
+      if (relationKeys.includes(relationName)) {
+        const joinAlias = `filter_${relationName}`;
+        query.leftJoin(`${alias}.${relationName}`, joinAlias);
+        query.andWhere(`${joinAlias}.id IN (:...${key})`, { [key]: value });
+        return;
+      }
     }
 
     if (typeof value === 'string') {

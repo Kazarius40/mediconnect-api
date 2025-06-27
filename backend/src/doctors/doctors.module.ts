@@ -7,10 +7,11 @@ import { ClinicsModule } from '../clinics/clinics.module';
 import { ServiceModule } from '../services/service.module';
 import { DoctorAdminController } from './controllers/doctor-admin.controller';
 import { DoctorPublicController } from './controllers/doctor-public.controller';
+import { Clinic } from '../clinics/entities/clinic.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Doctor, Service]),
+    TypeOrmModule.forFeature([Doctor, Service, Clinic]),
     ClinicsModule,
     ServiceModule,
   ],

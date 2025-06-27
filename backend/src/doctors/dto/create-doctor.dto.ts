@@ -6,55 +6,52 @@ import {
   IsPhoneNumber,
   IsString,
 } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { RelationProperty } from '../../shared/utils/decorators/relation-property.decorator';
+import {
+  DoctorClinicsSwagger,
+  DoctorEmailSwagger,
+  DoctorFirstNameSwagger,
+  DoctorLastNameSwagger,
+  DoctorPhoneSwagger,
+  DoctorServicesSwagger,
+} from '../../swagger/methods/doctor/create-doctor-dto.swagger';
+import { normalizePhone } from '../../shared/utils/phone/normalize-phone.util';
 
 export class CreateDoctorDto {
   [key: string]: unknown;
 
-  @ApiProperty({ description: "Doctor's first name", example: 'Oleksandr' })
+  @DoctorFirstNameSwagger()
   @IsNotEmpty()
   @IsString()
   firstName: string;
 
-  @ApiProperty({ description: "Doctor's last name", example: 'Shevchenko' })
+  @DoctorLastNameSwagger()
   @IsNotEmpty()
   @IsString()
   lastName: string;
 
-  @ApiPropertyOptional({
-    description: "Doctor's email address",
-    example: 'oleksandr.shevchenko@example.com',
-  })
+  @DoctorEmailSwagger()
   @IsOptional()
   @IsEmail()
   email?: string;
 
-  @ApiPropertyOptional({
-    description: "Doctor's phone number",
-    example: '+380679876543',
-  })
+  @DoctorPhoneSwagger()
   @IsOptional()
   @IsPhoneNumber()
+  @Transform(({ value }) =>
+    value ? normalizePhone(value as string) : (value as string),
+  )
   phone?: string;
 
-  @ApiPropertyOptional({
-    description: 'Array of clinic IDs the doctor is associated with',
-    example: [1, 2],
-    type: [Number],
-  })
+  @DoctorClinicsSwagger()
   @IsOptional()
   @IsArray()
   @Type(() => Number)
   @RelationProperty()
   clinics?: number[];
 
-  @ApiPropertyOptional({
-    description: 'Array of service IDs the doctor provides',
-    example: [10, 11],
-    type: [Number],
-  })
+  @DoctorServicesSwagger()
   @IsOptional()
   @IsArray()
   @Type(() => Number)

@@ -1,6 +1,5 @@
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import {
-  applyDecorators,
   Body,
   Controller,
   Delete,
@@ -26,7 +25,7 @@ import {
   DeleteDoctorDocs,
   PatchDoctorDocs,
   PutDoctorDocs,
-} from '../../swagger/methods/doctor/admin-docs.swagger';
+} from '../../swagger/methods/doctor/admin-doctor-docs.swagger';
 
 @ApiTags('Doctors (Admin)')
 @ApiBearerAuth('JWT-auth')
@@ -38,14 +37,14 @@ export class DoctorAdminController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @applyDecorators(...CreateDoctorDocs)
+  @CreateDoctorDocs()
   async create(@Body() dto: CreateDoctorDto): Promise<Doctor> {
     return this.doctorService.create(dto);
   }
 
   @Put(':id')
   @HttpCode(HttpStatus.OK)
-  @applyDecorators(...PutDoctorDocs)
+  @PutDoctorDocs()
   async put(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateDoctorDto,
@@ -55,7 +54,7 @@ export class DoctorAdminController {
 
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
-  @applyDecorators(...PatchDoctorDocs)
+  @PatchDoctorDocs()
   async patch(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateDoctorDto,
@@ -65,7 +64,7 @@ export class DoctorAdminController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @applyDecorators(...DeleteDoctorDocs)
+  @DeleteDoctorDocs()
   async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
     await this.doctorService.delete(id);
   }
