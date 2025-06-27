@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 
-const RELATION_PROPS_KEY = Symbol('relation_props');
+export const RELATION_PROPS_KEY = Symbol('relation_props');
 
 export function RelationProperty(): PropertyDecorator {
   // target => CreateDoctorDto.prototype

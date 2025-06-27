@@ -1,6 +1,6 @@
 import { ObjectLiteral, Repository } from 'typeorm';
 import { omitRelations } from './omit-relations.util';
-import { getRequiredFields } from '../../validators/get-required-fields.util';
+import { getFilteredFields } from '../../validators/get-required-fields.util';
 import { resolveRelations } from './resolve-relations.util';
 import { applyDtoToEntity } from './apply-dto-to-entity.util';
 
@@ -12,7 +12,7 @@ export type RepositoriesMap<TDto extends Record<string, unknown>> = {
   [K in keyof TDto]?: Repository<BaseEntity>;
 };
 
-export function buildRelationRepositoriesMap<
+export function buildReposMap<
   TDto extends Record<string, unknown>,
   TEntities extends EntityClass<BaseEntity>[],
 >(
@@ -23,8 +23,9 @@ export function buildRelationRepositoriesMap<
 
   for (const entityClass of relationEntityClasses) {
     const name = entityClass.name;
-    const key = name.charAt(0).toLowerCase() + name.slice(1);
-    const repositoryKey = `${key}Repository`;
+    const singularKey = name.charAt(0).toLowerCase() + name.slice(1);
+    const pluralKey = `${singularKey}s`;
+    const repositoryKey = `${singularKey}Repository`;
 
     const repository = injectedRepositories[repositoryKey];
     if (!repository) {
@@ -33,16 +34,16 @@ export function buildRelationRepositoriesMap<
       );
     }
 
-    reposMap[key as keyof TDto] = repository;
+    reposMap[pluralKey as keyof TDto] = repository;
   }
 
   return reposMap as RepositoriesMap<TDto>;
 }
 
-export function getDtoWithoutRelations<
-  T extends Record<string, unknown>,
-  K extends keyof T,
->(dto: T, relationKeys: K[]): Omit<T, K> {
+export function cleanDto<T extends Record<string, unknown>, K extends keyof T>(
+  dto: T,
+  relationKeys: K[],
+): Omit<T, K> {
   return omitRelations(dto, relationKeys);
 }
 
@@ -50,7 +51,7 @@ export function getRequiredScalarFields<
   T extends Record<string, unknown>,
   K extends keyof T,
 >(dtoClass: EntityClass<T>, relationKeys: K[]): (keyof T)[] {
-  return getRequiredFields(dtoClass).filter(
+  return getFilteredFields(dtoClass).filter(
     (field) => !(relationKeys as string[]).includes(field as string),
   );
 }
@@ -64,20 +65,22 @@ export async function setEntityRelations<
   dto: TDTO,
   relationKeys: K[],
   reposByKey: RepositoriesMap<TDTO>,
+  mode: 'put' | 'patch' = 'patch',
 ): Promise<void> {
-  for (const relationName of relationKeys) {
-    const repository = reposByKey[relationName];
-    const relationIds = dto[relationName];
+  for (const relation of relationKeys) {
+    const repository = reposByKey[relation];
+    const relationIds = dto[relation];
 
     if (repository && Array.isArray(relationIds)) {
       const resolved = await resolveRelations(repository, relationIds);
-      (entity as Record<string, unknown>)[relationName as string] =
-        resolved ?? [];
+      (entity as Record<string, unknown>)[relation as string] = resolved ?? [];
+    } else if (mode === 'put') {
+      (entity as Record<string, unknown>)[relation as string] = [];
     }
   }
 }
 
-export async function composeEntity<
+export async function compose<
   TEntity extends BaseEntity,
   TDTO extends Record<string, unknown>,
   K extends keyof TDTO,
@@ -92,7 +95,7 @@ export async function composeEntity<
 
   applyDtoToEntity(
     entity,
-    getDtoWithoutRelations(dto, relationKeys) as unknown as Partial<TEntity>,
+    cleanDto(dto, relationKeys) as unknown as Partial<TEntity>,
   );
 
   await setEntityRelations(entity, dto, relationKeys, reposByKey);
