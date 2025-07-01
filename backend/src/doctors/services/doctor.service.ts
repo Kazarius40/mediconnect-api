@@ -11,24 +11,23 @@ import { validateEntityUniqueness } from '../../shared/validators/validate-entit
 import { findOrFail } from '../../shared/utils/typeorm/find-or-fail.util';
 import { applyFilters } from '../../shared/utils/query/apply-filters.util';
 import { handleDb } from '../../shared/utils/db/handle-db.util';
-import { getRelationProperties } from '../../shared/utils/decorators/relation-property.decorator';
 import {
   buildReposMap,
   cleanDto,
   compose,
-  getRequiredScalarFields,
   RepositoriesMap,
   setEntityRelations,
 } from '../../shared/utils/entity/entity-composition.util';
 import { updateEntityFields } from '../../shared/utils/entity/update-entity-fields.util';
 import { getRelations } from '../../shared/utils/typeorm/relations.util';
+import { getFilteredFields } from '../../shared/validators/get-required-fields.util';
 
 @Injectable()
 export class DoctorService {
   private readonly logger = new Logger(DoctorService.name);
 
-  private readonly relationKeys =
-    getRelationProperties<CreateDoctorDto>(CreateDoctorDto);
+  private readonly relations: (keyof CreateDoctorDto)[];
+
   private readonly reposByKey: RepositoriesMap<CreateDoctorDto>;
 
   constructor(
@@ -50,6 +49,10 @@ export class DoctorService {
       clinicRepository: this.clinicRepository,
       serviceRepository: this.serviceRepository,
     });
+
+    this.relations = getRelations(
+      this.doctorRepository,
+    ) as (keyof CreateDoctorDto)[];
   }
 
   async create(dto: CreateDoctorDto): Promise<Doctor> {
@@ -63,25 +66,24 @@ export class DoctorService {
     await handleDb(() => this.doctorRepository.save(doctor));
     this.logger.log(`Doctor with ID ${doctor.id} created successfully.`);
 
-    const relations = getRelations(this.doctorRepository);
-    return await findOrFail(this.doctorRepository, doctor.id, { relations });
+    return await findOrFail(this.doctorRepository, doctor.id, {
+      relations: this.relations,
+    });
   }
 
   async findAll(dto?: FilterDoctorDto): Promise<Doctor[]> {
     const query = this.doctorRepository.createQueryBuilder('doctor');
-    const relations = getRelations(this.doctorRepository);
-    for (const relation of relations) {
+    for (const relation of this.relations) {
       query.leftJoinAndSelect(`doctor.${relation}`, relation);
     }
     if (dto) {
-      applyFilters(query, dto, 'doctor', this.relationKeys as string[]);
+      applyFilters(query, dto, 'doctor', this.relations);
     }
     return query.getMany();
   }
 
   async findOne(id: number): Promise<Doctor> {
-    const relations = getRelations(this.doctorRepository);
-    return findOrFail(this.doctorRepository, id, { relations });
+    return findOrFail(this.doctorRepository, id, { relations: this.relations });
   }
 
   async update(
@@ -89,9 +91,9 @@ export class DoctorService {
     dto: UpdateDoctorDto,
     mode: 'put' | 'patch',
   ): Promise<Doctor> {
-    const relations = getRelations(this.doctorRepository);
-
-    const doctor = await findOrFail(this.doctorRepository, id, { relations });
+    const doctor = await findOrFail(this.doctorRepository, id, {
+      relations: this.relations,
+    });
 
     const cleanDto = this.getCleanDto(dto);
 
@@ -109,7 +111,9 @@ export class DoctorService {
     await handleDb(() => this.doctorRepository.save(doctor));
     this.logger.log(`Doctor with ID ${id} updated via ${mode}.`);
 
-    return await findOrFail(this.doctorRepository, id, { relations });
+    return await findOrFail(this.doctorRepository, id, {
+      relations: this.relations,
+    });
   }
 
   async delete(id: number): Promise<void> {
@@ -127,7 +131,7 @@ export class DoctorService {
     return compose(
       Doctor,
       dto as unknown as Record<string, unknown>,
-      this.relationKeys,
+      this.relations,
       this.reposByKey,
     );
   }
@@ -136,16 +140,13 @@ export class DoctorService {
     dto: T,
   ): Omit<T, Extract<keyof T, keyof CreateDoctorDto>> {
     return cleanDto(
-      dto as unknown as Record<string, unknown>,
-      this.relationKeys as Extract<keyof T, keyof CreateDoctorDto>[],
-    ) as Omit<T, Extract<keyof T, keyof CreateDoctorDto>>;
+      dto,
+      this.relations as Extract<keyof T, keyof CreateDoctorDto>[],
+    );
   }
 
   private getFilteredFields(): Array<keyof CreateDoctorDto> {
-    return getRequiredScalarFields(
-      CreateDoctorDto as unknown as new () => Record<string, unknown>,
-      this.relationKeys,
-    );
+    return getFilteredFields(CreateDoctorDto, this.relations);
   }
 
   private async setRelations<T extends CreateDoctorDto | UpdateDoctorDto>(
@@ -156,7 +157,7 @@ export class DoctorService {
     await setEntityRelations(
       doctor,
       dto as unknown as Record<string, unknown>,
-      this.relationKeys,
+      this.relations,
       this.reposByKey,
       mode,
     );

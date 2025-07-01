@@ -13,7 +13,6 @@ import {
   compose,
   RepositoriesMap,
 } from '../../shared/utils/entity/entity-composition.util';
-import { getRelationProperties } from '../../shared/utils/decorators/relation-property.decorator';
 import { handleDb } from 'src/shared/utils/db/handle-db.util';
 import { applyFilters } from '../../shared/utils/query/apply-filters.util';
 import { getRelations } from '../../shared/utils/typeorm/relations.util';
@@ -23,8 +22,6 @@ import { CLINIC_NESTED_RELATIONS } from '../../shared/constants/relations.consta
 export class ClinicService {
   private readonly logger = new Logger(ClinicService.name);
 
-  private readonly relationKeys =
-    getRelationProperties<CreateClinicDto>(CreateClinicDto);
   private readonly reposByKey: RepositoriesMap<CreateClinicDto>;
 
   constructor(

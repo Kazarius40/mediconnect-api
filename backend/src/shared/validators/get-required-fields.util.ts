@@ -1,15 +1,10 @@
-import 'reflect-metadata';
 import { getMetadataStorage } from 'class-validator';
-import { RELATION_PROPS_KEY } from '../utils/decorators/relation-property.decorator';
 
 export function getFilteredFields<T extends object>(
   target: new () => T,
+  relationKeys: (keyof T)[] = [],
   includeOptional = false,
 ): (keyof T)[] {
-  const relationProps =
-    (Reflect.getMetadata(RELATION_PROPS_KEY, target) as string[] | undefined) ??
-    [];
-
   const metadata = getMetadataStorage().getTargetValidationMetadatas(
     target,
     '',
@@ -20,7 +15,7 @@ export function getFilteredFields<T extends object>(
   const uniqueFields = new Set<string>();
 
   for (const meta of metadata) {
-    if (relationProps.includes(meta.propertyName)) {
+    if (relationKeys.includes(meta.propertyName as keyof T)) {
       continue;
     }
 

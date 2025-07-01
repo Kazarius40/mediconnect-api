@@ -1,10 +1,10 @@
 import { ObjectLiteral, Repository } from 'typeorm';
 import { omitRelations } from './omit-relations.util';
-import { getFilteredFields } from '../../validators/get-required-fields.util';
 import { resolveRelations } from './resolve-relations.util';
 import { applyDtoToEntity } from './apply-dto-to-entity.util';
 
 type EntityClass<T> = new (...args: never[]) => T;
+type EntityFields<TEntity> = Omit<TEntity, 'relations...'>;
 
 export type BaseEntity = ObjectLiteral & { id: number };
 
@@ -47,19 +47,10 @@ export function cleanDto<T extends object, K extends keyof T>(
   return omitRelations(dto, relationKeys);
 }
 
-export function getRequiredScalarFields<
-  T extends Record<string, unknown>,
-  K extends Extract<keyof T, string>,
->(dtoClass: EntityClass<T>, relationKeys: readonly K[]): K[] {
-  return getFilteredFields(dtoClass).filter(
-    (field) => !relationKeys.includes(field as K),
-  ) as K[];
-}
-
 export async function setEntityRelations<
   TEntity extends BaseEntity,
   TDTO extends Record<string, unknown>,
-  K extends keyof TDTO,
+  K extends keyof TDTO & string,
 >(
   entity: TEntity,
   dto: TDTO,
@@ -73,30 +64,31 @@ export async function setEntityRelations<
 
     if (repository && Array.isArray(relationIds)) {
       const resolved = await resolveRelations(repository, relationIds);
-      (entity as Record<string, unknown>)[relation as string] = resolved ?? [];
+      if (relation in entity) {
+        (entity as Record<K, typeof resolved>)[relation] = resolved ?? [];
+      }
     } else if (mode === 'put') {
-      (entity as Record<string, unknown>)[relation as string] = [];
+      if (relation in entity) {
+        (entity as Record<K, unknown[]>)[relation] = [];
+      }
     }
   }
 }
 
 export async function compose<
   TEntity extends BaseEntity,
-  TDTO extends Record<string, unknown>,
-  K extends keyof TDTO,
+  TDto extends Partial<EntityFields<TEntity>>,
+  K extends Extract<keyof TDto, string>,
 >(
   entityClass: EntityClass<TEntity>,
-  dto: TDTO,
+  dto: TDto,
   relationKeys: K[],
-  reposByKey: RepositoriesMap<TDTO>,
+  reposByKey: RepositoriesMap<TDto>,
   existingEntity?: TEntity,
 ): Promise<TEntity> {
   const entity = existingEntity || new entityClass();
 
-  applyDtoToEntity(
-    entity,
-    cleanDto(dto, relationKeys) as unknown as Partial<TEntity>,
-  );
+  applyDtoToEntity(entity, dto);
 
   await setEntityRelations(entity, dto, relationKeys, reposByKey);
 
