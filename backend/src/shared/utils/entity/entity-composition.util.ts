@@ -8,12 +8,12 @@ type EntityClass<T> = new (...args: never[]) => T;
 
 export type BaseEntity = ObjectLiteral & { id: number };
 
-export type RepositoriesMap<TDto extends Record<string, unknown>> = {
+export type RepositoriesMap<TDto extends object> = {
   [K in keyof TDto]?: Repository<BaseEntity>;
 };
 
 export function buildReposMap<
-  TDto extends Record<string, unknown>,
+  TDto extends object,
   TEntities extends EntityClass<BaseEntity>[],
 >(
   relationEntityClasses: readonly [...TEntities],
@@ -40,20 +40,20 @@ export function buildReposMap<
   return reposMap as RepositoriesMap<TDto>;
 }
 
-export function cleanDto<T extends Record<string, unknown>, K extends keyof T>(
+export function cleanDto<T extends object, K extends keyof T>(
   dto: T,
-  relationKeys: K[],
+  relationKeys: readonly K[],
 ): Omit<T, K> {
   return omitRelations(dto, relationKeys);
 }
 
 export function getRequiredScalarFields<
   T extends Record<string, unknown>,
-  K extends keyof T,
->(dtoClass: EntityClass<T>, relationKeys: K[]): (keyof T)[] {
+  K extends Extract<keyof T, string>,
+>(dtoClass: EntityClass<T>, relationKeys: readonly K[]): K[] {
   return getFilteredFields(dtoClass).filter(
-    (field) => !(relationKeys as string[]).includes(field as string),
-  );
+    (field) => !relationKeys.includes(field as K),
+  ) as K[];
 }
 
 export async function setEntityRelations<

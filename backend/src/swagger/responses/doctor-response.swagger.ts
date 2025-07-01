@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ServiceResponse } from '../../services/swagger/service-response.swagger';
-import { ClinicResponse } from '../../clinics/swagger/clinic-response.swagger';
+import { ClinicResponse } from './clinic-response.swagger';
 
 export class DoctorResponse {
   @ApiProperty({ description: 'Unique identifier of the doctor', example: 1 })

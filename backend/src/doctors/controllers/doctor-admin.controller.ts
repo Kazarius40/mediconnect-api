@@ -25,7 +25,7 @@ import {
   DeleteDoctorDocs,
   PatchDoctorDocs,
   PutDoctorDocs,
-} from '../../swagger/methods/doctor/admin-doctor-docs.swagger';
+} from '../../swagger/methods/doctors/admin-doctor-docs.swagger';
 
 @ApiTags('Doctors (Admin)')
 @ApiBearerAuth('JWT-auth')

@@ -8,7 +8,7 @@ import { MessageResponse } from '../../responses/common-responses.swagger';
 export function CreateDoctorDocs() {
   return applyDecorators(
     ApiOperation({ summary: 'Create a new doctor (Admin only)' }),
-    ApiBody({ type: CreateDoctorDto }),
+    ApiBody({ type: CreateDoctorDto, description: 'Doctor creation data' }),
     ApiResponse({
       status: HttpStatus.CREATED,
       description: 'Doctor successfully created.',
@@ -39,11 +39,18 @@ export function CreateDoctorDocs() {
 
 export function PutDoctorDocs() {
   return applyDecorators(
-    ApiOperation({ summary: 'Fully update doctor by ID (Admin only)' }),
-    ApiBody({ type: CreateDoctorDto }),
+    ApiOperation({
+      summary: 'Fully update a doctor by ID (Admin only)',
+      description:
+        'Fully replaces the doctor. Missing fields will be set to null or defaults. Use for complete updates.',
+    }),
+    ApiBody({
+      type: CreateDoctorDto,
+      description: 'Doctor update data (full)',
+    }),
     ApiResponse({
       status: HttpStatus.OK,
-      description: 'Successfully updated.',
+      description: 'Doctor successfully updated (full).',
       type: DoctorResponse,
     }),
     ApiResponse({
@@ -53,6 +60,10 @@ export function PutDoctorDocs() {
     ApiResponse({
       status: HttpStatus.NOT_FOUND,
       description: 'Doctor not found.',
+    }),
+    ApiResponse({
+      status: HttpStatus.CONFLICT,
+      description: 'Doctor with this email or phone already exists.',
     }),
     ApiResponse({
       status: HttpStatus.UNAUTHORIZED,
@@ -71,11 +82,17 @@ export function PutDoctorDocs() {
 
 export function PatchDoctorDocs() {
   return applyDecorators(
-    ApiOperation({ summary: 'Partially update doctor by ID (Admin only)' }),
-    ApiBody({ type: UpdateDoctorDto }),
+    ApiOperation({
+      summary: 'Partially update doctor by ID (Admin only)',
+      description: 'Updates only the fields provided in the request body.',
+    }),
+    ApiBody({
+      type: UpdateDoctorDto,
+      description: 'Doctor update data (partial)',
+    }),
     ApiResponse({
       status: HttpStatus.OK,
-      description: 'Successfully updated.',
+      description: 'Doctor successfully updated (partial).',
       type: DoctorResponse,
     }),
     ApiResponse({
@@ -85,6 +102,10 @@ export function PatchDoctorDocs() {
     ApiResponse({
       status: HttpStatus.NOT_FOUND,
       description: 'Doctor not found.',
+    }),
+    ApiResponse({
+      status: HttpStatus.CONFLICT,
+      description: 'Doctor with this email or phone already exists.',
     }),
     ApiResponse({
       status: HttpStatus.UNAUTHORIZED,
@@ -106,8 +127,7 @@ export function DeleteDoctorDocs() {
     ApiOperation({ summary: 'Delete doctor by ID (Admin only)' }),
     ApiResponse({
       status: HttpStatus.NO_CONTENT,
-      description: 'Successfully deleted.',
-      type: MessageResponse,
+      description: 'Doctor successfully deleted.',
     }),
     ApiResponse({
       status: HttpStatus.NOT_FOUND,

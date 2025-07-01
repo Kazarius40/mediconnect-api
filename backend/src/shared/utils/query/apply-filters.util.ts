@@ -21,7 +21,7 @@ export function applyFilters<T extends ObjectLiteral>(
       Array.isArray(value) &&
       value.length > 0
     ) {
-      const relationName = key.slice(0, -3);
+      const relationName = key.slice(0, -3) + 's';
       if (relationKeys.includes(relationName)) {
         const joinAlias = `filter_${relationName}`;
         query.leftJoin(`${alias}.${relationName}`, joinAlias);

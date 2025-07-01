@@ -15,7 +15,7 @@ import { Doctor } from '../entities/doctor.entity';
 import {
   FindAllDoctorsDocs,
   FindOneDoctorDocs,
-} from '../../swagger/methods/doctor/public-doctor-docs.swagger';
+} from '../../swagger/methods/doctors/public-doctor-docs.swagger';
 
 @ApiTags('Doctors')
 @Controller('doctors')

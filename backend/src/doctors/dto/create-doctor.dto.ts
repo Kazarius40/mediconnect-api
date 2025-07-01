@@ -15,12 +15,10 @@ import {
   DoctorLastNameSwagger,
   DoctorPhoneSwagger,
   DoctorServicesSwagger,
-} from '../../swagger/methods/doctor/create-doctor-dto.swagger';
+} from '../../swagger/methods/doctors/create-doctor-dto.swagger';
 import { normalizePhone } from '../../shared/utils/phone/normalize-phone.util';
 
 export class CreateDoctorDto {
-  [key: string]: unknown;
-
   @DoctorFirstNameSwagger()
   @IsNotEmpty()
   @IsString()
