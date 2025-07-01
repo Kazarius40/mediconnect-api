@@ -22,6 +22,8 @@ import { CLINIC_NESTED_RELATIONS } from '../../shared/constants/relations.consta
 export class ClinicService {
   private readonly logger = new Logger(ClinicService.name);
 
+  private readonly relationKeys: (keyof CreateClinicDto)[];
+
   private readonly reposByKey: RepositoriesMap<CreateClinicDto>;
 
   constructor(
@@ -29,6 +31,7 @@ export class ClinicService {
     private clinicRepository: Repository<Clinic>,
   ) {
     const relationEntities: [] = [] as const;
+
     this.reposByKey = buildReposMap<
       CreateClinicDto,
       (typeof relationEntities)[number][]
@@ -122,13 +125,10 @@ export class ClinicService {
     }
   }
 
-  private async composeClinic(dto: CreateClinicDto): Promise<Clinic> {
-    return compose(
-      Clinic,
-      dto as unknown as Record<string, unknown>,
-      this.relationKeys,
-      this.reposByKey,
-    );
+  private async composeClinic<T extends CreateClinicDto>(
+    dto: T,
+  ): Promise<Clinic> {
+    return compose(Clinic, dto, this.relationKeys, this.reposByKey);
   }
 
   /**
@@ -139,8 +139,8 @@ export class ClinicService {
     dto: T,
   ): Omit<T, Extract<keyof T, keyof CreateClinicDto>> {
     return cleanDto(
-      dto as unknown as Record<string, unknown>,
+      dto,
       this.relationKeys as Extract<keyof T, keyof CreateClinicDto>[],
-    ) as Omit<T, Extract<keyof T, keyof CreateClinicDto>>;
+    );
   }
 }

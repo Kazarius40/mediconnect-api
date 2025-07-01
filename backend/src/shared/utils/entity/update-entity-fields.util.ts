@@ -23,7 +23,7 @@ export function updateEntityFields<T extends object>(
         Array.isArray(currentVal) || typeof currentVal === 'object';
 
       if (!isRelational) {
-        entity[key] = null as unknown as T[keyof T];
+        entity[key] = null as T[keyof T];
       }
     }
   }

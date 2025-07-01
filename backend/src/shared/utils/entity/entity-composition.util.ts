@@ -4,7 +4,6 @@ import { resolveRelations } from './resolve-relations.util';
 import { applyDtoToEntity } from './apply-dto-to-entity.util';
 
 type EntityClass<T> = new (...args: never[]) => T;
-type EntityFields<TEntity> = Omit<TEntity, 'relations...'>;
 
 export type BaseEntity = ObjectLiteral & { id: number };
 
@@ -49,13 +48,13 @@ export function cleanDto<T extends object, K extends keyof T>(
 
 export async function setEntityRelations<
   TEntity extends BaseEntity,
-  TDTO extends Record<string, unknown>,
-  K extends keyof TDTO & string,
+  TDto extends object,
+  K extends keyof TDto & string,
 >(
   entity: TEntity,
-  dto: TDTO,
+  dto: TDto,
   relationKeys: K[],
-  reposByKey: RepositoriesMap<TDTO>,
+  reposByKey: RepositoriesMap<TDto>,
   mode: 'put' | 'patch' = 'patch',
 ): Promise<void> {
   for (const relation of relationKeys) {
@@ -77,8 +76,8 @@ export async function setEntityRelations<
 
 export async function compose<
   TEntity extends BaseEntity,
-  TDto extends Partial<EntityFields<TEntity>>,
-  K extends Extract<keyof TDto, string>,
+  TDto extends object,
+  K extends keyof TDto & string,
 >(
   entityClass: EntityClass<TEntity>,
   dto: TDto,

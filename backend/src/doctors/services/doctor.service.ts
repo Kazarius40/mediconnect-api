@@ -127,13 +127,10 @@ export class DoctorService {
    * Cleans the DTO by removing relational properties,
    * leaving only scalar fields.
    */
-  private async composeDoctor(dto: CreateDoctorDto): Promise<Doctor> {
-    return compose(
-      Doctor,
-      dto as unknown as Record<string, unknown>,
-      this.relations,
-      this.reposByKey,
-    );
+  private async composeDoctor<T extends CreateDoctorDto>(
+    dto: T,
+  ): Promise<Doctor> {
+    return compose(Doctor, dto, this.relations, this.reposByKey);
   }
 
   private getCleanDto<T extends CreateDoctorDto | UpdateDoctorDto>(
@@ -156,7 +153,7 @@ export class DoctorService {
   ): Promise<void> {
     await setEntityRelations(
       doctor,
-      dto as unknown as Record<string, unknown>,
+      dto,
       this.relations,
       this.reposByKey,
       mode,
