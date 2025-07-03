@@ -4,9 +4,9 @@ import { Doctor } from '../entities/doctor.entity';
 import { Repository } from 'typeorm';
 import { Clinic } from 'src/clinics/entities/clinic.entity';
 import { Service } from 'src/services/entities/service.entity';
-import { FilterDoctorDto } from '../dto/filter-doctor.dto';
-import { CreateDoctorDto } from '../dto/create-doctor.dto';
-import { UpdateDoctorDto } from '../dto/update-doctor';
+import { DoctorFilterDto } from '../dto/doctor-filter.dto';
+import { DoctorCreateDto } from '../dto/doctor-create.dto';
+import { DoctorUpdateDto } from '../dto/doctor-update';
 import { validateEntityUniqueness } from '../../shared/validators/validate-entity-uniqueness.util';
 import { findOrFail } from '../../shared/utils/typeorm/find-or-fail.util';
 import { applyFilters } from '../../shared/utils/query/apply-filters.util';
@@ -21,14 +21,15 @@ import {
 import { updateEntityFields } from '../../shared/utils/entity/update-entity-fields.util';
 import { getRelations } from '../../shared/utils/typeorm/relations.util';
 import { getFilteredFields } from '../../shared/validators/get-required-fields.util';
+import { DOCTOR_NESTED_RELATIONS } from '../../shared/constants/relations.constants';
 
 @Injectable()
 export class DoctorService {
   private readonly logger = new Logger(DoctorService.name);
 
-  private readonly relations: (keyof CreateDoctorDto)[];
+  private readonly relationKeys: (keyof DoctorCreateDto)[];
 
-  private readonly reposByKey: RepositoriesMap<CreateDoctorDto>;
+  private readonly reposByKey: RepositoriesMap<DoctorCreateDto>;
 
   constructor(
     @InjectRepository(Doctor)
@@ -43,19 +44,19 @@ export class DoctorService {
     const relationEntities = [Clinic, Service] as const;
 
     this.reposByKey = buildReposMap<
-      CreateDoctorDto,
+      DoctorCreateDto,
       (typeof relationEntities)[number][]
     >(relationEntities, {
       clinicRepository: this.clinicRepository,
       serviceRepository: this.serviceRepository,
     });
 
-    this.relations = getRelations(
+    this.relationKeys = getRelations(
       this.doctorRepository,
-    ) as (keyof CreateDoctorDto)[];
+    ) as (keyof DoctorCreateDto)[];
   }
 
-  async create(dto: CreateDoctorDto): Promise<Doctor> {
+  async create(dto: DoctorCreateDto): Promise<Doctor> {
     await validateEntityUniqueness(
       this.doctorRepository,
       this.getCleanDto(dto),
@@ -67,37 +68,42 @@ export class DoctorService {
     this.logger.log(`Doctor with ID ${doctor.id} created successfully.`);
 
     return await findOrFail(this.doctorRepository, doctor.id, {
-      relations: this.relations,
+      relations: this.getDoctorRelations(),
     });
   }
 
-  async findAll(dto?: FilterDoctorDto): Promise<Doctor[]> {
+  async findAll(dto?: DoctorFilterDto): Promise<Doctor[]> {
+    const relations = this.getDoctorRelations();
+
     const query = this.doctorRepository.createQueryBuilder('doctor');
-    for (const relation of this.relations) {
+    for (const relation of relations) {
       query.leftJoinAndSelect(`doctor.${relation}`, relation);
     }
+
     if (dto) {
-      applyFilters(query, dto, 'doctor', this.relations);
+      applyFilters(query, dto, 'doctor', relations);
     }
     return query.getMany();
   }
 
   async findOne(id: number): Promise<Doctor> {
-    return findOrFail(this.doctorRepository, id, { relations: this.relations });
+    return findOrFail(this.doctorRepository, id, {
+      relations: this.getDoctorRelations(),
+    });
   }
 
   async update(
     id: number,
-    dto: UpdateDoctorDto,
+    dto: DoctorUpdateDto,
     mode: 'put' | 'patch',
   ): Promise<Doctor> {
-    const doctor = await findOrFail(this.doctorRepository, id, {
-      relations: this.relations,
-    });
+    const relations = this.getDoctorRelations();
+
+    const doctor = await findOrFail(this.doctorRepository, id, { relations });
 
     const cleanDto = this.getCleanDto(dto);
 
-    const requiredFields = this.getFilteredFields();
+    const requiredFields = this.getRequiredFields();
 
     updateEntityFields(
       doctor,
@@ -111,9 +117,7 @@ export class DoctorService {
     await handleDb(() => this.doctorRepository.save(doctor));
     this.logger.log(`Doctor with ID ${id} updated via ${mode}.`);
 
-    return await findOrFail(this.doctorRepository, id, {
-      relations: this.relations,
-    });
+    return await findOrFail(this.doctorRepository, id, { relations });
   }
 
   async delete(id: number): Promise<void> {
@@ -127,26 +131,30 @@ export class DoctorService {
    * Cleans the DTO by removing relational properties,
    * leaving only scalar fields.
    */
-  private async composeDoctor<T extends CreateDoctorDto>(
+  private async composeDoctor<T extends DoctorCreateDto>(
     dto: T,
   ): Promise<Doctor> {
-    return compose(Doctor, dto, this.relations, this.reposByKey);
+    return compose(Doctor, dto, this.relationKeys, this.reposByKey);
   }
 
-  private getCleanDto<T extends CreateDoctorDto | UpdateDoctorDto>(
+  /**
+   * Cleans the DTO by removing relational properties,
+   * leaving only scalar fields.
+   */
+  private getCleanDto<T extends DoctorCreateDto | DoctorUpdateDto>(
     dto: T,
-  ): Omit<T, Extract<keyof T, keyof CreateDoctorDto>> {
+  ): Omit<T, Extract<keyof T, keyof DoctorCreateDto>> {
     return cleanDto(
       dto,
-      this.relations as Extract<keyof T, keyof CreateDoctorDto>[],
+      this.relationKeys as Extract<keyof T, keyof DoctorCreateDto>[],
     );
   }
 
-  private getFilteredFields(): Array<keyof CreateDoctorDto> {
-    return getFilteredFields(CreateDoctorDto, this.relations);
+  private getRequiredFields(): Array<keyof DoctorCreateDto> {
+    return getFilteredFields(DoctorCreateDto, this.relationKeys);
   }
 
-  private async setRelations<T extends CreateDoctorDto | UpdateDoctorDto>(
+  private async setRelations<T extends DoctorCreateDto | DoctorUpdateDto>(
     doctor: Doctor,
     dto: T,
     mode: 'put' | 'patch',
@@ -154,9 +162,13 @@ export class DoctorService {
     await setEntityRelations(
       doctor,
       dto,
-      this.relations,
+      this.relationKeys,
       this.reposByKey,
       mode,
     );
+  }
+
+  private getDoctorRelations(): string[] {
+    return [...this.relationKeys, ...DOCTOR_NESTED_RELATIONS] as string[];
   }
 }

@@ -3,10 +3,9 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Strategy, ExtractJwt } from 'passport-jwt';
+import { ExtractJwt, Strategy } from 'passport-jwt';
 import { IJWTPayload } from '../interfaces/jwt-payload.interface';
 import { Token } from '../entities/token.entity';
-import { User } from '../entities/user.entity';
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(
@@ -14,14 +13,13 @@ export class JwtRefreshStrategy extends PassportStrategy(
   'jwt-refresh',
 ) {
   constructor(
-    private readonly configService: ConfigService,
+    configService: ConfigService,
     @InjectRepository(Token)
     private readonly tokenRepository: Repository<Token>,
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    // @InjectRepository(User)
+    // private readonly userRepository: Repository<User>,
   ) {
     const jwtSecret = configService.get<string>('JWT_SECRET');
-
     if (!jwtSecret) {
       throw new Error('JWT_SECRET is not defined in environment variables.');
     }
@@ -33,6 +31,13 @@ export class JwtRefreshStrategy extends PassportStrategy(
     });
   }
 
+  /**
+   * Validate refresh token payload:
+   * - Check jti presence
+   * - Ensure token exists, not blocked, and user exists
+   * - Check token expiration
+   * - Return minimal user info with a role and jti
+   */
   async validate(payload: IJWTPayload) {
     if (!payload.jti) {
       throw new UnauthorizedException(
@@ -41,10 +46,7 @@ export class JwtRefreshStrategy extends PassportStrategy(
     }
 
     const tokenEntity = await this.tokenRepository.findOne({
-      where: {
-        jti: payload.jti,
-        isBlocked: false,
-      },
+      where: { jti: payload.jti, isBlocked: false },
       relations: ['user'],
     });
 

@@ -1,5 +1,9 @@
 type UpdateMode = 'patch' | 'put';
 
+/**
+ * Updates scalar fields of entity based on DTO values.
+ * In 'put' mode sets absent scalar fields (not preserved) to null.
+ */
 export function updateEntityFields<T extends object>(
   entity: T,
   dto: Partial<T>,

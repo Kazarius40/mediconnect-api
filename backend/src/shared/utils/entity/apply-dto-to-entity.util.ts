@@ -1,3 +1,7 @@
+/**
+ * Applies scalar fields from DTO to entity.
+ * Skips fields in the exclude list.
+ */
 export function applyDtoToEntity<T extends object>(
   entity: T,
   dto: Partial<T>,

@@ -17,15 +17,15 @@ import { RolesGuard } from '../../auth/guards/roles.guard';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { UserRole } from '../../users/user-role.enum';
 import { DoctorService } from '../services/doctor.service';
-import { CreateDoctorDto } from '../dto/create-doctor.dto';
+import { DoctorCreateDto } from '../dto/doctor-create.dto';
 import { Doctor } from '../entities/doctor.entity';
-import { UpdateDoctorDto } from '../dto/update-doctor';
 import {
   CreateDoctorDocs,
   DeleteDoctorDocs,
   PatchDoctorDocs,
   PutDoctorDocs,
-} from '../../swagger/methods/doctors/admin-doctor-docs.swagger';
+} from '../../swagger/methods/doctors/doctor-admin-docs.swagger';
+import { DoctorUpdateDto } from '../dto/doctor-update';
 
 @ApiTags('Doctors (Admin)')
 @ApiBearerAuth('JWT-auth')
@@ -38,7 +38,7 @@ export class DoctorAdminController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @CreateDoctorDocs()
-  async create(@Body() dto: CreateDoctorDto): Promise<Doctor> {
+  async create(@Body() dto: DoctorCreateDto): Promise<Doctor> {
     return this.doctorService.create(dto);
   }
 
@@ -47,7 +47,7 @@ export class DoctorAdminController {
   @PutDoctorDocs()
   async put(
     @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdateDoctorDto,
+    @Body() dto: DoctorCreateDto,
   ): Promise<Doctor> {
     return this.doctorService.update(id, dto, 'put');
   }
@@ -57,7 +57,7 @@ export class DoctorAdminController {
   @PatchDoctorDocs()
   async patch(
     @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdateDoctorDto,
+    @Body() dto: DoctorUpdateDto,
   ): Promise<Doctor> {
     return this.doctorService.update(id, dto, 'patch');
   }
@@ -65,7 +65,7 @@ export class DoctorAdminController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @DeleteDoctorDocs()
-  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+  async delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
     await this.doctorService.delete(id);
   }
 }

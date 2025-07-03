@@ -16,7 +16,7 @@
     "typeorm": "ts-node -r tsconfig-paths/register -r dotenv/config ./node_modules/typeorm/cli.js",
     "migration:generate:local": "cross-env DB_HOST_CLI=localhost DB_PORT_CLI=3307 npm run typeorm -- migration:generate -d ./src/data-source.ts",
     "migration:run": "cross-env DB_HOST_CLI=${DB_HOST} DB_PORT_CLI=${DB_PORT} npm run typeorm -- migration:run -d ./src/data-source.ts",
-    "migration:generate": "cross-env DB_HOST_CLI=${DB_HOST} DB_PORT_CLI=${DB_PORT} npm run typeorm -- migration:generate -d ./src/data-source.ts",
+    "migration:generate": "cross-env DB_HOST_CLI=localhost DB_PORT_CLI=3307 npm run typeorm -- migration:generate ./src/database/migrations/${npm_package_config_name} -d ./src/data-source.ts",
     "migration:create": "cross-env DB_HOST_CLI=${DB_HOST} DB_PORT_CLI=${DB_PORT} npm run typeorm -- migration:create -d ./src/data-source.ts",
     "migration:revert": "cross-env DB_HOST_CLI=${DB_HOST} DB_PORT_CLI=${DB_PORT} npm run typeorm -- migration:revert -d ./src/data-source.ts"
   },

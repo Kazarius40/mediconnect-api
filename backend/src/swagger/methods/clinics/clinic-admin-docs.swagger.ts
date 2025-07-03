@@ -1,14 +1,13 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { CreateClinicDto } from '../../../clinics/dto/create-clinic.dto';
+import { ClinicCreateDto } from '../../../clinics/dto/clinic-create.dto';
 import { ClinicResponse } from '../../responses/clinic-response.swagger';
-import { UpdateClinicDto } from '../../../clinics/dto/update-clinic.dto';
-import { MessageResponse } from '../../responses/common-responses.swagger';
+import { ClinicUpdateDto } from '../../../clinics/dto/clinic-update.dto';
 
 export function CreateClinicDocs() {
   return applyDecorators(
     ApiOperation({ summary: 'Create a new clinic (Admin only)' }),
-    ApiBody({ type: CreateClinicDto, description: 'Clinic creation data' }),
+    ApiBody({ type: ClinicCreateDto, description: 'Clinic creation data' }),
     ApiResponse({
       status: HttpStatus.CREATED,
       description: 'Clinic successfully created.',
@@ -45,7 +44,7 @@ export function PutClinicDocs() {
         'Fully replaces the clinic. Missing fields will be set to null or defaults. Use for complete updates.',
     }),
     ApiBody({
-      type: CreateClinicDto,
+      type: ClinicCreateDto,
       description: 'Clinic update data (full)',
     }),
     ApiResponse({
@@ -87,7 +86,7 @@ export function PatchClinicDocs() {
       description: 'Updates only the fields provided in the request body.',
     }),
     ApiBody({
-      type: UpdateClinicDto,
+      type: ClinicUpdateDto,
       description: 'Clinic update data (partial)',
     }),
     ApiResponse({

@@ -10,12 +10,12 @@ import {
   Query,
 } from '@nestjs/common';
 import { DoctorService } from '../services/doctor.service';
-import { FilterDoctorDto } from '../dto/filter-doctor.dto';
+import { DoctorFilterDto } from '../dto/doctor-filter.dto';
 import { Doctor } from '../entities/doctor.entity';
 import {
   FindAllDoctorsDocs,
   FindOneDoctorDocs,
-} from '../../swagger/methods/doctors/public-doctor-docs.swagger';
+} from '../../swagger/methods/doctors/doctor-public-docs.swagger';
 
 @ApiTags('Doctors')
 @Controller('doctors')
@@ -25,7 +25,7 @@ export class DoctorPublicController {
   @Get()
   @HttpCode(HttpStatus.OK)
   @applyDecorators(...FindAllDoctorsDocs)
-  async findAll(@Query() filterDto: FilterDoctorDto): Promise<Doctor[]> {
+  async findAll(@Query() filterDto: DoctorFilterDto): Promise<Doctor[]> {
     return this.doctorService.findAll(filterDto);
   }
 

@@ -1,10 +1,10 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Clinic } from '../entities/clinic.entity';
-import { CreateClinicDto } from '../dto/create-clinic.dto';
-import { UpdateClinicDto } from '../dto/update-clinic.dto';
-import { FilterClinicDto } from '../dto/filter-clinic.dto';
+import { ClinicCreateDto } from '../dto/clinic-create.dto';
+import { ClinicUpdateDto } from '../dto/clinic-update.dto';
+import { ClinicFilterDto } from '../dto/clinic-filter.dto';
 import { findOrFail } from 'src/shared/utils/typeorm/find-or-fail.util';
 import { validateEntityUniqueness } from '../../shared/validators/validate-entity-uniqueness.util';
 import {
@@ -12,33 +12,46 @@ import {
   cleanDto,
   compose,
   RepositoriesMap,
+  setEntityRelations,
 } from '../../shared/utils/entity/entity-composition.util';
 import { handleDb } from 'src/shared/utils/db/handle-db.util';
 import { applyFilters } from '../../shared/utils/query/apply-filters.util';
 import { getRelations } from '../../shared/utils/typeorm/relations.util';
 import { CLINIC_NESTED_RELATIONS } from '../../shared/constants/relations.constants';
+import { updateEntityFields } from 'src/shared/utils/entity/update-entity-fields.util';
+import { getFilteredFields } from 'src/shared/validators/get-required-fields.util';
+import { Doctor } from '../../doctors/entities/doctor.entity';
 
 @Injectable()
 export class ClinicService {
   private readonly logger = new Logger(ClinicService.name);
 
-  private readonly relationKeys: (keyof CreateClinicDto)[];
+  private readonly relationKeys: (keyof ClinicCreateDto)[];
 
-  private readonly reposByKey: RepositoriesMap<CreateClinicDto>;
+  private readonly reposByKey: RepositoriesMap<ClinicCreateDto>;
 
   constructor(
     @InjectRepository(Clinic)
     private clinicRepository: Repository<Clinic>,
+
+    @InjectRepository(Doctor)
+    private doctorRepository: Repository<Doctor>,
   ) {
-    const relationEntities: [] = [] as const;
+    const relationEntities = [Doctor] as const;
 
     this.reposByKey = buildReposMap<
-      CreateClinicDto,
+      ClinicCreateDto,
       (typeof relationEntities)[number][]
-    >(relationEntities, {});
+    >(relationEntities, {
+      doctorRepository: this.doctorRepository,
+    });
+
+    this.relationKeys = getRelations(
+      this.clinicRepository,
+    ) as (keyof ClinicCreateDto)[];
   }
 
-  async create(dto: CreateClinicDto): Promise<Clinic> {
+  async create(dto: ClinicCreateDto): Promise<Clinic> {
     await validateEntityUniqueness(
       this.clinicRepository,
       this.getCleanDto(dto),
@@ -49,83 +62,75 @@ export class ClinicService {
     await handleDb(() => this.clinicRepository.save(clinic));
     this.logger.log(`Clinic with ID ${clinic.id} created successfully.`);
 
-    const relations = getRelations(this.clinicRepository, [
-      ...CLINIC_NESTED_RELATIONS,
-    ]);
-    return await findOrFail(this.clinicRepository, clinic.id, { relations });
+    return await findOrFail(this.clinicRepository, clinic.id, {
+      relations: this.getClinicRelations(),
+    });
   }
 
-  async findAll(dto?: FilterClinicDto): Promise<Clinic[]> {
-    const relations = getRelations(this.clinicRepository, [
-      ...CLINIC_NESTED_RELATIONS,
-    ]);
-
+  async findAll(dto?: ClinicFilterDto): Promise<Clinic[]> {
     const query = this.clinicRepository.createQueryBuilder('clinic');
-    for (const relation of relations) {
+
+    for (const relation of this.relationKeys) {
       query.leftJoinAndSelect(`clinic.${relation}`, relation);
     }
+
+    query.leftJoinAndSelect('doctors.services', 'services');
+
     if (dto) {
-      applyFilters(query, dto, 'clinic', relations);
+      applyFilters(query, dto, 'clinic', this.relationKeys, {
+        serviceIds: 'services',
+      });
     }
+
     return query.getMany();
   }
 
   async findOne(id: number): Promise<Clinic> {
-    const relations = getRelations(this.clinicRepository, [
-      ...CLINIC_NESTED_RELATIONS,
-    ]);
-    return findOrFail(this.clinicRepository, id, { relations });
+    return findOrFail(this.clinicRepository, id, {
+      relations: this.getClinicRelations(),
+    });
   }
 
-  async put(id: number, dto: CreateClinicDto): Promise<Clinic> {
-    const clinic = await findOrFail(this.clinicRepository, id, {
-      relations: ['doctors', 'doctors.services'],
-    });
+  async update(
+    id: number,
+    dto: ClinicUpdateDto,
+    mode: 'put' | 'patch',
+  ): Promise<Clinic> {
+    const relations = this.getClinicRelations();
 
-    await validateEntityUniqueness(
-      this.clinicRepository,
-      { name: dto.name, email: dto.email, phone: dto.phone },
-      id,
+    const clinic = await findOrFail(this.clinicRepository, id, { relations });
+
+    const cleanDto = this.getCleanDto(dto);
+
+    const requiredFields = this.getRequiredFields();
+
+    updateEntityFields(
+      clinic,
+      cleanDto,
+      mode,
+      requiredFields as (keyof Clinic)[],
     );
 
-    Object.assign(clinic, dto);
+    await this.setRelations(clinic, dto, mode);
 
-    return this.handleDb(
-      async () => await this.clinicRepository.save(clinic),
-      'clinic update',
-    );
-  }
+    await handleDb(() => this.clinicRepository.save(clinic));
+    this.logger.log(`Clinic with ID ${id} updated via ${mode}.`);
 
-  async patch(id: number, dto: UpdateClinicDto): Promise<Clinic> {
-    const clinic = await findOrFail(this.clinicRepository, id, {
-      relations: ['doctors', 'doctors.services'],
-    });
-
-    await validateEntityUniqueness(
-      this.clinicRepository,
-      { name: dto.name, email: dto.email, phone: dto.phone },
-      id,
-    );
-
-    if (dto.name !== undefined) clinic.name = dto.name;
-    if (dto.address !== undefined) clinic.address = dto.address;
-    if (dto.phone !== undefined) clinic.phone = dto.phone;
-    if (dto.email !== undefined) clinic.email = dto.email;
-
-    return this.handleDb(
-      async () => await this.clinicRepository.save(clinic),
-      'Partial clinic update',
-    );
+    return await findOrFail(this.clinicRepository, id, { relations });
   }
 
   async delete(id: number): Promise<void> {
-    const result = await this.clinicRepository.delete(id);
-    if (!result.affected) {
-      throw new NotFoundException(`Clinic with ID ${id} not found.`);
-    }
+    await handleDb(() => this.clinicRepository.delete(id), {
+      requireAffected: true,
+    });
+    this.logger.log(`Clinic with ID ${id} deleted successfully.`);
   }
 
-  private async composeClinic<T extends CreateClinicDto>(
+  /**
+   * Cleans the DTO by removing relational properties,
+   * leaving only scalar fields.
+   */
+  private async composeClinic<T extends ClinicCreateDto>(
     dto: T,
   ): Promise<Clinic> {
     return compose(Clinic, dto, this.relationKeys, this.reposByKey);
@@ -135,12 +140,34 @@ export class ClinicService {
    * Cleans the DTO by removing relational properties,
    * leaving only scalar fields.
    */
-  private getCleanDto<T extends CreateClinicDto | UpdateClinicDto>(
+  private getCleanDto<T extends ClinicCreateDto | ClinicUpdateDto>(
     dto: T,
-  ): Omit<T, Extract<keyof T, keyof CreateClinicDto>> {
+  ): Omit<T, Extract<keyof T, keyof ClinicCreateDto>> {
     return cleanDto(
       dto,
-      this.relationKeys as Extract<keyof T, keyof CreateClinicDto>[],
+      this.relationKeys as Extract<keyof T, keyof ClinicCreateDto>[],
     );
+  }
+
+  private getRequiredFields(): Array<keyof ClinicCreateDto> {
+    return getFilteredFields(ClinicCreateDto, this.relationKeys);
+  }
+
+  private async setRelations<T extends ClinicCreateDto | ClinicUpdateDto>(
+    clinic: Clinic,
+    dto: T,
+    mode: 'put' | 'patch',
+  ): Promise<void> {
+    await setEntityRelations(
+      clinic,
+      dto,
+      this.relationKeys,
+      this.reposByKey,
+      mode,
+    );
+  }
+
+  private getClinicRelations(): string[] {
+    return [...this.relationKeys, ...CLINIC_NESTED_RELATIONS] as string[];
   }
 }

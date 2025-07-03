@@ -11,6 +11,10 @@ export type RepositoriesMap<TDto extends object> = {
   [K in keyof TDto]?: Repository<BaseEntity>;
 };
 
+/**
+ * Builds a map of relation DTO keys to their respective repositories.
+ * Used for setting relations dynamically by DTO property name.
+ */
 export function buildReposMap<
   TDto extends object,
   TEntities extends EntityClass<BaseEntity>[],
@@ -39,6 +43,10 @@ export function buildReposMap<
   return reposMap as RepositoriesMap<TDto>;
 }
 
+/**
+ * Cleans DTO by removing relational properties, leaving only scalar fields.
+ * Useful before applying uniqueness validation or saving entities.
+ */
 export function cleanDto<T extends object, K extends keyof T>(
   dto: T,
   relationKeys: readonly K[],
@@ -46,6 +54,10 @@ export function cleanDto<T extends object, K extends keyof T>(
   return omitRelations(dto, relationKeys);
 }
 
+/**
+ * Sets relations for entity based on provided DTO and mode (put/patch).
+ * Replaces or clears relations depending on update mode.
+ */
 export async function setEntityRelations<
   TEntity extends BaseEntity,
   TDto extends object,
@@ -74,6 +86,12 @@ export async function setEntityRelations<
   }
 }
 
+/**
+ * Composes entity from DTO and related entities by:
+ * - Applying scalar fields.
+ * - Resolving and assigning relations.
+ * Supports creating new or updating existing entity.
+ */
 export async function compose<
   TEntity extends BaseEntity,
   TDto extends object,

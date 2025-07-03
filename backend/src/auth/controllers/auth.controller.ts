@@ -1,30 +1,26 @@
 import {
   Body,
   Controller,
-  Post,
   HttpCode,
   HttpStatus,
-  UseGuards,
+  Post,
   Request,
+  UseGuards,
 } from '@nestjs/common';
 import { RegisterDto } from '../dto/register.dto';
 import { LoginDto } from '../dto/login.dto';
 import { RefreshTokenDto } from '../dto/refresh-token.dto';
 import { AuthGuard } from '@nestjs/passport';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-import {
-  TokensResponse,
-  UserResponse,
-  LogoutMessageResponse,
-} from '../swagger/auth-response.swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UserRequest } from '../interfaces/user-request.interface';
 import { AuthService } from '../services/auth.service';
 import { TokenService } from '../services/token.service';
+import {
+  LoginDocs,
+  LogoutDocs,
+  RefreshDocs,
+  RegisterDocs,
+} from '../../swagger/methods/auth/auth/auth-public-docs.swagger';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -35,77 +31,34 @@ export class AuthController {
   ) {}
 
   @Post('register')
-  @ApiOperation({
-    summary: 'Create a new user',
-  })
-  @ApiResponse({
-    status: HttpStatus.CREATED,
-    description: 'User successfully registered',
-    type: UserResponse,
-  })
-  @ApiResponse({
-    status: HttpStatus.CONFLICT,
-    description: 'Email already in use',
-  })
-  async register(@Body() registerDto: RegisterDto) {
-    return await this.authService.register(registerDto);
+  @HttpCode(HttpStatus.CREATED)
+  @RegisterDocs()
+  async register(@Body() dto: RegisterDto) {
+    return await this.authService.register(dto);
   }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'User login' })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'Successful login, returns access and refresh tokens',
-    type: TokensResponse,
-  })
-  @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
-    description: 'Invalid credentials',
-  })
-  async login(@Body() loginDto: LoginDto) {
-    return await this.authService.login(loginDto);
+  @LoginDocs()
+  async login(@Body() dto: LoginDto) {
+    return await this.authService.login(dto);
   }
 
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt-refresh'))
-  @ApiOperation({ summary: 'Token refresh' })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'Tokens successfully refreshed',
-    type: TokensResponse,
-  })
-  @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
-    description: 'Invalid or expired refresh token',
-  })
-  async refresh(
-    @Request() req: UserRequest,
-    @Body() refreshTokenDto: RefreshTokenDto,
-  ) {
-    return await this.tokenService.refresh(refreshTokenDto);
+  @RefreshDocs()
+  async refresh(@Request() _req: UserRequest, @Body() dto: RefreshTokenDto) {
+    return await this.tokenService.refresh(dto);
   }
 
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Account logout' })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'Logout successful',
-    type: LogoutMessageResponse,
-  })
-  @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
-    description: 'Unauthorized access',
-  })
-  async logOut(
-    @Request() req: UserRequest,
-    @Body() refreshTokenDto: RefreshTokenDto,
-  ) {
-    await this.tokenService.logOut(refreshTokenDto.refreshToken);
+  @LogoutDocs()
+  async logOut(@Request() _req: UserRequest, @Body() dto: RefreshTokenDto) {
+    await this.tokenService.logOut(dto.refreshToken);
     return { message: 'Logged out successfully' };
   }
 }

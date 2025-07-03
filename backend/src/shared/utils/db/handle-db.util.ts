@@ -5,6 +5,13 @@ import {
 } from '@nestjs/common';
 import { DeleteResult, QueryFailedError, UpdateResult } from 'typeorm';
 
+/**
+ * Handles DB operations with unified error handling for common cases:
+ * - Throws ConflictException on unique constraint violation.
+ * - Re-throws NotFound or Conflict exceptions.
+ * - Converts other errors to InternalServerErrorException.
+ * Optionally ensures affected rows (for update/delete).
+ */
 export async function handleDb<T>(
   operation: () => Promise<T>,
   options?: { requireAffected?: boolean },

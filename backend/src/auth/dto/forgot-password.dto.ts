@@ -1,11 +1,8 @@
 import { IsEmail } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ForgotPasswordEmailSwagger } from '../../swagger/methods/auth/dto/forgot-password.dto.swagger';
 
 export class ForgotPasswordDto {
   @IsEmail()
-  @ApiProperty({
-    description: 'Email address of the user who forgot the password',
-    example: 'user@example.com',
-  })
+  @ForgotPasswordEmailSwagger()
   email: string;
 }

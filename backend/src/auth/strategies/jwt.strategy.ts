@@ -26,7 +26,7 @@ interface ReturnedUserPayload {
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
-    private readonly configService: ConfigService,
+    configService: ConfigService,
     @InjectRepository(Token)
     private readonly tokenRepository: Repository<Token>,
     @InjectRepository(User)
@@ -45,6 +45,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
+  /**
+   * Validate JWT payload:
+   * - Check presence of jti
+   * - Verify token not blocked
+   * - Verify user exists
+   * - Return safe user payload with jti
+   */
   async validate(payload: IJWTPayload): Promise<ReturnedUserPayload> {
     if (!payload.jti) {
       throw new UnauthorizedException('Invalid token: jti is missing');
@@ -59,16 +66,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     const user = await this.userRepository.findOneBy({ id: payload.sub });
-
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
 
+    // Remove sensitive fields
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...safeUserBase } = user;
+    const { password, ...safeUser } = user;
 
     return {
-      ...safeUserBase,
+      ...safeUser,
       jti: payload.jti,
     } as ReturnedUserPayload;
   }

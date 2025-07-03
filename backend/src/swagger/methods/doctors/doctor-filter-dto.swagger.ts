@@ -40,10 +40,10 @@ export function DoctorServiceIdsSwagger() {
   });
 }
 
-export function DoctorSortBySwagger() {
+export function DoctorSortBySwagger(fields: string[]) {
   return ApiPropertyOptional({
     description: 'Field to sort by',
-    enum: ['firstName', 'lastName', 'email', 'phone'],
+    enum: fields,
   });
 }
 

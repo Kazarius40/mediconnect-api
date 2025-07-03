@@ -8,6 +8,7 @@ import { User } from '../entities/user.entity';
 import { ITokens } from '../interfaces/tokens.interface';
 import { RefreshTokenDto } from '../dto/refresh-token.dto';
 import { IJWTPayload } from '../interfaces/jwt-payload.interface';
+import { handleDb } from '../../shared/utils/db/handle-db.util';
 
 @Injectable()
 export class TokenService {
@@ -34,6 +35,9 @@ export class TokenService {
     }
   }
 
+  /**
+   * Generate new access & refresh tokens, save it to DB, block old tokens if exist
+   */
   async generateAndSaveTokens(user: User): Promise<ITokens> {
     const existingToken = await this.tokenRepository.findOne({
       where: { user: { id: user.id }, isBlocked: false },
@@ -65,10 +69,13 @@ export class TokenService {
     return { accessToken, refreshToken };
   }
 
+  /**
+   * Verify and refresh tokens using provided refresh token DTO
+   */
   async refresh(refreshTokenDto: RefreshTokenDto): Promise<ITokens> {
     const { refreshToken } = refreshTokenDto;
-
     let payload: IJWTPayload;
+
     try {
       payload = this.jwtService.verify<IJWTPayload>(refreshToken);
     } catch {
@@ -99,9 +106,12 @@ export class TokenService {
 
     await this.blockToken(tokenEntity);
 
-    return await this.generateAndSaveTokens(tokenEntity.user);
+    return this.generateAndSaveTokens(tokenEntity.user);
   }
 
+  /**
+   * Log out by blocking refresh token
+   */
   async logOut(refreshToken: string): Promise<void> {
     const tokenEntity = await this.tokenRepository.findOne({
       where: { refreshToken, isBlocked: false },
@@ -117,15 +127,24 @@ export class TokenService {
     await this.blockToken(tokenEntity);
   }
 
+  /**
+   * Mark token as blocked to invalidate it
+   */
   private async blockToken(token: Token): Promise<void> {
     token.isBlocked = true;
-    await this.tokenRepository.save(token);
+    await handleDb(() => this.tokenRepository.save(token));
   }
 
+  /**
+   * Generate unique token identifier (jti)
+   */
   private generateJti(): string {
     return Math.random().toString(36).substring(2) + Date.now().toString(36);
   }
 
+  /**
+   * Create JWT payload
+   */
   private createPayload(
     sub: number,
     email: string,
@@ -135,6 +154,9 @@ export class TokenService {
     return { sub, email, role, jti };
   }
 
+  /**
+   * Persist access & refresh tokens in DB with expiration dates
+   */
   private async saveTokens(
     user: User,
     accessToken: string,
@@ -154,6 +176,6 @@ export class TokenService {
       jti,
       isBlocked: false,
     });
-    await this.tokenRepository.save(tokenEntity);
+    await handleDb(() => this.tokenRepository.save(tokenEntity));
   }
 }

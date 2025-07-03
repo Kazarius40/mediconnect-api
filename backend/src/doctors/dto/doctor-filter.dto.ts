@@ -8,14 +8,14 @@ import {
   DoctorServiceIdsSwagger,
   DoctorSortBySwagger,
   DoctorSortOrderSwagger,
-} from '../../swagger/methods/doctors/filter-doctor-dto.swagger';
+} from '../../swagger/methods/doctors/doctor-filter-dto.swagger';
 import { getFilteredFields } from '../../shared/validators/get-required-fields.util';
-import { CreateDoctorDto } from './create-doctor.dto';
+import { DoctorCreateDto } from './doctor-create.dto';
 import { TransformToNumberArray } from '../../shared/utils/decorators/transform-to-number-array.decorator';
 
-const scalarFields = getFilteredFields(CreateDoctorDto, true);
+const scalarFields = getFilteredFields(DoctorCreateDto, [], true);
 
-export class FilterDoctorDto {
+export class DoctorFilterDto {
   @DoctorFirstNameSwagger()
   @IsOptional()
   @IsString()
@@ -50,7 +50,7 @@ export class FilterDoctorDto {
   @TransformToNumberArray()
   serviceIds?: number[];
 
-  @DoctorSortBySwagger()
+  @DoctorSortBySwagger(scalarFields)
   @IsOptional()
   @IsString()
   @IsIn(scalarFields)

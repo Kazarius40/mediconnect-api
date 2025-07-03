@@ -8,19 +8,47 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Doctor } from '../../doctors/entities/doctor.entity';
+import {
+  ClinicAddressSwagger,
+  ClinicCreatedAtSwagger,
+  ClinicEmailSwagger,
+  ClinicIdSwagger,
+  ClinicNameSwagger,
+  ClinicPhoneSwagger,
+  ClinicUpdatedAtSwagger,
+} from '../../swagger/methods/clinics/clinic-entity.swagger';
 
 @Entity()
 export class Clinic {
   // ------------------------------------------------------ Main fields ------------------------------------------------------------
-  @PrimaryGeneratedColumn() id: number;
-  @Column() name: string;
-  @Column() address: string;
-  @Column() phone: string;
-  @Column({ nullable: true }) email?: string;
+  @ClinicIdSwagger()
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @ClinicNameSwagger()
+  @Column()
+  name: string;
+
+  @ClinicAddressSwagger()
+  @Column()
+  address: string;
+
+  @ClinicPhoneSwagger()
+  @Column()
+  phone: string;
+
+  @ClinicEmailSwagger()
+  @Column({ nullable: true })
+  email?: string;
 
   // ------------------------------------------------------ Timestamps ------------------------------------------------------------
-  @CreateDateColumn() createdAt: Date;
-  @UpdateDateColumn() updatedAt: Date;
+  @ClinicCreatedAtSwagger()
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @ClinicUpdatedAtSwagger()
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   // ------------------------------------------------------ Relations ------------------------------------------------------------
   @ManyToMany(() => Doctor, (doctor) => doctor.clinics)

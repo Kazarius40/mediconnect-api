@@ -6,6 +6,10 @@ type ScalarFieldsOf<T> = {
   [K in keyof T as T[K] extends object ? never : K]?: T[K];
 };
 
+/**
+ * Validates DTO scalar fields for uniqueness against DB.
+ * Throws ConflictException if another entity with the same unique field exists.
+ */
 export async function validateEntityUniqueness<T extends object>(
   repository: Repository<T>,
   dto: ScalarFieldsOf<Partial<T>>,

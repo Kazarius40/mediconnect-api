@@ -1,18 +1,17 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { CreateDoctorDto } from '../../../doctors/dto/create-doctor.dto';
-import { DoctorResponse } from '../../responses/doctor-response.swagger';
-import { UpdateDoctorDto } from '../../../doctors/dto/update-doctor';
-import { MessageResponse } from '../../responses/common-responses.swagger';
+import { ServiceCreateDto } from '../../../services/dto/service-create.dto';
+import { ServiceUpdateDto } from '../../../services/dto/service-update.dto';
+import { ServiceResponse } from '../../responses/service-response.swagger';
 
-export function CreateDoctorDocs() {
+export function CreateServiceDocs() {
   return applyDecorators(
-    ApiOperation({ summary: 'Create a new doctor (Admin only)' }),
-    ApiBody({ type: CreateDoctorDto, description: 'Doctor creation data' }),
+    ApiOperation({ summary: 'Create a new service (Admin only)' }),
+    ApiBody({ type: ServiceCreateDto, description: 'Service creation data' }),
     ApiResponse({
       status: HttpStatus.CREATED,
-      description: 'Doctor successfully created.',
-      type: DoctorResponse,
+      description: 'Service successfully created.',
+      type: ServiceResponse,
     }),
     ApiResponse({
       status: HttpStatus.BAD_REQUEST,
@@ -20,7 +19,7 @@ export function CreateDoctorDocs() {
     }),
     ApiResponse({
       status: HttpStatus.CONFLICT,
-      description: 'Email or phone already exists.',
+      description: 'Service with this name already exists.',
     }),
     ApiResponse({
       status: HttpStatus.UNAUTHORIZED,
@@ -37,21 +36,21 @@ export function CreateDoctorDocs() {
   );
 }
 
-export function PutDoctorDocs() {
+export function PutServiceDocs() {
   return applyDecorators(
     ApiOperation({
-      summary: 'Fully update a doctor by ID (Admin only)',
+      summary: 'Fully update a service by ID (Admin only)',
       description:
-        'Fully replaces the doctor. Missing fields will be set to null or defaults. Use for complete updates.',
+        'Fully replaces the service. Missing fields will be set to null or defaults. Use for complete updates.',
     }),
     ApiBody({
-      type: CreateDoctorDto,
-      description: 'Doctor update data (full)',
+      type: ServiceCreateDto,
+      description: 'Service update data (full)',
     }),
     ApiResponse({
       status: HttpStatus.OK,
-      description: 'Doctor successfully updated (full).',
-      type: DoctorResponse,
+      description: 'Service successfully updated (full).',
+      type: ServiceResponse,
     }),
     ApiResponse({
       status: HttpStatus.BAD_REQUEST,
@@ -59,11 +58,11 @@ export function PutDoctorDocs() {
     }),
     ApiResponse({
       status: HttpStatus.NOT_FOUND,
-      description: 'Doctor not found.',
+      description: 'Service not found.',
     }),
     ApiResponse({
       status: HttpStatus.CONFLICT,
-      description: 'Doctor with this email or phone already exists.',
+      description: 'Service with this name already exists.',
     }),
     ApiResponse({
       status: HttpStatus.UNAUTHORIZED,
@@ -80,20 +79,20 @@ export function PutDoctorDocs() {
   );
 }
 
-export function PatchDoctorDocs() {
+export function PatchServiceDocs() {
   return applyDecorators(
     ApiOperation({
-      summary: 'Partially update doctor by ID (Admin only)',
+      summary: 'Partially update service by ID (Admin only)',
       description: 'Updates only the fields provided in the request body.',
     }),
     ApiBody({
-      type: UpdateDoctorDto,
-      description: 'Doctor update data (partial)',
+      type: ServiceUpdateDto,
+      description: 'Service update data (partial)',
     }),
     ApiResponse({
       status: HttpStatus.OK,
-      description: 'Doctor successfully updated (partial).',
-      type: DoctorResponse,
+      description: 'Service successfully updated (partial).',
+      type: ServiceResponse,
     }),
     ApiResponse({
       status: HttpStatus.BAD_REQUEST,
@@ -101,11 +100,11 @@ export function PatchDoctorDocs() {
     }),
     ApiResponse({
       status: HttpStatus.NOT_FOUND,
-      description: 'Doctor not found.',
+      description: 'Service not found.',
     }),
     ApiResponse({
       status: HttpStatus.CONFLICT,
-      description: 'Doctor with this email or phone already exists.',
+      description: 'Service with this name already exists.',
     }),
     ApiResponse({
       status: HttpStatus.UNAUTHORIZED,
@@ -122,16 +121,16 @@ export function PatchDoctorDocs() {
   );
 }
 
-export function DeleteDoctorDocs() {
+export function DeleteServiceDocs() {
   return applyDecorators(
-    ApiOperation({ summary: 'Delete doctor by ID (Admin only)' }),
+    ApiOperation({ summary: 'Delete service by ID (Admin only)' }),
     ApiResponse({
       status: HttpStatus.NO_CONTENT,
-      description: 'Doctor successfully deleted.',
+      description: 'Service successfully deleted.',
     }),
     ApiResponse({
       status: HttpStatus.NOT_FOUND,
-      description: 'Doctor not found.',
+      description: 'Service not found.',
     }),
     ApiResponse({
       status: HttpStatus.UNAUTHORIZED,

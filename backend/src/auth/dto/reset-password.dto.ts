@@ -1,24 +1,18 @@
-import { IsNotEmpty, IsString, Matches } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString } from 'class-validator';
+import {
+  ResetPasswordPasswordSwagger,
+  ResetPasswordTokenSwagger,
+} from '../../swagger/methods/auth/dto/reset-password.dto.swagger';
+import { IsStrongPassword } from '../../shared/validators/custom-validators';
 
 export class ResetPasswordDto {
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({
-    description: 'Token received for password reset (e.g., from email link)',
-    example: 'someLongAndSecureResetToken12345',
-  })
+  @ResetPasswordTokenSwagger()
   token: string;
 
   @IsString()
-  @Matches(/^(?=.*[A-Z])(?=.*\d).{6,}$/, {
-    message:
-      'Password must contain at least one uppercase letter and one number',
-  })
-  @ApiProperty({
-    description:
-      'New password for the user. Must be at least 6 characters long and contain at least one uppercase letter and one number.',
-    example: 'NewPassword123!',
-  })
+  @IsStrongPassword()
+  @ResetPasswordPasswordSwagger()
   password: string;
 }

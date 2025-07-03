@@ -1,55 +1,85 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Service } from '../entities/service.entity';
 import { Repository } from 'typeorm';
-import { CreateServiceDto } from '../dto/create-service.dto';
-import { UpdateServiceDto } from '../dto/update-service.dto';
-import { FilterServiceDto } from '../dto/filter-service.dto';
+import { ServiceCreateDto } from '../dto/service-create.dto';
+import { ServiceUpdateDto } from '../dto/service-update.dto';
+import { ServiceFilterDto } from '../dto/service-filter.dto';
 import { findOrFail } from '../../shared/utils/typeorm/find-or-fail.util';
 import { validateEntityUniqueness } from '../../shared/validators/validate-entity-uniqueness.util';
+import {
+  buildReposMap,
+  cleanDto,
+  compose,
+  RepositoriesMap,
+  setEntityRelations,
+} from '../../shared/utils/entity/entity-composition.util';
+import { getRelations } from '../../shared/utils/typeorm/relations.util';
+import { SERVICE_NESTED_RELATIONS } from '../../shared/constants/relations.constants';
+import { getFilteredFields } from '../../shared/validators/get-required-fields.util';
+import { handleDb } from '../../shared/utils/db/handle-db.util';
+import { applyFilters } from '../../shared/utils/query/apply-filters.util';
+import { updateEntityFields } from '../../shared/utils/entity/update-entity-fields.util';
+import { Doctor } from '../../doctors/entities/doctor.entity';
 
 @Injectable()
 export class ServiceService {
+  private readonly logger = new Logger(ServiceService.name);
+
+  private readonly relationKeys: (keyof ServiceCreateDto)[];
+
+  private readonly reposByKey: RepositoriesMap<ServiceCreateDto>;
+
   constructor(
     @InjectRepository(Service)
     private serviceRepository: Repository<Service>,
-  ) {}
 
-  async create(dto: CreateServiceDto): Promise<Service> {
-    await validateEntityUniqueness(this.serviceRepository, { name: dto.name });
+    @InjectRepository(Doctor)
+    private doctorRepository: Repository<Doctor>,
+  ) {
+    const relationEntities = [Doctor] as const;
 
-    const service = this.serviceRepository.create(dto);
+    this.reposByKey = buildReposMap<
+      ServiceCreateDto,
+      (typeof relationEntities)[number][]
+    >(relationEntities, {
+      doctorRepository: this.doctorRepository,
+    });
 
-    try {
-      return await this.serviceRepository.save(service);
-    } catch {
-      throw new InternalServerErrorException(
-        'An unexpected error occurred during service creation.',
-      );
-    }
+    this.relationKeys = getRelations(
+      this.serviceRepository,
+    ) as (keyof ServiceCreateDto)[];
   }
 
-  async findAll(dto?: FilterServiceDto): Promise<Service[]> {
-    const { name, sortBy, sortOrder } = dto || {};
+  async create(dto: ServiceCreateDto): Promise<Service> {
+    await validateEntityUniqueness(
+      this.serviceRepository,
+      this.getCleanDto(dto),
+    );
 
+    const service = await this.composeService(dto);
+
+    await handleDb(() => this.serviceRepository.save(service));
+    this.logger.log(`Service with ID ${service.id} created successfully.`);
+
+    return await findOrFail(this.serviceRepository, service.id, {
+      relations: this.getServiceRelations(),
+    });
+  }
+
+  async findAll(dto?: ServiceFilterDto): Promise<Service[]> {
     const query = this.serviceRepository.createQueryBuilder('service');
-    query.leftJoinAndSelect('service.doctors', 'doctor');
-    query.leftJoinAndSelect('doctor.clinics', 'clinic');
 
-    if (name) {
-      query.andWhere('service.name LIKE :name', { name: `%${name}%` });
+    for (const relation of this.relationKeys) {
+      query.leftJoinAndSelect(`service.${relation}`, relation);
     }
 
-    const orderDirection = sortOrder?.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+    query.leftJoinAndSelect('doctors.clinics', 'clinics');
 
-    if (sortBy === 'name') {
-      query.orderBy('service.name', orderDirection);
-    } else {
-      query.orderBy('service.id', 'ASC');
+    if (dto) {
+      applyFilters(query, dto, 'service', this.relationKeys, {
+        clinicIds: 'clinics',
+      });
     }
 
     return query.getMany();
@@ -57,61 +87,87 @@ export class ServiceService {
 
   async findOne(id: number): Promise<Service> {
     return findOrFail(this.serviceRepository, id, {
-      relations: ['doctors', 'doctors.clinics'],
+      relations: this.getServiceRelations(),
     });
   }
 
-  async put(id: number, dto: UpdateServiceDto): Promise<Service> {
-    const service = await findOrFail(this.serviceRepository, id, {
-      relations: ['doctors', 'doctors.clinics'],
-    });
+  async update(
+    id: number,
+    dto: ServiceUpdateDto,
+    mode: 'put' | 'patch',
+  ): Promise<Service> {
+    const relations = this.getServiceRelations();
 
-    if (dto.name !== undefined && dto.name !== service.name) {
-      await validateEntityUniqueness(
-        this.serviceRepository,
-        { name: dto.name },
-        id,
-      );
-      service.name = dto.name;
-    }
+    const service = await findOrFail(this.serviceRepository, id, { relations });
 
-    service.description = dto.description ?? null;
+    const cleanDto = this.getCleanDto(dto);
 
-    return this.saveAndReturn(service);
-  }
+    const requiredFields = this.getRequiredFields();
 
-  async patch(id: number, dto: UpdateServiceDto): Promise<Service> {
-    const service = await findOrFail(this.serviceRepository, id, {
-      relations: ['doctors', 'doctors.clinics'],
-    });
+    updateEntityFields(
+      service,
+      cleanDto,
+      mode,
+      requiredFields as (keyof Service)[],
+    );
 
-    if (dto.name !== undefined && dto.name !== service.name) {
-      await validateEntityUniqueness(
-        this.serviceRepository,
-        { name: dto.name },
-        id,
-      );
-    }
+    await this.setRelations(service, dto, mode);
 
-    Object.assign(service, dto);
+    await handleDb(() => this.serviceRepository.save(service));
+    this.logger.log(`Service with ID ${id} updated via ${mode}.`);
 
-    return this.saveAndReturn(service);
+    return await findOrFail(this.serviceRepository, id, { relations });
   }
 
   async delete(id: number): Promise<void> {
-    const result = await this.serviceRepository.delete(id);
-    if (result.affected === 0) {
-      throw new NotFoundException(`Service with ID ${id} not found.`);
-    }
+    await handleDb(() => this.serviceRepository.delete(id), {
+      requireAffected: true,
+    });
+    this.logger.log(`Service with ID ${id} deleted successfully.`);
   }
 
-  private async saveAndReturn(service: Service): Promise<Service> {
-    try {
-      return await this.serviceRepository.save(service);
-    } catch {
-      throw new InternalServerErrorException(
-        'An unexpected error occurred during saving service.',
-      );
-    }
+  /**
+   * Cleans the DTO by removing relational properties,
+   * leaving only scalar fields.
+   */
+  private async composeService<T extends ServiceCreateDto>(
+    dto: T,
+  ): Promise<Service> {
+    return compose(Service, dto, this.relationKeys, this.reposByKey);
+  }
+
+  /**
+   * Cleans the DTO by removing relational properties,
+   * leaving only scalar fields.
+   */
+  private getCleanDto<T extends ServiceCreateDto | ServiceUpdateDto>(
+    dto: T,
+  ): Omit<T, Extract<keyof T, keyof ServiceCreateDto>> {
+    return cleanDto(
+      dto,
+      this.relationKeys as Extract<keyof T, keyof ServiceCreateDto>[],
+    );
+  }
+
+  private getRequiredFields(): Array<keyof ServiceCreateDto> {
+    return getFilteredFields(ServiceCreateDto, this.relationKeys);
+  }
+
+  private async setRelations<T extends ServiceCreateDto | ServiceUpdateDto>(
+    service: Service,
+    dto: T,
+    mode: 'put' | 'patch',
+  ): Promise<void> {
+    await setEntityRelations(
+      service,
+      dto,
+      this.relationKeys,
+      this.reposByKey,
+      mode,
+    );
+  }
+
+  private getServiceRelations(): string[] {
+    return [...this.relationKeys, ...SERVICE_NESTED_RELATIONS] as string[];
   }
 }

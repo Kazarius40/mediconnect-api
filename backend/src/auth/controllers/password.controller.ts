@@ -1,12 +1,12 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ForgotPasswordDto } from '../dto/forgot-password.dto';
 import { ResetPasswordDto } from '../dto/reset-password.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import {
-  ForgotPasswordMessageResponse,
-  ResetPasswordMessageResponse,
-} from '../swagger/auth-response.swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from '../services/auth.service';
+import {
+  ForgotPasswordDocs,
+  ResetPasswordDocs,
+} from '../../swagger/methods/auth/auth/auth-password-docs.swagger';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -15,37 +15,15 @@ export class PasswordController {
 
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({
-    summary: 'Send password reset link to email',
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description:
-      'If a user with that email exists, a password reset link has been sent.',
-    type: ForgotPasswordMessageResponse,
-  })
-  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
-    await this.authService.forgotPassword(forgotPasswordDto);
-    return {
-      message:
-        'If a user with that email exists, a password reset link has been sent.',
-    };
+  @ForgotPasswordDocs()
+  async forgotPassword(@Body() dto: ForgotPasswordDto) {
+    return await this.authService.forgotPassword(dto);
   }
 
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Reset password using reset token' })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'Password has been successfully reset',
-    type: ResetPasswordMessageResponse,
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'Invalid or expired password reset token',
-  })
-  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
-    await this.authService.resetPassword(resetPasswordDto);
-    return { message: 'Password has been successfully reset.' };
+  @ResetPasswordDocs()
+  async resetPassword(@Body() dto: ResetPasswordDto) {
+    return await this.authService.resetPassword(dto);
   }
 }

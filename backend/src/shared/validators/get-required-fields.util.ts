@@ -22,13 +22,7 @@ export function getFilteredFields<T extends object>(
     const isRequiredValidator =
       meta.type === 'isDefined' || meta.type === 'isNotEmpty';
 
-    const isOptionalValidator = meta.type === 'isOptional';
-
-    if (isRequiredValidator) {
-      uniqueFields.add(meta.propertyName);
-    } else if (includeOptional && isOptionalValidator) {
-      uniqueFields.add(meta.propertyName);
-    } else if (includeOptional && !isOptionalValidator) {
+    if (isRequiredValidator || includeOptional) {
       uniqueFields.add(meta.propertyName);
     }
   }

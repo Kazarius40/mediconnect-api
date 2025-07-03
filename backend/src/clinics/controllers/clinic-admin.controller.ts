@@ -17,15 +17,15 @@ import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../../auth/guards/roles.guard';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { UserRole } from 'src/users/user-role.enum';
-import { CreateClinicDto } from '../dto/create-clinic.dto';
+import { ClinicCreateDto } from '../dto/clinic-create.dto';
 import { Clinic } from '../entities/clinic.entity';
-import { UpdateClinicDto } from '../dto/update-clinic.dto';
+import { ClinicUpdateDto } from '../dto/clinic-update.dto';
 import {
   CreateClinicDocs,
   DeleteClinicDocs,
   PatchClinicDocs,
   PutClinicDocs,
-} from '../../swagger/methods/clinics/clinic-doctor-docs.swagger';
+} from '../../swagger/methods/clinics/clinic-admin-docs.swagger';
 
 @ApiTags('Clinics (Admin)')
 @ApiBearerAuth('JWT-auth')
@@ -38,8 +38,8 @@ export class ClinicAdminController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @CreateClinicDocs()
-  async create(@Body() dto: CreateClinicDto): Promise<Clinic> {
-    return await this.clinicService.create(dto);
+  async create(@Body() dto: ClinicCreateDto): Promise<Clinic> {
+    return this.clinicService.create(dto);
   }
 
   @Put(':id')
@@ -47,9 +47,9 @@ export class ClinicAdminController {
   @PutClinicDocs()
   async put(
     @Param('id', ParseIntPipe) id: number,
-    @Body() dto: CreateClinicDto,
+    @Body() dto: ClinicCreateDto,
   ): Promise<Clinic> {
-    return await this.clinicService.put(id, dto);
+    return this.clinicService.update(id, dto, 'put');
   }
 
   @Patch(':id')
@@ -57,15 +57,15 @@ export class ClinicAdminController {
   @PatchClinicDocs()
   async patch(
     @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdateClinicDto,
+    @Body() dto: ClinicUpdateDto,
   ): Promise<Clinic> {
-    return await this.clinicService.patch(id, dto);
+    return this.clinicService.update(id, dto, 'patch');
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @DeleteClinicDocs()
-  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+  async delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
     await this.clinicService.delete(id);
   }
 }

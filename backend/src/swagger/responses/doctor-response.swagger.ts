@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ServiceResponse } from '../../services/swagger/service-response.swagger';
+import { ServiceResponse } from './service-response.swagger';
 import { ClinicResponse } from './clinic-response.swagger';
 
 export class DoctorResponse {

@@ -1,5 +1,13 @@
 import { ObjectLiteral, SelectQueryBuilder } from 'typeorm';
 
+/**
+ * Applies filtering to query builder based on filter DTO.
+ * Supports:
+ * - scalar filters
+ * - relationIds-based filters
+ * - nested filters via nestedFilterMap
+ * - sortBy / sortOrder
+ */
 export function applyFilters<T extends ObjectLiteral>(
   query: SelectQueryBuilder<T>,
   filter: Partial<
@@ -7,11 +15,34 @@ export function applyFilters<T extends ObjectLiteral>(
   >,
   alias: string,
   relationKeys?: string[],
+  nestedFilterMap?: Record<string, string>,
 ): void {
   const excludedKeys = ['sortBy', 'sortOrder'];
 
+  let joinCounter = 0;
+  function joinRelation(
+    query: SelectQueryBuilder<T>,
+    baseAlias: string,
+    relation: string,
+  ) {
+    const joinAlias = `${baseAlias}_${relation}_${joinCounter++}`;
+    query.leftJoin(`${baseAlias}.${relation}`, joinAlias);
+    return joinAlias;
+  }
+
   Object.entries(filter).forEach(([key, value]) => {
     if (value === undefined || value === null || excludedKeys.includes(key)) {
+      return;
+    }
+
+    if (
+      nestedFilterMap &&
+      nestedFilterMap[key] &&
+      Array.isArray(value) &&
+      value.length > 0
+    ) {
+      const nestedAlias = nestedFilterMap[key];
+      query.andWhere(`${nestedAlias}.id IN (:...${key})`, { [key]: value });
       return;
     }
 
@@ -21,11 +52,17 @@ export function applyFilters<T extends ObjectLiteral>(
       Array.isArray(value) &&
       value.length > 0
     ) {
-      const relationName = key.slice(0, -3) + 's';
-      if (relationKeys.includes(relationName)) {
-        const joinAlias = `filter_${relationName}`;
-        query.leftJoin(`${alias}.${relationName}`, joinAlias);
-        query.andWhere(`${joinAlias}.id IN (:...${key})`, { [key]: value });
+      const baseRelationName = key.slice(0, -3) + 's';
+
+      const matchedRelations = relationKeys.filter(
+        (r) => r === baseRelationName && !r.includes('.'),
+      );
+
+      if (matchedRelations.length > 0) {
+        matchedRelations.forEach((relation) => {
+          const joinAlias = joinRelation(query, alias, relation);
+          query.andWhere(`${joinAlias}.id IN (:...${key})`, { [key]: value });
+        });
         return;
       }
     }

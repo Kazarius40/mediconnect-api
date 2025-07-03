@@ -7,31 +7,35 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Doctor } from '../../doctors/entities/doctor.entity';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  ServiceCreatedAtSwagger,
+  ServiceDescriptionSwagger,
+  ServiceIdSwagger,
+  ServiceNameSwagger,
+  ServiceUpdatedAtSwagger,
+} from '../../swagger/methods/services/service-entity.swagger';
 
 @Entity()
 export class Service {
   // ------------------------------------------------------ Main fields ------------------------------------------------------------
-  @ApiProperty({ description: 'Unique identifier of the service' })
+  @ServiceIdSwagger()
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiProperty({ description: 'Unique name of the service' })
+  @ServiceNameSwagger()
   @Column({ unique: true })
   name: string;
 
-  @ApiPropertyOptional({ description: 'Optional description of the service' })
+  @ServiceDescriptionSwagger()
   @Column({ type: 'text', nullable: true })
   description: string | null;
 
   // ------------------------------------------------------ Timestamps ------------------------------------------------------------
-  @ApiProperty({ description: 'Date and time when the service was created' })
+  @ServiceCreatedAtSwagger()
   @CreateDateColumn()
   createdAt: Date;
 
-  @ApiProperty({
-    description: 'Date and time when the service was last updated',
-  })
+  @ServiceUpdatedAtSwagger()
   @UpdateDateColumn()
   updatedAt: Date;
 

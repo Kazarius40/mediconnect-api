@@ -2,12 +2,11 @@ import {
   IsArray,
   IsEmail,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsPhoneNumber,
   IsString,
 } from 'class-validator';
-import { Transform, Type } from 'class-transformer';
-import { RelationProperty } from '../../shared/utils/decorators/relation-property.decorator';
 import {
   DoctorClinicsSwagger,
   DoctorEmailSwagger,
@@ -15,10 +14,11 @@ import {
   DoctorLastNameSwagger,
   DoctorPhoneSwagger,
   DoctorServicesSwagger,
-} from '../../swagger/methods/doctors/create-doctor-dto.swagger';
-import { normalizePhone } from '../../shared/utils/phone/normalize-phone.util';
+} from '../../swagger/methods/doctors/doctor-create-dto.swagger';
+import { TransformNormalizePhone } from '../../shared/utils/phone/normalize-phone.util';
+import { TransformToNumberArray } from '../../shared/utils/decorators/transform-to-number-array.decorator';
 
-export class CreateDoctorDto {
+export class DoctorCreateDto {
   @DoctorFirstNameSwagger()
   @IsNotEmpty()
   @IsString()
@@ -37,22 +37,20 @@ export class CreateDoctorDto {
   @DoctorPhoneSwagger()
   @IsOptional()
   @IsPhoneNumber()
-  @Transform(({ value }) =>
-    value ? normalizePhone(value as string) : (value as string),
-  )
+  @TransformNormalizePhone()
   phone?: string;
 
   @DoctorClinicsSwagger()
   @IsOptional()
   @IsArray()
-  @Type(() => Number)
-  @RelationProperty()
+  @IsNumber({}, { each: true })
+  @TransformToNumberArray()
   clinics?: number[];
 
   @DoctorServicesSwagger()
   @IsOptional()
   @IsArray()
-  @Type(() => Number)
-  @RelationProperty()
+  @IsNumber({}, { each: true })
+  @TransformToNumberArray()
   services?: number[];
 }

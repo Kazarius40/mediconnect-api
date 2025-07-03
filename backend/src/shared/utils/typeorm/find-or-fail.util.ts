@@ -1,6 +1,9 @@
 import { FindOneOptions, FindOptionsWhere, Repository } from 'typeorm';
 import { NotFoundException } from '@nestjs/common';
 
+/**
+ * Finds entity by ID or throws NotFoundException with entity name.
+ */
 export async function findOrFail<T extends { id: number }>(
   repository: Repository<T>,
   id: number,
