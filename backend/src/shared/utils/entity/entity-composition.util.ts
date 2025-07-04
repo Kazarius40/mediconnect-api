@@ -67,7 +67,6 @@ export async function setEntityRelations<
   dto: TDto,
   relationKeys: K[],
   reposByKey: RepositoriesMap<TDto>,
-  mode: 'put' | 'patch' = 'patch',
 ): Promise<void> {
   for (const relation of relationKeys) {
     const repository = reposByKey[relation];
@@ -77,10 +76,6 @@ export async function setEntityRelations<
       const resolved = await resolveRelations(repository, relationIds);
       if (relation in entity) {
         (entity as Record<K, typeof resolved>)[relation] = resolved ?? [];
-      }
-    } else if (mode === 'put') {
-      if (relation in entity) {
-        (entity as Record<K, unknown[]>)[relation] = [];
       }
     }
   }

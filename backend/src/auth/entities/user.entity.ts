@@ -34,18 +34,6 @@ export class User {
   id: number;
 
   // ------------------------------------------------------ Main fields ----------------------------------------------------------
-  @Column({ unique: true })
-  @UserEmailSwagger()
-  email: string;
-
-  @Column()
-  @UserPasswordSwagger()
-  password: string;
-
-  @Column({ type: 'enum', enum: UserRole, default: UserRole.PATIENT })
-  @UserRoleSwagger()
-  role: UserRole;
-
   @Column({ nullable: true })
   @UserFirstNameSwagger()
   firstName?: string;
@@ -57,6 +45,18 @@ export class User {
   @Column({ nullable: true })
   @UserPhoneSwagger()
   phone?: string;
+
+  @Column({ unique: true })
+  @UserEmailSwagger()
+  email: string;
+
+  @Column()
+  @UserPasswordSwagger()
+  password: string;
+
+  @Column({ type: 'enum', enum: UserRole, default: UserRole.PATIENT })
+  @UserRoleSwagger()
+  role: UserRole;
 
   // ------------------------------------------------------ Password reset -------------------------------------------------------
   @Column({ nullable: true, type: 'varchar', length: 255 })

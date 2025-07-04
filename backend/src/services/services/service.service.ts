@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Service } from '../entities/service.entity';
 import { Repository } from 'typeorm';
@@ -16,7 +16,6 @@ import {
 } from '../../shared/utils/entity/entity-composition.util';
 import { getRelations } from '../../shared/utils/typeorm/relations.util';
 import { SERVICE_NESTED_RELATIONS } from '../../shared/constants/relations.constants';
-import { getFilteredFields } from '../../shared/validators/get-required-fields.util';
 import { handleDb } from '../../shared/utils/db/handle-db.util';
 import { applyFilters } from '../../shared/utils/query/apply-filters.util';
 import { updateEntityFields } from '../../shared/utils/entity/update-entity-fields.util';
@@ -96,22 +95,16 @@ export class ServiceService {
     dto: ServiceUpdateDto,
     mode: 'put' | 'patch',
   ): Promise<Service> {
-    const relations = this.getServiceRelations();
+    // Get the cleaned DTO without relational fields — for validation and updates
+    const cleanDto = this.getCleanDto(dto);
+    await validateEntityUniqueness(this.serviceRepository, cleanDto, id);
 
+    const relations = this.getServiceRelations();
     const service = await findOrFail(this.serviceRepository, id, { relations });
 
-    const cleanDto = this.getCleanDto(dto);
+    updateEntityFields(service, cleanDto, mode);
 
-    const requiredFields = this.getRequiredFields();
-
-    updateEntityFields(
-      service,
-      cleanDto,
-      mode,
-      requiredFields as (keyof Service)[],
-    );
-
-    await this.setRelations(service, dto, mode);
+    await this.setRelations(service, dto);
 
     await handleDb(() => this.serviceRepository.save(service));
     this.logger.log(`Service with ID ${id} updated via ${mode}.`);
@@ -120,9 +113,25 @@ export class ServiceService {
   }
 
   async delete(id: number): Promise<void> {
-    await handleDb(() => this.serviceRepository.delete(id), {
-      requireAffected: true,
+    const service = await this.serviceRepository.findOne({
+      where: { id },
+      relations: this.relationKeys as string[],
     });
+
+    if (!service) {
+      throw new NotFoundException(`Service with ID ${id} not found.`);
+    }
+
+    for (const relationKey of this.relationKeys) {
+      if (Array.isArray(service[relationKey])) {
+        (service[relationKey] as unknown) = [];
+      }
+    }
+
+    await handleDb(() => this.serviceRepository.save(service));
+
+    await handleDb(() => this.serviceRepository.remove(service));
+
     this.logger.log(`Service with ID ${id} deleted successfully.`);
   }
 
@@ -149,22 +158,11 @@ export class ServiceService {
     );
   }
 
-  private getRequiredFields(): Array<keyof ServiceCreateDto> {
-    return getFilteredFields(ServiceCreateDto, this.relationKeys);
-  }
-
   private async setRelations<T extends ServiceCreateDto | ServiceUpdateDto>(
     service: Service,
     dto: T,
-    mode: 'put' | 'patch',
   ): Promise<void> {
-    await setEntityRelations(
-      service,
-      dto,
-      this.relationKeys,
-      this.reposByKey,
-      mode,
-    );
+    await setEntityRelations(service, dto, this.relationKeys, this.reposByKey);
   }
 
   private getServiceRelations(): string[] {

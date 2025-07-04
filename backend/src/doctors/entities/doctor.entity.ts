@@ -34,13 +34,13 @@ export class Doctor {
   @Column()
   lastName: string;
 
-  @DoctorEmailSwagger()
-  @Column({ nullable: true, unique: true })
-  email?: string;
-
   @DoctorPhoneSwagger()
   @Column({ nullable: true, unique: true })
   phone?: string;
+
+  @DoctorEmailSwagger()
+  @Column({ nullable: true, unique: true })
+  email?: string;
 
   // ------------------------------------------------------ Timestamps ------------------------------------------------------------
   @DoctorCreatedAtSwagger()

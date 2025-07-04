@@ -27,11 +27,11 @@ import {
   PutClinicDocs,
 } from '../../swagger/methods/clinics/clinic-admin-docs.swagger';
 
+@Controller('clinics')
 @ApiTags('Clinics (Admin)')
 @ApiBearerAuth('JWT-auth')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @Roles(UserRole.ADMIN)
-@Controller('clinics')
 export class ClinicAdminController {
   constructor(private readonly clinicService: ClinicService) {}
 

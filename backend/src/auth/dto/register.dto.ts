@@ -18,37 +18,39 @@ import {
   IsValidName,
   IsValidPhone,
 } from '../../shared/validators/custom-validators';
+import { TransformNormalizePhone } from '../../shared/utils/phone/normalize-phone.util';
 
 export class RegisterDto {
-  @IsEmail()
-  @IsNotEmpty()
   @RegisterEmailSwagger()
+  @IsNotEmpty()
+  @IsEmail()
   email: string;
 
-  @IsString()
+  @RegisterPasswordSwagger()
   @IsNotEmpty()
   @MinLength(8, { message: 'Password must be at least 8 characters long' })
   @IsStrongPassword()
-  @RegisterPasswordSwagger()
+  @IsString()
   password: string;
 
+  @RegisterFirstNameSwagger()
   @IsOptional()
-  @IsString()
   @MaxLength(50)
   @IsValidName()
-  @RegisterFirstNameSwagger()
+  @IsString()
   firstName?: string;
 
+  @RegisterLastNameSwagger()
   @IsOptional()
-  @IsString()
   @MaxLength(50)
   @IsValidName()
-  @RegisterLastNameSwagger()
+  @IsString()
   lastName?: string;
 
-  @IsOptional()
-  @IsString()
-  @IsValidPhone()
   @RegisterPhoneSwagger()
+  @IsOptional()
+  @TransformNormalizePhone()
+  @IsValidPhone()
+  @IsString()
   phone?: string;
 }

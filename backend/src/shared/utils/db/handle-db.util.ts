@@ -26,7 +26,7 @@ export async function handleDb<T>(
       (error.driverError as { code?: string })?.code === 'ER_DUP_ENTRY'
     ) {
       throw new ConflictException(
-        'This phone number is already in use. Please enter a different one.',
+        'An entity with the same unique value already exists. Please use different data.',
       );
     }
 

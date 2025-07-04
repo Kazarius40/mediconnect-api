@@ -17,8 +17,8 @@ import {
   FindOneServiceDocs,
 } from '../../swagger/methods/services/service-public-docs.swagger';
 
-@ApiTags('Services')
 @Controller('services')
+@ApiTags('Services')
 export class ServicePublicController {
   constructor(private readonly serviceService: ServiceService) {}
 

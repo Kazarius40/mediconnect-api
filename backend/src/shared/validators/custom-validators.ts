@@ -50,7 +50,7 @@ export function IsValidPhone(validationOptions?: ValidationOptions) {
       validator: {
         validate(value: unknown) {
           if (typeof value !== 'string') return false;
-          return /^\+?[0-9]{7,15}$/.test(value);
+          return /^\+380\d{9}$/.test(value);
         },
         defaultMessage() {
           return 'Phone number must be valid';

@@ -10,7 +10,7 @@ import { TransformToNumberArray } from '../../shared/utils/decorators/transform-
 import { getFilteredFields } from '../../shared/validators/get-required-fields.util';
 import { ServiceCreateDto } from './service-create.dto';
 
-const scalarFields = getFilteredFields(ServiceCreateDto, [], true);
+const scalarFields = getFilteredFields(ServiceCreateDto, []);
 
 export class ServiceFilterDto {
   @ServiceNameSwagger()
@@ -20,16 +20,16 @@ export class ServiceFilterDto {
 
   @ServiceDoctorIdsSwagger()
   @IsOptional()
+  @TransformToNumberArray()
   @IsArray()
   @IsNumber({}, { each: true })
-  @TransformToNumberArray()
   doctorIds?: number[];
 
   @ServiceClinicIdsSwagger()
   @IsOptional()
+  @TransformToNumberArray()
   @IsArray()
   @IsNumber({}, { each: true })
-  @TransformToNumberArray()
   clinicIds?: number[];
 
   @ServiceSortBySwagger(scalarFields)

@@ -19,7 +19,6 @@ import { applyFilters } from '../../shared/utils/query/apply-filters.util';
 import { getRelations } from '../../shared/utils/typeorm/relations.util';
 import { CLINIC_NESTED_RELATIONS } from '../../shared/constants/relations.constants';
 import { updateEntityFields } from 'src/shared/utils/entity/update-entity-fields.util';
-import { getFilteredFields } from 'src/shared/validators/get-required-fields.util';
 import { Doctor } from '../../doctors/entities/doctor.entity';
 
 @Injectable()
@@ -96,22 +95,16 @@ export class ClinicService {
     dto: ClinicUpdateDto,
     mode: 'put' | 'patch',
   ): Promise<Clinic> {
-    const relations = this.getClinicRelations();
+    // Get the cleaned DTO without relational fields — for validation and updates
+    const cleanDto = this.getCleanDto(dto);
+    await validateEntityUniqueness(this.clinicRepository, cleanDto, id);
 
+    const relations = this.getClinicRelations();
     const clinic = await findOrFail(this.clinicRepository, id, { relations });
 
-    const cleanDto = this.getCleanDto(dto);
+    updateEntityFields(clinic, cleanDto, mode);
 
-    const requiredFields = this.getRequiredFields();
-
-    updateEntityFields(
-      clinic,
-      cleanDto,
-      mode,
-      requiredFields as (keyof Clinic)[],
-    );
-
-    await this.setRelations(clinic, dto, mode);
+    await this.setRelations(clinic, dto);
 
     await handleDb(() => this.clinicRepository.save(clinic));
     this.logger.log(`Clinic with ID ${id} updated via ${mode}.`);
@@ -149,22 +142,11 @@ export class ClinicService {
     );
   }
 
-  private getRequiredFields(): Array<keyof ClinicCreateDto> {
-    return getFilteredFields(ClinicCreateDto, this.relationKeys);
-  }
-
   private async setRelations<T extends ClinicCreateDto | ClinicUpdateDto>(
     clinic: Clinic,
     dto: T,
-    mode: 'put' | 'patch',
   ): Promise<void> {
-    await setEntityRelations(
-      clinic,
-      dto,
-      this.relationKeys,
-      this.reposByKey,
-      mode,
-    );
+    await setEntityRelations(clinic, dto, this.relationKeys, this.reposByKey);
   }
 
   private getClinicRelations(): string[] {

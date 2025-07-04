@@ -13,7 +13,7 @@ import { TransformToNumberArray } from '../../shared/utils/decorators/transform-
 import { getFilteredFields } from '../../shared/validators/get-required-fields.util';
 import { ClinicCreateDto } from './clinic-create.dto';
 
-const scalarFields = getFilteredFields(ClinicCreateDto, [], true);
+const scalarFields = getFilteredFields(ClinicCreateDto, []);
 
 export class ClinicFilterDto {
   @ClinicNameSwagger()
@@ -38,16 +38,16 @@ export class ClinicFilterDto {
 
   @ClinicDoctorIdsSwagger()
   @IsOptional()
+  @TransformToNumberArray()
   @IsArray()
   @IsNumber({}, { each: true })
-  @TransformToNumberArray()
   doctorIds?: number[];
 
   @ClinicServiceIdsSwagger()
   @IsOptional()
+  @TransformToNumberArray()
   @IsArray()
   @IsNumber({}, { each: true })
-  @TransformToNumberArray()
   serviceIds?: number[];
 
   @ClinicSortBySwagger(scalarFields)

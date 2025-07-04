@@ -1,10 +1,11 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import {
   UserResponse,
   UserRoleUpdateResponse,
 } from '../../../responses/auth-response.swagger';
 import { MessageResponse } from '../../../responses/common-responses.swagger';
+import { AdminUpdateUserDto } from '../../../../auth/dto/admin-update-user.dto';
 
 export function GetAllUsersDocs() {
   return applyDecorators(
@@ -43,6 +44,44 @@ export function GetUserByIdDocs() {
       description: 'Unauthorized access',
     }),
     ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Access denied' }),
+  );
+}
+
+export function AdminUpdateUserDocs() {
+  return applyDecorators(
+    ApiOperation({
+      summary: 'Update user data by admin (partial/full update)',
+    }),
+    ApiBody({ type: AdminUpdateUserDto }),
+    ApiResponse({
+      status: HttpStatus.OK,
+      description: 'User data updated successfully.',
+      type: UserResponse,
+    }),
+    ApiResponse({
+      status: HttpStatus.BAD_REQUEST,
+      description: 'Invalid data provided.',
+    }),
+    ApiResponse({
+      status: HttpStatus.NOT_FOUND,
+      description: 'User not found.',
+    }),
+    ApiResponse({
+      status: HttpStatus.CONFLICT,
+      description: 'Conflict with existing user data (email/phone).',
+    }),
+    ApiResponse({
+      status: HttpStatus.UNAUTHORIZED,
+      description: 'Unauthorized.',
+    }),
+    ApiResponse({
+      status: HttpStatus.FORBIDDEN,
+      description: 'Access denied.',
+    }),
+    ApiResponse({
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      description: 'Internal server error.',
+    }),
   );
 }
 

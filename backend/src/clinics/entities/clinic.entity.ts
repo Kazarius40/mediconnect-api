@@ -34,11 +34,11 @@ export class Clinic {
   address: string;
 
   @ClinicPhoneSwagger()
-  @Column()
+  @Column({ unique: true })
   phone: string;
 
   @ClinicEmailSwagger()
-  @Column({ nullable: true })
+  @Column({ nullable: true, unique: true })
   email?: string;
 
   // ------------------------------------------------------ Timestamps ------------------------------------------------------------

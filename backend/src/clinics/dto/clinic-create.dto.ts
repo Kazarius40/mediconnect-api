@@ -4,7 +4,6 @@ import {
   IsNotEmpty,
   IsNumber,
   IsOptional,
-  IsPhoneNumber,
   IsString,
 } from 'class-validator';
 import {
@@ -16,33 +15,34 @@ import {
 } from '../../swagger/methods/clinics/clinic-create-dto.swagger';
 import { TransformToNumberArray } from '../../shared/utils/decorators/transform-to-number-array.decorator';
 import { TransformNormalizePhone } from '../../shared/utils/phone/normalize-phone.util';
+import { IsValidPhone } from '../../shared/validators/custom-validators';
 
 export class ClinicCreateDto {
   @ClinicNameSwagger()
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   name: string;
 
   @ClinicAddressSwagger()
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   address: string;
 
   @ClinicPhoneSwagger()
   @IsNotEmpty()
-  @IsPhoneNumber()
   @TransformNormalizePhone()
+  @IsValidPhone()
   phone: string;
 
   @ClinicEmailSwagger()
-  @IsEmail()
   @IsOptional()
+  @IsEmail()
   email?: string;
 
   @ClinicDoctorsSwagger()
   @IsOptional()
+  @TransformToNumberArray()
   @IsArray()
   @IsNumber({}, { each: true })
-  @TransformToNumberArray()
   doctors?: number[];
 }

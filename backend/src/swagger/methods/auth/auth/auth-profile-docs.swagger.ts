@@ -1,6 +1,15 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { UserProfileResponse } from '../../../responses/auth-response.swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+} from '@nestjs/swagger';
+import {
+  UserProfileResponse,
+  UserResponse,
+} from '../../../responses/auth-response.swagger';
+import { UpdateProfileDto } from '../../../../auth/dto/update-profile.dto';
 
 export function GetProfileDocs() {
   return applyDecorators(
@@ -14,6 +23,30 @@ export function GetProfileDocs() {
     ApiResponse({
       status: HttpStatus.UNAUTHORIZED,
       description: 'Unauthorized access',
+    }),
+  );
+}
+
+export function UpdateProfileDocs() {
+  return applyDecorators(
+    ApiOperation({ summary: 'Update current user profile' }),
+    ApiBody({ type: UpdateProfileDto }),
+    ApiResponse({
+      status: HttpStatus.OK,
+      description: 'User profile updated successfully.',
+      type: UserResponse,
+    }),
+    ApiResponse({
+      status: HttpStatus.BAD_REQUEST,
+      description: 'Invalid data provided.',
+    }),
+    ApiResponse({
+      status: HttpStatus.UNAUTHORIZED,
+      description: 'Unauthorized.',
+    }),
+    ApiResponse({
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      description: 'Internal server error.',
     }),
   );
 }

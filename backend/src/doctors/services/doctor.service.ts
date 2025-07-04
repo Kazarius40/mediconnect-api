@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Doctor } from '../entities/doctor.entity';
 import { Repository } from 'typeorm';
@@ -20,7 +20,6 @@ import {
 } from '../../shared/utils/entity/entity-composition.util';
 import { updateEntityFields } from '../../shared/utils/entity/update-entity-fields.util';
 import { getRelations } from '../../shared/utils/typeorm/relations.util';
-import { getFilteredFields } from '../../shared/validators/get-required-fields.util';
 import { DOCTOR_NESTED_RELATIONS } from '../../shared/constants/relations.constants';
 
 @Injectable()
@@ -97,22 +96,16 @@ export class DoctorService {
     dto: DoctorUpdateDto,
     mode: 'put' | 'patch',
   ): Promise<Doctor> {
-    const relations = this.getDoctorRelations();
+    // Get the cleaned DTO without relational fields — for validation and updates
+    const cleanDto = this.getCleanDto(dto);
+    await validateEntityUniqueness(this.doctorRepository, cleanDto, id);
 
+    const relations = this.getDoctorRelations();
     const doctor = await findOrFail(this.doctorRepository, id, { relations });
 
-    const cleanDto = this.getCleanDto(dto);
+    updateEntityFields(doctor, cleanDto, mode);
 
-    const requiredFields = this.getRequiredFields();
-
-    updateEntityFields(
-      doctor,
-      cleanDto,
-      mode,
-      requiredFields as (keyof Doctor)[],
-    );
-
-    await this.setRelations(doctor, dto, mode);
+    await this.setRelations(doctor, dto);
 
     await handleDb(() => this.doctorRepository.save(doctor));
     this.logger.log(`Doctor with ID ${id} updated via ${mode}.`);
@@ -121,9 +114,25 @@ export class DoctorService {
   }
 
   async delete(id: number): Promise<void> {
-    await handleDb(() => this.doctorRepository.delete(id), {
-      requireAffected: true,
+    const doctor = await this.doctorRepository.findOne({
+      where: { id },
+      relations: this.relationKeys as string[],
     });
+
+    if (!doctor) {
+      throw new NotFoundException(`Doctor with ID ${id} not found.`);
+    }
+
+    for (const relationKey of this.relationKeys) {
+      if (Array.isArray(doctor[relationKey])) {
+        (doctor[relationKey] as unknown) = [];
+      }
+    }
+
+    await handleDb(() => this.doctorRepository.save(doctor));
+
+    await handleDb(() => this.doctorRepository.remove(doctor));
+
     this.logger.log(`Doctor with ID ${id} deleted successfully.`);
   }
 
@@ -150,22 +159,11 @@ export class DoctorService {
     );
   }
 
-  private getRequiredFields(): Array<keyof DoctorCreateDto> {
-    return getFilteredFields(DoctorCreateDto, this.relationKeys);
-  }
-
   private async setRelations<T extends DoctorCreateDto | DoctorUpdateDto>(
     doctor: Doctor,
     dto: T,
-    mode: 'put' | 'patch',
   ): Promise<void> {
-    await setEntityRelations(
-      doctor,
-      dto,
-      this.relationKeys,
-      this.reposByKey,
-      mode,
-    );
+    await setEntityRelations(doctor, dto, this.relationKeys, this.reposByKey);
   }
 
   private getDoctorRelations(): string[] {

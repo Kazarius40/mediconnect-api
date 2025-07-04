@@ -22,7 +22,7 @@ Generate a new migration
 Run the following command, replacing MigrationName with a descriptive name (no spaces):
 
 ```bash
-npm run migration:generate --name=NameMigration
+npm run migration:generate:local -- ./src/database/MyMigrationName
 ```
 This will create a new migration file in:
 

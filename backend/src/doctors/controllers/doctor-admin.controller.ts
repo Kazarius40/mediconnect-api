@@ -27,11 +27,11 @@ import {
 } from '../../swagger/methods/doctors/doctor-admin-docs.swagger';
 import { DoctorUpdateDto } from '../dto/doctor-update';
 
+@Controller('doctors')
 @ApiTags('Doctors (Admin)')
 @ApiBearerAuth('JWT-auth')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @Roles(UserRole.ADMIN)
-@Controller('doctors')
 export class DoctorAdminController {
   constructor(private readonly doctorService: DoctorService) {}
 

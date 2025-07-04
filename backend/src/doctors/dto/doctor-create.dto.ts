@@ -4,7 +4,6 @@ import {
   IsNotEmpty,
   IsNumber,
   IsOptional,
-  IsPhoneNumber,
   IsString,
 } from 'class-validator';
 import {
@@ -17,15 +16,21 @@ import {
 } from '../../swagger/methods/doctors/doctor-create-dto.swagger';
 import { TransformNormalizePhone } from '../../shared/utils/phone/normalize-phone.util';
 import { TransformToNumberArray } from '../../shared/utils/decorators/transform-to-number-array.decorator';
+import {
+  IsValidName,
+  IsValidPhone,
+} from '../../shared/validators/custom-validators';
 
 export class DoctorCreateDto {
   @DoctorFirstNameSwagger()
   @IsNotEmpty()
+  @IsValidName()
   @IsString()
   firstName: string;
 
   @DoctorLastNameSwagger()
   @IsNotEmpty()
+  @IsValidName()
   @IsString()
   lastName: string;
 
@@ -36,21 +41,21 @@ export class DoctorCreateDto {
 
   @DoctorPhoneSwagger()
   @IsOptional()
-  @IsPhoneNumber()
   @TransformNormalizePhone()
+  @IsValidPhone()
   phone?: string;
 
   @DoctorClinicsSwagger()
   @IsOptional()
+  @TransformToNumberArray()
   @IsArray()
   @IsNumber({}, { each: true })
-  @TransformToNumberArray()
   clinics?: number[];
 
   @DoctorServicesSwagger()
   @IsOptional()
+  @TransformToNumberArray()
   @IsArray()
   @IsNumber({}, { each: true })
-  @TransformToNumberArray()
   services?: number[];
 }

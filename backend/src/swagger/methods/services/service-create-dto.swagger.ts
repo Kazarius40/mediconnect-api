@@ -13,3 +13,11 @@ export function ServiceDescriptionSwagger() {
     example: 'A thorough cleaning of teeth and gums',
   });
 }
+
+export function ServiceDoctorsSwagger() {
+  return ApiPropertyOptional({
+    description: 'Array of doctor IDs associated with the service',
+    example: [1, 5, 7],
+    type: [Number],
+  });
+}

@@ -17,8 +17,8 @@ import {
   FindOneClinicDocs,
 } from '../../swagger/methods/clinics/clinic-public-docs.swagger';
 
-@ApiTags('Clinics')
 @Controller('clinics')
+@ApiTags('Clinics')
 export class ClinicPublicController {
   constructor(private readonly clinicService: ClinicService) {}
 

@@ -20,17 +20,19 @@ import { UserRequest } from '../interfaces/user-request.interface';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthService } from '../services/auth.service';
 import {
+  AdminUpdateUserDocs,
   DeleteUserDocs,
   GetAllUsersDocs,
   GetUserByIdDocs,
   UpdateUserRoleDocs,
 } from '../../swagger/methods/auth/auth/auth-admin-docs.swagger';
+import { AdminUpdateUserDto } from '../dto/admin-update-user.dto';
 
-@ApiTags('Auth')
 @Controller('auth/users')
+@ApiTags('Auth')
+@ApiBearerAuth('JWT-auth')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @Roles(UserRole.ADMIN)
-@ApiBearerAuth('JWT-auth')
 export class AdminController {
   constructor(private readonly authService: AuthService) {}
 
@@ -38,14 +40,25 @@ export class AdminController {
   @HttpCode(HttpStatus.OK)
   @GetAllUsersDocs()
   async getAllUsers() {
-    return await this.authService.findAllUsers();
+    return await this.authService.findAll();
   }
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @GetUserByIdDocs()
   async getUserById(@Param('id', ParseIntPipe) id: number) {
-    return await this.authService.findUserByIdOrFail(id);
+    return await this.authService.findOne(id);
+  }
+
+  @Patch(':id')
+  @HttpCode(HttpStatus.OK)
+  @AdminUpdateUserDocs()
+  async adminUpdateUser(
+    @Request() req: UserRequest,
+    @Param('id', ParseIntPipe) userId: number,
+    @Body() dto: AdminUpdateUserDto,
+  ) {
+    return await this.authService.update(userId, dto, req.user.id);
   }
 
   @Patch(':id/role')
@@ -56,7 +69,7 @@ export class AdminController {
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateUserRoleDto,
   ) {
-    return await this.authService.updateUserRole(id, dto.role, req.user.id);
+    return await this.authService.update(id, { role: dto.role }, req.user.id);
   }
 
   @Delete(':id')
@@ -66,6 +79,6 @@ export class AdminController {
     @Request() req: UserRequest,
     @Param('id', ParseIntPipe) id: number,
   ) {
-    await this.authService.deleteUser(id, req.user.id);
+    await this.authService.delete(id, req.user.id);
   }
 }

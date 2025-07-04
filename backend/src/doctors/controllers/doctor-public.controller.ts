@@ -17,8 +17,8 @@ import {
   FindOneDoctorDocs,
 } from '../../swagger/methods/doctors/doctor-public-docs.swagger';
 
-@ApiTags('Doctors')
 @Controller('doctors')
+@ApiTags('Doctors')
 export class DoctorPublicController {
   constructor(private readonly doctorService: DoctorService) {}
 

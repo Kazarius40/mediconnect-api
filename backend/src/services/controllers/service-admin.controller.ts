@@ -27,11 +27,11 @@ import { ServiceCreateDto } from '../dto/service-create.dto';
 import { Service } from '../entities/service.entity';
 import { ServiceUpdateDto } from '../dto/service-update.dto';
 
+@Controller('services')
 @ApiTags('Services (Admin)')
 @ApiBearerAuth('JWT-auth')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @Roles(UserRole.ADMIN)
-@Controller('services')
 export class ServiceAdminController {
   constructor(private readonly serviceService: ServiceService) {}
 
