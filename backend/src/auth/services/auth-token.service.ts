@@ -6,12 +6,12 @@ import { ConfigService } from '@nestjs/config';
 import { Token } from '../entities/token.entity';
 import { User } from '../entities/user.entity';
 import { ITokens } from '../interfaces/tokens.interface';
-import { RefreshTokenDto } from '../dto/refresh-token.dto';
+import { AuthRefreshTokenDto } from '../dto/auth-refresh-token.dto';
 import { IJWTPayload } from '../interfaces/jwt-payload.interface';
 import { handleDb } from '../../shared/utils/db/handle-db.util';
 
 @Injectable()
-export class TokenService {
+export class AuthTokenService {
   private readonly accessTokenExpiresIn: number;
   private readonly refreshTokenExpiresIn: number;
 
@@ -72,7 +72,7 @@ export class TokenService {
   /**
    * Verify and refresh tokens using provided refresh token DTO
    */
-  async refresh(refreshTokenDto: RefreshTokenDto): Promise<ITokens> {
+  async refresh(refreshTokenDto: AuthRefreshTokenDto): Promise<ITokens> {
     const { refreshToken } = refreshTokenDto;
     let payload: IJWTPayload;
 

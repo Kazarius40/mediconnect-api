@@ -9,7 +9,7 @@ import {
   UserProfileResponse,
   UserResponse,
 } from '../../../responses/auth-response.swagger';
-import { UpdateProfileDto } from '../../../../auth/dto/update-profile.dto';
+import { AuthUpdateProfileDto } from '../../../../auth/dto/auth-update-profile.dto';
 
 export function GetProfileDocs() {
   return applyDecorators(
@@ -30,7 +30,7 @@ export function GetProfileDocs() {
 export function UpdateProfileDocs() {
   return applyDecorators(
     ApiOperation({ summary: 'Update current user profile' }),
-    ApiBody({ type: UpdateProfileDto }),
+    ApiBody({ type: AuthUpdateProfileDto }),
     ApiResponse({
       status: HttpStatus.OK,
       description: 'User profile updated successfully.',

@@ -5,7 +5,7 @@ import {
 } from '../../swagger/methods/auth/dto/reset-password.dto.swagger';
 import { IsStrongPassword } from '../../shared/validators/custom-validators';
 
-export class ResetPasswordDto {
+export class AuthResetPasswordDto {
   @IsString()
   @IsNotEmpty()
   @ResetPasswordTokenSwagger()

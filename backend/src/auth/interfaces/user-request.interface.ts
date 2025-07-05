@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { UserRole } from '../../users/user-role.enum';
+import { UserRole } from '../../shared/enums/user-role.enum';
 import { Token } from '../entities/token.entity';
 
 export interface AuthenticatedUserPayload {

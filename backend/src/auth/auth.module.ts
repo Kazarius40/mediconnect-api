@@ -4,18 +4,18 @@ import { PassportModule } from '@nestjs/passport';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { AuthController } from './controllers/auth.controller';
+import { AuthSessionController } from './controllers/auth-session.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { Token } from './entities/token.entity';
-import { AuthService } from './services/auth.service';
+import { AuthAdminService } from './services/auth-admin.service';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TokenCleanupService } from './services/token-cleanup.service';
-import { TokenService } from './services/token.service';
-import { ProfileService } from './services/profile.service';
+import { AuthTokenService } from './services/auth-token.service';
+import { AuthProfileService } from './services/auth-profile.service';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
-import { ProfileController } from './controllers/profile.controller';
-import { AdminController } from './controllers/admin.controller';
-import { PasswordController } from './controllers/password.controller';
+import { AuthProfileController } from './controllers/auth-profile.controller';
+import { AuthAdminController } from './controllers/auth-admin.controller';
+import { AuthPasswordController } from './controllers/auth-password.controller';
 
 @Module({
   imports: [
@@ -35,19 +35,19 @@ import { PasswordController } from './controllers/password.controller';
     TypeOrmModule.forFeature([User, Token]),
   ],
   controllers: [
-    AuthController,
-    ProfileController,
-    AdminController,
-    PasswordController,
+    AuthSessionController,
+    AuthProfileController,
+    AuthAdminController,
+    AuthPasswordController,
   ],
   providers: [
-    AuthService,
+    AuthAdminService,
     JwtStrategy,
     JwtRefreshStrategy,
     TokenCleanupService,
-    TokenService,
-    ProfileService,
+    AuthTokenService,
+    AuthProfileService,
   ],
-  exports: [AuthService, JwtStrategy, TokenService],
+  exports: [AuthAdminService, JwtStrategy, AuthTokenService],
 })
 export class AuthModule {}

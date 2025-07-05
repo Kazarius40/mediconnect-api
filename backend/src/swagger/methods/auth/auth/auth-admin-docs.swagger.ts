@@ -5,7 +5,7 @@ import {
   UserRoleUpdateResponse,
 } from '../../../responses/auth-response.swagger';
 import { MessageResponse } from '../../../responses/common-responses.swagger';
-import { AdminUpdateUserDto } from '../../../../auth/dto/admin-update-user.dto';
+import { AuthAdminUpdateUserDto } from '../../../../auth/dto/auth-admin-update-user.dto';
 
 export function GetAllUsersDocs() {
   return applyDecorators(
@@ -52,7 +52,7 @@ export function AdminUpdateUserDocs() {
     ApiOperation({
       summary: 'Update user data by admin (partial/full update)',
     }),
-    ApiBody({ type: AdminUpdateUserDto }),
+    ApiBody({ type: AuthAdminUpdateUserDto }),
     ApiResponse({
       status: HttpStatus.OK,
       description: 'User data updated successfully.',

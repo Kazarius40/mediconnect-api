@@ -5,7 +5,11 @@ import {
 } from '../../shared/validators/custom-validators';
 import { TransformNormalizePhone } from '../../shared/utils/phone/normalize-phone.util';
 
-export class AdminUpdateUserDto {
+export class AuthAdminUpdateUserDto {
+  @IsOptional()
+  @IsEmail()
+  email?: string;
+
   @IsOptional()
   @IsString()
   @MaxLength(50)
@@ -23,8 +27,4 @@ export class AdminUpdateUserDto {
   @IsValidPhone()
   @TransformNormalizePhone()
   phone?: string;
-
-  @IsOptional()
-  @IsEmail()
-  email?: string;
 }

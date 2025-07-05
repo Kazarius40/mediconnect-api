@@ -1,8 +1,8 @@
 import { IsEnum, IsNotEmpty } from 'class-validator';
-import { UserRole } from '../../users/user-role.enum';
+import { UserRole } from '../../shared/enums/user-role.enum';
 import { UpdateUserRoleSwagger } from '../../swagger/methods/auth/dto/update-user-role.dto.swagger';
 
-export class UpdateUserRoleDto {
+export class AuthUpdateUserRoleDto {
   @IsEnum(UserRole)
   @IsNotEmpty()
   @UpdateUserRoleSwagger()

@@ -5,7 +5,7 @@ import {
 } from '../../shared/validators/custom-validators';
 import { TransformNormalizePhone } from '../../shared/utils/phone/normalize-phone.util';
 
-export class UpdateProfileDto {
+export class AuthUpdateProfileDto {
   @IsOptional()
   @IsString()
   @MaxLength(50)

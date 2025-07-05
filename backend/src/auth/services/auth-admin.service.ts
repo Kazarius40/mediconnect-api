@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -11,27 +10,28 @@ import * as crypto from 'crypto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
 import { MoreThan, Repository } from 'typeorm';
-import { TokenService } from './token.service';
+import { AuthTokenService } from './auth-token.service';
 import { ConfigService } from '@nestjs/config';
-import { RegisterDto } from '../dto/register.dto';
+import { AuthRegisterDto } from '../dto/auth-register.dto';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
-import { UserRole } from 'src/users/user-role.enum';
+import { UserRole } from 'src/shared/enums/user-role.enum';
 import { SafeUser } from '../interfaces/safe-user.interface';
-import { LoginDto } from '../dto/login.dto';
+import { AuthLoginDto } from '../dto/auth-login.dto';
 import { ITokens } from '../interfaces/tokens.interface';
-import { ForgotPasswordDto } from '../dto/forgot-password.dto';
-import { ResetPasswordDto } from '../dto/reset-password.dto';
+import { AuthForgotPasswordDto } from '../dto/auth-forgot-password.dto';
+import { AuthResetPasswordDto } from '../dto/auth-reset-password.dto';
 import { findOrFail } from '../../shared/utils/typeorm/find-or-fail.util';
 import { handleDb } from '../../shared/utils/db/handle-db.util';
-import { AdminUpdateUserDto } from '../dto/admin-update-user.dto';
+import { AuthAdminUpdateUserDto } from '../dto/auth-admin-update-user.dto';
+import { validateEntityUniqueness } from '../../shared/validators/validate-entity-uniqueness.util';
 
 @Injectable()
-export class AuthService implements OnModuleInit {
+export class AuthAdminService implements OnModuleInit {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    private readonly tokenService: TokenService,
+    private readonly tokenService: AuthTokenService,
     private readonly configService: ConfigService,
   ) {}
 
@@ -48,7 +48,7 @@ export class AuthService implements OnModuleInit {
 
     if (!adminEmail || !adminPassword) return;
 
-    const tempDto = plainToInstance(RegisterDto, {
+    const tempDto = plainToInstance(AuthRegisterDto, {
       email: adminEmail,
       password: adminPassword,
     });
@@ -72,13 +72,8 @@ export class AuthService implements OnModuleInit {
   // -------------------
   // Registration & Authentication
   // -------------------
-  async register(dto: RegisterDto): Promise<SafeUser> {
-    const existingUser = await this.userRepository.findOneBy({
-      email: dto.email,
-    });
-    if (existingUser) {
-      throw new ConflictException('Email already in use');
-    }
+  async register(dto: AuthRegisterDto): Promise<SafeUser> {
+    await validateEntityUniqueness(this.userRepository, dto);
 
     const user = this.userRepository.create({
       ...dto,
@@ -89,7 +84,7 @@ export class AuthService implements OnModuleInit {
     return this.toSafeUser(user);
   }
 
-  async login(dto: LoginDto): Promise<ITokens> {
+  async login(dto: AuthLoginDto): Promise<ITokens> {
     const user = await this.validateUser(dto.email, dto.password);
     return await this.tokenService.generateAndSaveTokens(user);
   }
@@ -106,22 +101,28 @@ export class AuthService implements OnModuleInit {
 
   async update(
     id: number,
-    updates: Partial<AdminUpdateUserDto & { role?: UserRole }>,
+    dto: Partial<AuthAdminUpdateUserDto & { role?: UserRole }>,
     currentUserId?: number,
   ): Promise<SafeUser> {
+    await validateEntityUniqueness(this.userRepository, dto, id);
+
     const user = await this.findUserOrFail(id);
 
     if (
-      updates.role !== undefined &&
+      dto.role !== undefined &&
       currentUserId === id &&
-      updates.role !== UserRole.ADMIN
+      dto.role !== UserRole.ADMIN
     ) {
       throw new ForbiddenException(
         'Admin cannot change their own role to a non-admin role.',
       );
     }
 
-    Object.assign(user, updates);
+    const filteredUpdates = Object.fromEntries(
+      Object.entries(dto).filter(([, value]) => value !== undefined),
+    );
+
+    Object.assign(user, filteredUpdates);
 
     await handleDb(() => this.userRepository.save(user));
 
@@ -142,7 +143,7 @@ export class AuthService implements OnModuleInit {
   // Password management
   // -------------------
   async forgotPassword(
-    dto: ForgotPasswordDto,
+    dto: AuthForgotPasswordDto,
   ): Promise<{ message: string } | void> {
     const { email } = dto;
     const user = await this.userRepository.findOneBy({ email });
@@ -165,7 +166,7 @@ export class AuthService implements OnModuleInit {
     };
   }
 
-  async resetPassword(dto: ResetPasswordDto): Promise<{ message: string }> {
+  async resetPassword(dto: AuthResetPasswordDto): Promise<{ message: string }> {
     const { token, password } = dto;
 
     const user = await this.userRepository.findOne({

@@ -9,7 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import bcrypt from 'bcrypt';
-import { UserRole } from '../../users/user-role.enum';
+import { UserRole } from '../../shared/enums/user-role.enum';
 import { Token } from './token.entity';
 import {
   UserCreatedAtSwagger,
@@ -42,7 +42,7 @@ export class User {
   @UserLastNameSwagger()
   lastName?: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, unique: true })
   @UserPhoneSwagger()
   phone?: string;
 

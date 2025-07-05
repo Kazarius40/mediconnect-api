@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { UserRole } from '../../../users/user-role.enum';
+import { UserRole } from '../../../shared/enums/user-role.enum';
 import { Token } from '../../../auth/entities/token.entity';
 
 export function UserIdSwagger() {

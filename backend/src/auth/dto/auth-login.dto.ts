@@ -4,7 +4,7 @@ import {
   LoginPasswordSwagger,
 } from '../../swagger/methods/auth/dto/login.dto.swagger';
 
-export class LoginDto {
+export class AuthLoginDto {
   @IsEmail()
   @LoginEmailSwagger()
   email: string;

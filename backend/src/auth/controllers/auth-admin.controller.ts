@@ -14,11 +14,11 @@ import {
 import { RolesGuard } from '../guards/roles.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles } from '../decorators/roles.decorator';
-import { UserRole } from '../../users/user-role.enum';
-import { UpdateUserRoleDto } from '../dto/update-user-role.dto';
+import { UserRole } from '../../shared/enums/user-role.enum';
+import { AuthUpdateUserRoleDto } from '../dto/auth-update-user-role.dto';
 import { UserRequest } from '../interfaces/user-request.interface';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthService } from '../services/auth.service';
+import { AuthAdminService } from '../services/auth-admin.service';
 import {
   AdminUpdateUserDocs,
   DeleteUserDocs,
@@ -26,28 +26,28 @@ import {
   GetUserByIdDocs,
   UpdateUserRoleDocs,
 } from '../../swagger/methods/auth/auth/auth-admin-docs.swagger';
-import { AdminUpdateUserDto } from '../dto/admin-update-user.dto';
+import { AuthAdminUpdateUserDto } from '../dto/auth-admin-update-user.dto';
 
 @Controller('auth/users')
 @ApiTags('Auth')
 @ApiBearerAuth('JWT-auth')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @Roles(UserRole.ADMIN)
-export class AdminController {
-  constructor(private readonly authService: AuthService) {}
+export class AuthAdminController {
+  constructor(private readonly authAdminService: AuthAdminService) {}
 
   @Get()
   @HttpCode(HttpStatus.OK)
   @GetAllUsersDocs()
   async getAllUsers() {
-    return await this.authService.findAll();
+    return await this.authAdminService.findAll();
   }
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @GetUserByIdDocs()
   async getUserById(@Param('id', ParseIntPipe) id: number) {
-    return await this.authService.findOne(id);
+    return await this.authAdminService.findOne(id);
   }
 
   @Patch(':id')
@@ -56,9 +56,9 @@ export class AdminController {
   async adminUpdateUser(
     @Request() req: UserRequest,
     @Param('id', ParseIntPipe) userId: number,
-    @Body() dto: AdminUpdateUserDto,
+    @Body() dto: AuthAdminUpdateUserDto,
   ) {
-    return await this.authService.update(userId, dto, req.user.id);
+    return await this.authAdminService.update(userId, dto, req.user.id);
   }
 
   @Patch(':id/role')
@@ -67,9 +67,13 @@ export class AdminController {
   async updateUserRole(
     @Request() req: UserRequest,
     @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdateUserRoleDto,
+    @Body() dto: AuthUpdateUserRoleDto,
   ) {
-    return await this.authService.update(id, { role: dto.role }, req.user.id);
+    return await this.authAdminService.update(
+      id,
+      { role: dto.role },
+      req.user.id,
+    );
   }
 
   @Delete(':id')
@@ -79,6 +83,6 @@ export class AdminController {
     @Request() req: UserRequest,
     @Param('id', ParseIntPipe) id: number,
   ) {
-    await this.authService.delete(id, req.user.id);
+    await this.authAdminService.delete(id, req.user.id);
   }
 }

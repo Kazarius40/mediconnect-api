@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { UserRole } from '../../../../users/user-role.enum';
+import { UserRole } from '../../../../shared/enums/user-role.enum';
 
 export function UpdateUserRoleSwagger() {
   return ApiProperty({

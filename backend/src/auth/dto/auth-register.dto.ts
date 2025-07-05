@@ -20,7 +20,7 @@ import {
 } from '../../shared/validators/custom-validators';
 import { TransformNormalizePhone } from '../../shared/utils/phone/normalize-phone.util';
 
-export class RegisterDto {
+export class AuthRegisterDto {
   @RegisterEmailSwagger()
   @IsNotEmpty()
   @IsEmail()

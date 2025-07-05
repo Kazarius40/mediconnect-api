@@ -15,7 +15,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { UserRole } from 'src/users/user-role.enum';
+import { UserRole } from 'src/shared/enums/user-role.enum';
 import { ServiceService } from '../services/service.service';
 import {
   CreateServiceDocs,
