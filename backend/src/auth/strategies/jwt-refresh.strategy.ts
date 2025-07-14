@@ -6,6 +6,13 @@ import { Repository } from 'typeorm';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { IJWTPayload } from '../interfaces/jwt-payload.interface';
 import { Token } from '../entities/token.entity';
+import { Request } from 'express';
+
+export interface RequestWithCookies extends Request {
+  cookies: {
+    refreshToken?: string;
+  };
+}
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(
@@ -16,8 +23,6 @@ export class JwtRefreshStrategy extends PassportStrategy(
     configService: ConfigService,
     @InjectRepository(Token)
     private readonly tokenRepository: Repository<Token>,
-    // @InjectRepository(User)
-    // private readonly userRepository: Repository<User>,
   ) {
     const jwtSecret = configService.get<string>('JWT_SECRET');
     if (!jwtSecret) {
@@ -25,7 +30,9 @@ export class JwtRefreshStrategy extends PassportStrategy(
     }
 
     super({
-      jwtFromRequest: ExtractJwt.fromBodyField('refreshToken'),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (req: RequestWithCookies) => req?.cookies?.refreshToken || null,
+      ]),
       ignoreExpiration: false,
       secretOrKey: jwtSecret,
     });

@@ -28,7 +28,11 @@ export class AuthProfileService {
     const user = await this.findUserOrFail(id);
 
     const filteredUpdates = Object.fromEntries(
-      Object.entries(dto).filter(([, value]) => value !== undefined),
+      Object.entries(dto).filter(
+        ([, value]) =>
+          value !== undefined &&
+          (typeof value !== 'string' || value.trim() !== ''),
+      ),
     );
 
     Object.assign(user, filteredUpdates);

@@ -3,7 +3,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 export function setupSwagger(app: INestApplication): void {
   const config = new DocumentBuilder()
-    .setTitle('Service Management API')
+    .setTitle('ClinicInterface Management API')
     .setDescription('API for managing services within the application.')
     .setVersion('1.0')
     .addBearerAuth(

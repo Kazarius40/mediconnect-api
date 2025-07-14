@@ -50,12 +50,12 @@ export class DoctorCreateDto {
   @TransformToNumberArray()
   @IsArray()
   @IsNumber({}, { each: true })
-  clinics?: number[];
+  clinicIds?: number[];
 
   @DoctorServicesSwagger()
   @IsOptional()
   @TransformToNumberArray()
   @IsArray()
   @IsNumber({}, { each: true })
-  services?: number[];
+  serviceIds?: number[];
 }

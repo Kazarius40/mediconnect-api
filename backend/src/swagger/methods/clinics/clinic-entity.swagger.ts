@@ -10,7 +10,7 @@ export function ClinicIdSwagger() {
 export function ClinicNameSwagger() {
   return ApiProperty({
     description: 'Name of the clinic',
-    example: 'Healthy Paws Clinic',
+    example: 'Healthy Paws ClinicInterface',
   });
 }
 

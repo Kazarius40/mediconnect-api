@@ -1,4 +1,5 @@
 import { ObjectLiteral, SelectQueryBuilder } from 'typeorm';
+import { relationAliasMap } from '../entity/relation-alias-map.util';
 
 /**
  * Applies filtering to query builder based on filter DTO.
@@ -52,7 +53,7 @@ export function applyFilters<T extends ObjectLiteral>(
       Array.isArray(value) &&
       value.length > 0
     ) {
-      const baseRelationName = key.slice(0, -3) + 's';
+      const baseRelationName = relationAliasMap[key] ?? key;
 
       const matchedRelations = relationKeys.filter(
         (r) => r === baseRelationName && !r.includes('.'),

@@ -13,6 +13,8 @@ import { ClinicsModule } from './clinics/clinics.module';
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath:
+        process.env.NODE_ENV === 'production' ? '.env' : ['.env.local', '.env'],
       validationSchema: Joi.object({
         ACCESS_TOKEN_EXPIRATION_TIME: Joi.number().required(),
         REFRESH_TOKEN_EXPIRATION_TIME: Joi.number().required(),

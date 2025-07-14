@@ -2,6 +2,7 @@ import { ObjectLiteral, Repository } from 'typeorm';
 import { omitRelations } from './omit-relations.util';
 import { resolveRelations } from './resolve-relations.util';
 import { applyDtoToEntity } from './apply-dto-to-entity.util';
+import { relationAliasMap } from './relation-alias-map.util';
 
 type EntityClass<T> = new (...args: never[]) => T;
 
@@ -37,7 +38,8 @@ export function buildReposMap<
       );
     }
 
-    reposMap[pluralKey as keyof TDto] = repository;
+    const dtoKey = relationAliasMap[pluralKey] ?? pluralKey;
+    reposMap[dtoKey as keyof TDto] = repository;
   }
 
   return reposMap as RepositoriesMap<TDto>;
@@ -51,7 +53,11 @@ export function cleanDto<T extends object, K extends keyof T>(
   dto: T,
   relationKeys: readonly K[],
 ): Omit<T, K> {
-  return omitRelations(dto, relationKeys);
+  const aliasKeys = relationKeys.map(
+    (key) => (relationAliasMap[key as string] ?? key) as K,
+  );
+
+  return omitRelations(dto, aliasKeys);
 }
 
 /**
@@ -70,7 +76,12 @@ export async function setEntityRelations<
 ): Promise<void> {
   for (const relation of relationKeys) {
     const repository = reposByKey[relation];
-    const relationIds = dto[relation];
+    const dtoKey =
+      Object.entries(relationAliasMap).find(
+        ([, entityKey]) => entityKey === relation,
+      )?.[0] ?? relation;
+
+    const relationIds = dto[dtoKey as keyof TDto] as number[] | undefined;
 
     if (repository && Array.isArray(relationIds)) {
       const resolved = await resolveRelations(repository, relationIds);

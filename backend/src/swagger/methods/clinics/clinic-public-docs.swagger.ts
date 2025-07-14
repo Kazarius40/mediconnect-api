@@ -25,12 +25,12 @@ export const FindOneClinicDocs = [
   ApiOperation({ summary: 'Get clinic by ID' }),
   ApiResponse({
     status: HttpStatus.OK,
-    description: 'Clinic information successfully retrieved.',
+    description: 'ClinicInterface information successfully retrieved.',
     type: ClinicResponse,
   }),
   ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: 'Clinic not found.',
+    description: 'ClinicInterface not found.',
   }),
   ApiResponse({
     status: HttpStatus.INTERNAL_SERVER_ERROR,

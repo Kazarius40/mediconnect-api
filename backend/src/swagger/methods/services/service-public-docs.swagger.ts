@@ -25,12 +25,12 @@ export const FindOneServiceDocs = [
   ApiOperation({ summary: 'Get service by ID' }),
   ApiResponse({
     status: HttpStatus.OK,
-    description: 'Service information successfully retrieved.',
+    description: 'ClinicInterface information successfully retrieved.',
     type: ServiceResponse,
   }),
   ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: 'Service not found.',
+    description: 'ClinicInterface not found.',
   }),
   ApiResponse({
     status: HttpStatus.INTERNAL_SERVER_ERROR,

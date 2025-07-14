@@ -6,20 +6,20 @@ export class DoctorResponse {
   @ApiProperty({ description: 'Unique identifier of the doctor', example: 1 })
   id: number;
 
-  @ApiProperty({ description: "Doctor's first name", example: 'John' })
+  @ApiProperty({ description: "ClinicInterface's first name", example: 'John' })
   firstName: string;
 
-  @ApiProperty({ description: "Doctor's last name", example: 'Doe' })
+  @ApiProperty({ description: "ClinicInterface's last name", example: 'Doe' })
   lastName: string;
 
   @ApiProperty({
-    description: "Doctor's email address",
+    description: "ClinicInterface's email address",
     example: 'john.doe@example.com',
   })
   email: string;
 
   @ApiProperty({
-    description: "Doctor's phone number",
+    description: "ClinicInterface's phone number",
     example: '+380501234567',
   })
   phone: string;

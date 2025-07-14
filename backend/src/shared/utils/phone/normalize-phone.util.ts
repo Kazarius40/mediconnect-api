@@ -6,7 +6,7 @@ export function normalizePhone(phone: string): string {
   const digits = phone.replace(/\D/g, '');
 
   if (/^0\d{9}$/.test(digits)) {
-    return '+38' + digits;
+    return '+380' + digits.slice(1);
   }
 
   if (/^380\d{9}$/.test(digits)) {

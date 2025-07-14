@@ -7,10 +7,13 @@ import { DoctorUpdateDto } from '../../../doctors/dto/doctor-update';
 export function CreateDoctorDocs() {
   return applyDecorators(
     ApiOperation({ summary: 'Create a new doctor (Admin only)' }),
-    ApiBody({ type: DoctorCreateDto, description: 'Doctor creation data' }),
+    ApiBody({
+      type: DoctorCreateDto,
+      description: 'ClinicInterface creation data',
+    }),
     ApiResponse({
       status: HttpStatus.CREATED,
-      description: 'Doctor successfully created.',
+      description: 'ClinicInterface successfully created.',
       type: DoctorResponse,
     }),
     ApiResponse({
@@ -45,11 +48,11 @@ export function PutDoctorDocs() {
     }),
     ApiBody({
       type: DoctorCreateDto,
-      description: 'Doctor update data (full)',
+      description: 'ClinicInterface update data (full)',
     }),
     ApiResponse({
       status: HttpStatus.OK,
-      description: 'Doctor successfully updated (full).',
+      description: 'ClinicInterface successfully updated (full).',
       type: DoctorResponse,
     }),
     ApiResponse({
@@ -58,11 +61,11 @@ export function PutDoctorDocs() {
     }),
     ApiResponse({
       status: HttpStatus.NOT_FOUND,
-      description: 'Doctor not found.',
+      description: 'ClinicInterface not found.',
     }),
     ApiResponse({
       status: HttpStatus.CONFLICT,
-      description: 'Doctor with this email or phone already exists.',
+      description: 'ClinicInterface with this email or phone already exists.',
     }),
     ApiResponse({
       status: HttpStatus.UNAUTHORIZED,
@@ -87,11 +90,11 @@ export function PatchDoctorDocs() {
     }),
     ApiBody({
       type: DoctorUpdateDto,
-      description: 'Doctor update data (partial)',
+      description: 'ClinicInterface update data (partial)',
     }),
     ApiResponse({
       status: HttpStatus.OK,
-      description: 'Doctor successfully updated (partial).',
+      description: 'ClinicInterface successfully updated (partial).',
       type: DoctorResponse,
     }),
     ApiResponse({
@@ -100,11 +103,11 @@ export function PatchDoctorDocs() {
     }),
     ApiResponse({
       status: HttpStatus.NOT_FOUND,
-      description: 'Doctor not found.',
+      description: 'ClinicInterface not found.',
     }),
     ApiResponse({
       status: HttpStatus.CONFLICT,
-      description: 'Doctor with this email or phone already exists.',
+      description: 'ClinicInterface with this email or phone already exists.',
     }),
     ApiResponse({
       status: HttpStatus.UNAUTHORIZED,
@@ -126,11 +129,11 @@ export function DeleteDoctorDocs() {
     ApiOperation({ summary: 'Delete doctor by ID (Admin only)' }),
     ApiResponse({
       status: HttpStatus.NO_CONTENT,
-      description: 'Doctor successfully deleted.',
+      description: 'ClinicInterface successfully deleted.',
     }),
     ApiResponse({
       status: HttpStatus.NOT_FOUND,
-      description: 'Doctor not found.',
+      description: 'ClinicInterface not found.',
     }),
     ApiResponse({
       status: HttpStatus.UNAUTHORIZED,

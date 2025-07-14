@@ -16,6 +16,7 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { AuthProfileController } from './controllers/auth-profile.controller';
 import { AuthAdminController } from './controllers/auth-admin.controller';
 import { AuthPasswordController } from './controllers/auth-password.controller';
+import { AuthSessionService } from './services/auth-session.service';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { AuthPasswordController } from './controllers/auth-password.controller';
     TokenCleanupService,
     AuthTokenService,
     AuthProfileService,
+    AuthSessionService,
   ],
   exports: [AuthAdminService, JwtStrategy, AuthTokenService],
 })

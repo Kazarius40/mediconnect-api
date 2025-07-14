@@ -1,26 +1,18 @@
 import {
-  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
   OnModuleInit,
-  UnauthorizedException,
 } from '@nestjs/common';
-import * as crypto from 'crypto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
-import { MoreThan, Repository } from 'typeorm';
-import { AuthTokenService } from './auth-token.service';
+import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { AuthRegisterDto } from '../dto/auth-register.dto';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { UserRole } from 'src/shared/enums/user-role.enum';
 import { SafeUser } from '../interfaces/safe-user.interface';
-import { AuthLoginDto } from '../dto/auth-login.dto';
-import { ITokens } from '../interfaces/tokens.interface';
-import { AuthForgotPasswordDto } from '../dto/auth-forgot-password.dto';
-import { AuthResetPasswordDto } from '../dto/auth-reset-password.dto';
 import { findOrFail } from '../../shared/utils/typeorm/find-or-fail.util';
 import { handleDb } from '../../shared/utils/db/handle-db.util';
 import { AuthAdminUpdateUserDto } from '../dto/auth-admin-update-user.dto';
@@ -31,7 +23,6 @@ export class AuthAdminService implements OnModuleInit {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    private readonly tokenService: AuthTokenService,
     private readonly configService: ConfigService,
   ) {}
 
@@ -69,33 +60,15 @@ export class AuthAdminService implements OnModuleInit {
     }
   }
 
-  // -------------------
-  // Registration & Authentication
-  // -------------------
-  async register(dto: AuthRegisterDto): Promise<SafeUser> {
-    await validateEntityUniqueness(this.userRepository, dto);
-
-    const user = this.userRepository.create({
-      ...dto,
-      role: UserRole.PATIENT,
-    });
-
-    await handleDb(() => this.userRepository.save(user));
-    return this.toSafeUser(user);
-  }
-
-  async login(dto: AuthLoginDto): Promise<ITokens> {
-    const user = await this.validateUser(dto.email, dto.password);
-    return await this.tokenService.generateAndSaveTokens(user);
-  }
-
   async findAll(): Promise<SafeUser[]> {
     const users = await this.userRepository.find();
     return users.map((user) => this.toSafeUser(user));
   }
 
   async findOne(id: number): Promise<SafeUser> {
-    const user = await findOrFail(this.userRepository, id);
+    const user = await findOrFail(this.userRepository, id, {
+      relations: ['tokens'],
+    });
     return this.toSafeUser(user);
   }
 
@@ -118,11 +91,30 @@ export class AuthAdminService implements OnModuleInit {
       );
     }
 
-    const filteredUpdates = Object.fromEntries(
-      Object.entries(dto).filter(([, value]) => value !== undefined),
-    );
+    const updateKeys: Array<
+      keyof (AuthAdminUpdateUserDto & { role?: UserRole })
+    > = Object.keys(dto) as Array<
+      keyof (AuthAdminUpdateUserDto & { role?: UserRole })
+    >;
 
-    Object.assign(user, filteredUpdates);
+    for (const key of updateKeys) {
+      let value = dto[key];
+
+      if (value === undefined) continue;
+
+      if (typeof value === 'string') {
+        value = value.trim();
+        if (value === '') continue;
+      }
+
+      if (key in user) {
+        if (key === 'role') {
+          user.role = value as UserRole;
+        } else {
+          user[key] = value;
+        }
+      }
+    }
 
     await handleDb(() => this.userRepository.save(user));
 
@@ -137,68 +129,6 @@ export class AuthAdminService implements OnModuleInit {
     const user = await this.findUserOrFail(id);
 
     await handleDb(() => this.userRepository.remove(user));
-  }
-
-  // -------------------
-  // Password management
-  // -------------------
-  async forgotPassword(
-    dto: AuthForgotPasswordDto,
-  ): Promise<{ message: string } | void> {
-    const { email } = dto;
-    const user = await this.userRepository.findOneBy({ email });
-
-    if (!user) {
-      return;
-    }
-
-    const resetToken = crypto.randomBytes(32).toString('hex');
-    const resetTokenExpires = new Date(Date.now() + 3600000);
-
-    user.resetPasswordToken = resetToken;
-    user.resetPasswordExpires = resetTokenExpires;
-
-    await handleDb(() => this.userRepository.save(user));
-
-    return {
-      message:
-        'If a user with that email exists, a password reset link has been sent.',
-    };
-  }
-
-  async resetPassword(dto: AuthResetPasswordDto): Promise<{ message: string }> {
-    const { token, password } = dto;
-
-    const user = await this.userRepository.findOne({
-      where: {
-        resetPasswordToken: token,
-        resetPasswordExpires: MoreThan(new Date()),
-      },
-    });
-
-    if (!user) {
-      throw new BadRequestException('Invalid or expired password reset token');
-    }
-
-    user.password = password;
-    user.resetPasswordToken = null;
-    user.resetPasswordExpires = null;
-
-    await handleDb(() => this.userRepository.save(user));
-
-    return { message: 'Password has been successfully reset.' };
-  }
-
-  // -------------------
-  // Helpers
-  // -------------------
-  private async validateUser(email: string, password: string): Promise<User> {
-    const user = await this.userRepository.findOneBy({ email });
-
-    if (!user || !(await user.validatePassword(password))) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-    return user;
   }
 
   private toSafeUser(user: User): SafeUser {

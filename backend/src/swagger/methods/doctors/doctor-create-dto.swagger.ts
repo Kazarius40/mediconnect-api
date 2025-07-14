@@ -2,28 +2,28 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export function DoctorFirstNameSwagger() {
   return ApiProperty({
-    description: "Doctor's first name",
+    description: "ClinicInterface's first name",
     example: 'Oleksandr',
   });
 }
 
 export function DoctorLastNameSwagger() {
   return ApiProperty({
-    description: "Doctor's last name",
+    description: "ClinicInterface's last name",
     example: 'Shevchenko',
   });
 }
 
 export function DoctorEmailSwagger() {
   return ApiPropertyOptional({
-    description: "Doctor's email address",
+    description: "ClinicInterface's email address",
     example: 'oleksandr.shevchenko@example.com',
   });
 }
 
 export function DoctorPhoneSwagger() {
   return ApiPropertyOptional({
-    description: "Doctor's phone number",
+    description: "ClinicInterface's phone number",
     example: '+380679876543',
   });
 }

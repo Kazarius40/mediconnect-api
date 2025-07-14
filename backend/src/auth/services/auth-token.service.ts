@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Req, Res, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
@@ -6,14 +6,15 @@ import { ConfigService } from '@nestjs/config';
 import { Token } from '../entities/token.entity';
 import { User } from '../entities/user.entity';
 import { ITokens } from '../interfaces/tokens.interface';
-import { AuthRefreshTokenDto } from '../dto/auth-refresh-token.dto';
 import { IJWTPayload } from '../interfaces/jwt-payload.interface';
 import { handleDb } from '../../shared/utils/db/handle-db.util';
+import { Response } from 'express';
+import { RequestWithCookies } from '../../shared/request-with-cookies.interface';
 
 @Injectable()
 export class AuthTokenService {
-  private readonly accessTokenExpiresIn: number;
-  private readonly refreshTokenExpiresIn: number;
+  readonly accessTokenExpiresIn: number;
+  readonly refreshTokenExpiresIn: number;
 
   constructor(
     @InjectRepository(Token)
@@ -30,22 +31,17 @@ export class AuthTokenService {
 
     if (isNaN(this.accessTokenExpiresIn) || isNaN(this.refreshTokenExpiresIn)) {
       throw new Error(
-        'Token expiration times are not configured correctly. Ensure ACCESS_TOKEN_EXPIRATION_TIME and REFRESH_TOKEN_EXPIRATION_TIME are set to numbers in .env',
+        'Token expiration times are not configured correctly. Ensure ACCESS_TOKEN_EXPIRATION_TIME and REFRESH_TOKEN_EXPIRATION_TIME are set.',
       );
     }
   }
 
-  /**
-   * Generate new access & refresh tokens, save it to DB, block old tokens if exist
-   */
   async generateAndSaveTokens(user: User): Promise<ITokens> {
     const existingToken = await this.tokenRepository.findOne({
       where: { user: { id: user.id }, isBlocked: false },
     });
 
-    if (existingToken) {
-      await this.blockToken(existingToken);
-    }
+    if (existingToken) await this.blockToken(existingToken);
 
     const jti = this.generateJti();
     const payload = this.createPayload(user.id, user.email, user.role, jti);
@@ -57,25 +53,22 @@ export class AuthTokenService {
       expiresIn: `${this.refreshTokenExpiresIn}s`,
     });
 
-    await this.saveTokens(
-      user,
-      accessToken,
-      refreshToken,
-      this.accessTokenExpiresIn,
-      this.refreshTokenExpiresIn,
-      jti,
-    );
+    await this.saveTokens(user, accessToken, refreshToken, jti);
 
     return { accessToken, refreshToken };
   }
 
-  /**
-   * Verify and refresh tokens using provided refresh token DTO
-   */
-  async refresh(refreshTokenDto: AuthRefreshTokenDto): Promise<ITokens> {
-    const { refreshToken } = refreshTokenDto;
-    let payload: IJWTPayload;
+  async refresh(
+    @Req() req: RequestWithCookies,
+    @Res() res: Response,
+  ): Promise<ITokens> {
+    const refreshToken: string | undefined = req.cookies?.refreshToken;
 
+    if (!refreshToken) {
+      throw new UnauthorizedException('No refresh token provided');
+    }
+
+    let payload: IJWTPayload;
     try {
       payload = this.jwtService.verify<IJWTPayload>(refreshToken);
     } catch {
@@ -83,13 +76,15 @@ export class AuthTokenService {
     }
 
     if (!payload.jti) {
-      throw new UnauthorizedException(
-        'Invalid refresh token payload: jti missing',
-      );
+      throw new UnauthorizedException('Refresh token payload is missing jti');
     }
 
     const tokenEntity = await this.tokenRepository.findOne({
-      where: { refreshToken, jti: payload.jti, isBlocked: false },
+      where: {
+        refreshToken: refreshToken,
+        jti: payload.jti,
+        isBlocked: false,
+      },
       relations: ['user'],
     });
 
@@ -106,16 +101,16 @@ export class AuthTokenService {
 
     await this.blockToken(tokenEntity);
 
-    return this.generateAndSaveTokens(tokenEntity.user);
+    const tokens = await this.generateAndSaveTokens(tokenEntity.user);
+
+    this.setRefreshCookie(res, tokens.refreshToken);
+
+    return tokens;
   }
 
-  /**
-   * Log out by blocking refresh token
-   */
   async logOut(refreshToken: string): Promise<void> {
     const tokenEntity = await this.tokenRepository.findOne({
       where: { refreshToken, isBlocked: false },
-      relations: ['user'],
     });
 
     if (!tokenEntity) {
@@ -127,24 +122,40 @@ export class AuthTokenService {
     await this.blockToken(tokenEntity);
   }
 
-  /**
-   * Mark token as blocked to invalidate it
-   */
+  async invalidateUserTokens(userId: number): Promise<void> {
+    const tokens = await this.tokenRepository.find({
+      where: { user: { id: userId }, isBlocked: false },
+    });
+
+    for (const token of tokens) {
+      token.isBlocked = true;
+    }
+
+    await handleDb(() => this.tokenRepository.save(tokens));
+  }
+
+  setRefreshCookie(res: Response, refreshToken: string): void {
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+      maxAge: this.refreshTokenExpiresIn * 1000,
+    });
+  }
+
+  clearAuthCookies(res: Response): void {
+    res.clearCookie('refreshToken');
+  }
+
   private async blockToken(token: Token): Promise<void> {
     token.isBlocked = true;
     await handleDb(() => this.tokenRepository.save(token));
   }
 
-  /**
-   * Generate unique token identifier (jti)
-   */
   private generateJti(): string {
     return Math.random().toString(36).substring(2) + Date.now().toString(36);
   }
 
-  /**
-   * Create JWT payload
-   */
   private createPayload(
     sub: number,
     email: string,
@@ -154,28 +165,26 @@ export class AuthTokenService {
     return { sub, email, role, jti };
   }
 
-  /**
-   * Persist access & refresh tokens in DB with expiration dates
-   */
   private async saveTokens(
     user: User,
     accessToken: string,
     refreshToken: string,
-    accessTokenExpiresIn: number,
-    refreshTokenExpiresIn: number,
     jti: string,
   ): Promise<void> {
     const tokenEntity = this.tokenRepository.create({
       accessToken,
       refreshToken,
-      accessTokenExpiresAt: new Date(Date.now() + accessTokenExpiresIn * 1000),
+      accessTokenExpiresAt: new Date(
+        Date.now() + this.accessTokenExpiresIn * 1000,
+      ),
       refreshTokenExpiresAt: new Date(
-        Date.now() + refreshTokenExpiresIn * 1000,
+        Date.now() + this.refreshTokenExpiresIn * 1000,
       ),
       user,
       jti,
       isBlocked: false,
     });
+
     await handleDb(() => this.tokenRepository.save(tokenEntity));
   }
 }

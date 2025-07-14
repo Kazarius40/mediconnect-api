@@ -49,6 +49,8 @@ export function IsValidPhone(validationOptions?: ValidationOptions) {
       options: validationOptions,
       validator: {
         validate(value: unknown) {
+          if (value === null || value === undefined || value === '')
+            return true;
           if (typeof value !== 'string') return false;
           return /^\+380\d{9}$/.test(value);
         },

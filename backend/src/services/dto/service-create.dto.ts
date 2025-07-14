@@ -30,5 +30,5 @@ export class ServiceCreateDto {
   @TransformToNumberArray()
   @IsArray()
   @IsNumber({}, { each: true })
-  doctors?: number[];
+  doctorIds?: number[];
 }

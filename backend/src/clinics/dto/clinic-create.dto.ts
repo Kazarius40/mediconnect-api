@@ -44,5 +44,5 @@ export class ClinicCreateDto {
   @TransformToNumberArray()
   @IsArray()
   @IsNumber({}, { each: true })
-  doctors?: number[];
+  doctorIds?: number[];
 }

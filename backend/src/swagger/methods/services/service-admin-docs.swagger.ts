@@ -7,10 +7,13 @@ import { ServiceResponse } from '../../responses/service-response.swagger';
 export function CreateServiceDocs() {
   return applyDecorators(
     ApiOperation({ summary: 'Create a new service (Admin only)' }),
-    ApiBody({ type: ServiceCreateDto, description: 'Service creation data' }),
+    ApiBody({
+      type: ServiceCreateDto,
+      description: 'ClinicInterface creation data',
+    }),
     ApiResponse({
       status: HttpStatus.CREATED,
-      description: 'Service successfully created.',
+      description: 'ClinicInterface successfully created.',
       type: ServiceResponse,
     }),
     ApiResponse({
@@ -19,7 +22,7 @@ export function CreateServiceDocs() {
     }),
     ApiResponse({
       status: HttpStatus.CONFLICT,
-      description: 'Service with this name already exists.',
+      description: 'ClinicInterface with this name already exists.',
     }),
     ApiResponse({
       status: HttpStatus.UNAUTHORIZED,
@@ -45,11 +48,11 @@ export function PutServiceDocs() {
     }),
     ApiBody({
       type: ServiceCreateDto,
-      description: 'Service update data (full)',
+      description: 'ClinicInterface update data (full)',
     }),
     ApiResponse({
       status: HttpStatus.OK,
-      description: 'Service successfully updated (full).',
+      description: 'ClinicInterface successfully updated (full).',
       type: ServiceResponse,
     }),
     ApiResponse({
@@ -58,11 +61,11 @@ export function PutServiceDocs() {
     }),
     ApiResponse({
       status: HttpStatus.NOT_FOUND,
-      description: 'Service not found.',
+      description: 'ClinicInterface not found.',
     }),
     ApiResponse({
       status: HttpStatus.CONFLICT,
-      description: 'Service with this name already exists.',
+      description: 'ClinicInterface with this name already exists.',
     }),
     ApiResponse({
       status: HttpStatus.UNAUTHORIZED,
@@ -87,11 +90,11 @@ export function PatchServiceDocs() {
     }),
     ApiBody({
       type: ServiceUpdateDto,
-      description: 'Service update data (partial)',
+      description: 'ClinicInterface update data (partial)',
     }),
     ApiResponse({
       status: HttpStatus.OK,
-      description: 'Service successfully updated (partial).',
+      description: 'ClinicInterface successfully updated (partial).',
       type: ServiceResponse,
     }),
     ApiResponse({
@@ -100,11 +103,11 @@ export function PatchServiceDocs() {
     }),
     ApiResponse({
       status: HttpStatus.NOT_FOUND,
-      description: 'Service not found.',
+      description: 'ClinicInterface not found.',
     }),
     ApiResponse({
       status: HttpStatus.CONFLICT,
-      description: 'Service with this name already exists.',
+      description: 'ClinicInterface with this name already exists.',
     }),
     ApiResponse({
       status: HttpStatus.UNAUTHORIZED,
@@ -126,11 +129,11 @@ export function DeleteServiceDocs() {
     ApiOperation({ summary: 'Delete service by ID (Admin only)' }),
     ApiResponse({
       status: HttpStatus.NO_CONTENT,
-      description: 'Service successfully deleted.',
+      description: 'ClinicInterface successfully deleted.',
     }),
     ApiResponse({
       status: HttpStatus.NOT_FOUND,
-      description: 'Service not found.',
+      description: 'ClinicInterface not found.',
     }),
     ApiResponse({
       status: HttpStatus.UNAUTHORIZED,
