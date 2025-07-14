@@ -1,17 +1,19 @@
 import api from './axios';
-import type { AuthUser } from '@/interfaces/auth';
+import type {
+  AuthUser,
+  LoginDto,
+  LoginResponse,
+  RefreshResponse,
+  RegisterDto,
+  RegisterResponse,
+} from '@/interfaces/auth';
 
-export interface LoginDto {
-  email: string;
-  password: string;
-}
-
-export interface RefreshResponse {
-  accessToken: string;
+export function register(data: RegisterDto) {
+  return api.post<RegisterResponse>('/auth/register', data);
 }
 
 export function login(data: LoginDto) {
-  return api.post<AuthUser>('/auth/login', data);
+  return api.post<LoginResponse>('/auth/login', data);
 }
 
 export function logout() {

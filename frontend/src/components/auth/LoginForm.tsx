@@ -4,11 +4,7 @@ import React, { FormEvent, useState } from 'react';
 import { AxiosError } from 'axios';
 import Link from 'next/link';
 import { setCookie } from '@/utils/cookies';
-import api from '@/api/axios';
-
-interface LoginResponse {
-  accessToken: string;
-}
+import { login } from '@/api/auth';
 
 const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -20,11 +16,7 @@ const LoginForm: React.FC = () => {
     setError('');
 
     try {
-      const response = await api.post<LoginResponse>('/auth/login', {
-        email,
-        password,
-      });
-
+      const response = await login({ email, password });
       const { accessToken } = response.data;
 
       if (accessToken) {

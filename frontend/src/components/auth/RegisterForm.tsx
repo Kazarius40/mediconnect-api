@@ -3,11 +3,7 @@
 import React, { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AxiosError } from 'axios';
-import api from '@/api/axios';
-
-interface RegisterResponse {
-  message: string;
-}
+import { register } from '@/api/auth';
 
 const RegisterForm: React.FC = () => {
   const router = useRouter();
@@ -30,10 +26,7 @@ const RegisterForm: React.FC = () => {
     }
 
     try {
-      const response = await api.post<RegisterResponse>('/auth/register', {
-        email,
-        password,
-      });
+      const response = await register({ email, password });
 
       setSuccess(response.data.message || 'Registration successful!');
       setTimeout(() => router.push('/auth/login'), 2000);

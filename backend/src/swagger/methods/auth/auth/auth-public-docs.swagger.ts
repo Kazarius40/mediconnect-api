@@ -38,7 +38,9 @@ export function LoginDocs() {
 
 export function RefreshDocs() {
   return applyDecorators(
-    ApiOperation({ summary: 'Token refresh' }),
+    ApiOperation({
+      summary: 'Token refresh (refresh token sent via HttpOnly cookie)',
+    }),
     ApiResponse({
       status: HttpStatus.OK,
       description: 'Tokens successfully refreshed',
