@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import doctorService from '@/services/doctor.service';
+import doctorApi from '@/services/doctorApi';
 import { Doctor } from '@/interfaces/doctor';
 
 const DoctorsPage: React.FC = () => {
@@ -10,7 +10,7 @@ const DoctorsPage: React.FC = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    doctorService
+    doctorApi
       .getAll()
       .then((data) => {
         setDoctors(data);

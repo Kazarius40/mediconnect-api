@@ -3,9 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import ClinicCard from '@/components/clinics/ClinicCard';
 import { useRouter } from 'next/navigation';
-import clinicService from '@/services/clinic.service';
+import clinicApi from '@/services/clinicApi';
 import { Clinic } from '@/interfaces/clinic';
 import { useUser } from '@/hooks/useUser';
+import { matchesSearch } from '@/utils/common/search.util';
 
 const ClinicsPage: React.FC = () => {
   const [clinics, setClinics] = useState<Clinic[]>([]);
@@ -17,7 +18,7 @@ const ClinicsPage: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    clinicService
+    clinicApi
       .getAll()
       .then((data) => {
         setClinics(data);
@@ -30,9 +31,12 @@ const ClinicsPage: React.FC = () => {
   }, []);
 
   const filteredClinics = clinics.filter((clinic) =>
-    [clinic.name, clinic.address, clinic.phone, clinic.email]
-      .filter(Boolean)
-      .some((field) => field!.toLowerCase().includes(searchTerm.toLowerCase())),
+    matchesSearch(searchTerm, [
+      clinic.name,
+      clinic.address,
+      clinic.phone,
+      clinic.email,
+    ]),
   );
 
   if (loading) return <p>Loading clinics...</p>;

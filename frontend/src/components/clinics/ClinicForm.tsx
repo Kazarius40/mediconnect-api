@@ -1,12 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { Doctor } from '@/interfaces/doctor';
 import { CreateClinicDto } from '@/interfaces/clinic';
-import clinicService from '@/services/clinic.service';
+import clinicApi from '@/services/clinicApi';
 import { normalizePhoneFrontend } from '@/utils/phone/normalize-phone.util';
+import { sortByFields } from '@/utils/common/sort.util';
 
 interface ClinicFormProps {
   initialValues?: Partial<CreateClinicDto>;
@@ -20,6 +21,7 @@ export default function ClinicForm({
   clinicId,
 }: ClinicFormProps) {
   const router = useRouter();
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
 
   const {
     register,
@@ -45,7 +47,7 @@ export default function ClinicForm({
     }
   };
 
-  const removeDoctor = (id: number) => {
+  const deleteDoctor = (id: number) => {
     setValue(
       'doctorIds',
       doctorIds.filter((dId) => dId !== id),
@@ -65,10 +67,10 @@ export default function ClinicForm({
       }
 
       if (clinicId) {
-        await clinicService.update(clinicId, normalizedData);
+        await clinicApi.update(clinicId, normalizedData);
         router.push(`/admin/clinics/${clinicId}`);
       } else {
-        await clinicService.create(normalizedData);
+        await clinicApi.create(normalizedData);
         router.push('/clinics');
       }
     } catch (error: any) {
@@ -79,6 +81,16 @@ export default function ClinicForm({
   const availableDoctors = allDoctors.filter(
     (doc) => !doctorIds.includes(doc.id),
   );
+
+  const sortedDoctors = sortByFields(
+    availableDoctors,
+    ['lastName', 'firstName'],
+    sortDir,
+  );
+
+  const toggleSortDir = () => {
+    setSortDir((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-lg">
@@ -158,8 +170,19 @@ export default function ClinicForm({
 
       {/* Doctors */}
       <div>
-        <label className="block font-semibold mb-1">Doctors</label>
+        <div className="flex justify-between items-center mb-1">
+          <label className="block font-semibold">Doctors</label>
+          {/* Sort toggle button */}
+          <button
+            type="button"
+            onClick={toggleSortDir}
+            className="text-sm text-blue-600 hover:underline"
+          >
+            Sort {sortDir === 'asc' ? '↓' : '↑'}
+          </button>
+        </div>
 
+        {/* Selected doctors */}
         <div className="flex flex-wrap gap-2 mb-2">
           {doctorIds.map((id) => {
             const doc = allDoctors.find((d) => d.id === id);
@@ -170,11 +193,11 @@ export default function ClinicForm({
                 className="flex items-center bg-blue-200 text-blue-800 px-2 py-1 rounded"
               >
                 <span>
-                  {doc.firstName} {doc.lastName}
+                  {doc.lastName} {doc.firstName}
                 </span>
                 <button
                   type="button"
-                  onClick={() => removeDoctor(id)}
+                  onClick={() => deleteDoctor(id)}
                   className="ml-1 text-blue-600 hover:text-blue-900 font-bold"
                 >
                   ×
@@ -184,6 +207,7 @@ export default function ClinicForm({
           })}
         </div>
 
+        {/* Dropdown of available doctors */}
         <select
           className="w-full border p-2 rounded"
           onChange={(e) => {
@@ -196,9 +220,9 @@ export default function ClinicForm({
           <option value="" disabled>
             Select a doctor to add
           </option>
-          {availableDoctors.map((doc) => (
+          {sortedDoctors.map((doc) => (
             <option key={doc.id} value={doc.id}>
-              {doc.firstName} {doc.lastName}
+              {doc.lastName} {doc.firstName}
             </option>
           ))}
         </select>

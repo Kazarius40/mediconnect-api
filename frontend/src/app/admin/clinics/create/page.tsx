@@ -1,20 +1,11 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { Doctor } from '@/interfaces/doctor';
-import doctorService from '@/services/doctor.service';
+import React from 'react';
 import ClinicForm from '@/components/clinics/ClinicForm';
+import { useClinic } from '@/hooks/useClinic';
 
-export default function CreateClinicPage() {
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    doctorService
-      .getAll()
-      .then((data) => setDoctors(data))
-      .finally(() => setLoading(false));
-  }, []);
+export default function ClinicCreate() {
+  const { doctors, loading } = useClinic();
 
   if (loading) return <p>Loading...</p>;
 

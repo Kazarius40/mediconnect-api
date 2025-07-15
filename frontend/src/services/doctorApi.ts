@@ -1,7 +1,7 @@
 import { Doctor } from '@/interfaces/doctor';
 import api from '@/api/axios';
 
-const doctorService = {
+const doctorApi = {
   async getAll(): Promise<Doctor[]> {
     const res = await api.get('/doctors');
     return res.data;
@@ -13,4 +13,4 @@ const doctorService = {
   },
 };
 
-export default doctorService;
+export default doctorApi;

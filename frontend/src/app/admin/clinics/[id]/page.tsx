@@ -1,40 +1,13 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useParams } from 'next/navigation';
 import ClinicForm from '@/components/clinics/ClinicForm';
-import { Clinic } from '@/interfaces/clinic';
-import { Doctor } from '@/interfaces/doctor';
-import clinicService from '@/services/clinic.service';
-import doctorService from '@/services/doctor.service';
+import { useClinic } from '@/hooks/useClinic';
 
-export default function EditClinicPage() {
+export default function ClinicEdit() {
   const { id } = useParams();
-  const [clinic, setClinic] = useState<Clinic | null>(null);
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    if (!id) return;
-
-    const fetchData = async () => {
-      try {
-        const [clinicData, doctorsData] = await Promise.all([
-          clinicService.getById(Number(id)),
-          doctorService.getAll(),
-        ]);
-        setClinic(clinicData);
-        setDoctors(doctorsData);
-      } catch {
-        setError('Failed to load data');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    void fetchData();
-  }, [id]);
+  const { clinic, doctors, loading, error } = useClinic(Number(id));
 
   if (loading) return <p>Loading...</p>;
   if (error || !clinic)

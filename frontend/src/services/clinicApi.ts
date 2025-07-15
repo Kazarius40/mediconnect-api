@@ -1,7 +1,7 @@
 import { Clinic, CreateClinicDto, UpdateClinicDto } from '@/interfaces/clinic';
 import api from '@/api/axios';
 
-const clinicService = {
+const clinicApi = {
   async getAll(): Promise<Clinic[]> {
     const res = await api.get<Clinic[]>('/clinics');
     return res.data;
@@ -27,4 +27,4 @@ const clinicService = {
   },
 };
 
-export default clinicService;
+export default clinicApi;
