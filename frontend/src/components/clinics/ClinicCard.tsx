@@ -6,6 +6,7 @@ interface ClinicCardProps {
   name: string;
   address: string;
   phone: string;
+  email: string | undefined;
   description?: string;
   onClick?: () => void;
 }
@@ -14,6 +15,7 @@ const ClinicCard: React.FC<ClinicCardProps> = ({
   name,
   address,
   phone,
+  email,
   onClick,
 }) => {
   return (
@@ -27,6 +29,9 @@ const ClinicCard: React.FC<ClinicCardProps> = ({
       </p>
       <p className="text-sm text-gray-700">
         <strong>Phone:</strong> {phone}
+      </p>
+      <p className="text-sm text-gray-700">
+        <strong>Email:</strong> {email}
       </p>
     </div>
   );

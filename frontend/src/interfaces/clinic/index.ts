@@ -1,2 +1,2 @@
 export * from './clinic.interface';
-export * from './clinic.dto';
+export * from './clinic-create.dto';

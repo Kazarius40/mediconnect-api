@@ -7,6 +7,7 @@ import clinicApi from '@/services/clinicApi';
 import { Clinic } from '@/interfaces/clinic';
 import { useUser } from '@/hooks/useUser';
 import { matchesSearch } from '@/utils/common/search.util';
+import SortControls from '@/components/common/SortControls';
 
 const ClinicsPage: React.FC = () => {
   const [clinics, setClinics] = useState<Clinic[]>([]);
@@ -14,21 +15,36 @@ const ClinicsPage: React.FC = () => {
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
+  const [sortBy, setSortBy] = useState<string>('name');
+  const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('ASC');
+
   const { user, loading: userLoading } = useUser(false);
   const router = useRouter();
 
-  useEffect(() => {
-    clinicApi
-      .getAll()
-      .then((data) => {
-        setClinics(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError('Failed to load clinics');
-        setLoading(false);
+  const sortFields = [
+    { value: 'name', label: 'Name' },
+    { value: 'address', label: 'Address' },
+    { value: 'email', label: 'Email' },
+  ];
+
+  const loadClinics = async () => {
+    setLoading(true);
+    try {
+      const data = await clinicApi.getAll({
+        sortBy,
+        sortOrder,
       });
-  }, []);
+      setClinics(data);
+    } catch (e) {
+      setError('Failed to load clinics');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    void loadClinics();
+  }, [sortBy, sortOrder]);
 
   const filteredClinics = clinics.filter((clinic) =>
     matchesSearch(searchTerm, [
@@ -54,22 +70,34 @@ const ClinicsPage: React.FC = () => {
           + Create Clinic
         </button>
       )}
+
       <input
         type="text"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        placeholder="Search clinics by name, address, phone, or email"
+        placeholder="Search clinics by name, address, phone or email"
         className="w-full max-w-md p-2 border rounded mb-4"
       />
+
+      <SortControls
+        sortFields={sortFields}
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        onSortByChange={setSortBy}
+        onSortOrderChange={setSortOrder}
+      />
+
       {filteredClinics.length === 0 && (
         <p className="text-gray-500">No clinics found.</p>
       )}
+
       {filteredClinics.map((clinic) => (
         <ClinicCard
           key={clinic.id}
           name={clinic.name}
           address={clinic.address}
           phone={clinic.phone}
+          email={clinic.email}
           onClick={() => router.push(`/clinics/${clinic.id}`)}
         />
       ))}

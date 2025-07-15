@@ -1,9 +1,12 @@
 import { Clinic, CreateClinicDto, UpdateClinicDto } from '@/interfaces/clinic';
 import api from '@/api/axios';
+import { ClinicFilterDto } from '@/interfaces/clinic/clinic-filter.dto';
 
 const clinicApi = {
-  async getAll(): Promise<Clinic[]> {
-    const res = await api.get<Clinic[]>('/clinics');
+  async getAll(filters?: ClinicFilterDto): Promise<Clinic[]> {
+    const res = await api.get<Clinic[]>('/clinics', {
+      params: filters,
+    });
     return res.data;
   },
 
@@ -12,13 +15,13 @@ const clinicApi = {
     return res.data;
   },
 
-  async create(data: CreateClinicDto): Promise<Clinic> {
-    const res = await api.post<Clinic>('/clinics', data);
+  async create(dto: CreateClinicDto): Promise<Clinic> {
+    const res = await api.post<Clinic>('/clinics', dto);
     return res.data;
   },
 
-  async update(id: number, data: UpdateClinicDto): Promise<Clinic> {
-    const res = await api.patch<Clinic>(`/clinics/${id}`, data);
+  async update(id: number, dto: UpdateClinicDto): Promise<Clinic> {
+    const res = await api.patch<Clinic>(`/clinics/${id}`, dto);
     return res.data;
   },
 
