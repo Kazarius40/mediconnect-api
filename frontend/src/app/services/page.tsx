@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import ServiceCard from '@/components/services/ServiceCard';
 import { useRouter } from 'next/navigation';
-import serviceService from '@/services/service.service';
+import serviceService from '@/services/serviceApi';
 import { Service } from '@/interfaces/service';
 
 const ServicesPage: React.FC = () => {

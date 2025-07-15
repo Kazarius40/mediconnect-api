@@ -6,7 +6,10 @@ import { useForm } from 'react-hook-form';
 import { Doctor } from '@/interfaces/doctor';
 import { CreateClinicDto } from '@/interfaces/clinic';
 import clinicApi from '@/services/clinicApi';
-import { normalizePhoneFrontend } from '@/utils/phone/normalize-phone.util';
+import {
+  handlePhoneKeyDown,
+  normalizePhoneFrontend,
+} from '@/utils/phone/normalize-phone.util';
 import { sortByFields } from '@/utils/common/sort.util';
 
 interface ClinicFormProps {
@@ -29,6 +32,8 @@ export default function ClinicForm({
     formState: { errors, isSubmitting },
     setValue,
     watch,
+    setError,
+    clearErrors,
   } = useForm<CreateClinicDto>({
     defaultValues: {
       name: initialValues?.name || '',
@@ -37,6 +42,7 @@ export default function ClinicForm({
       email: initialValues?.email || '',
       doctorIds: initialValues?.doctorIds || [],
     },
+    mode: 'onChange',
   });
 
   const doctorIds = watch('doctorIds') || [];
@@ -73,8 +79,34 @@ export default function ClinicForm({
         await clinicApi.create(normalizedData);
         router.push('/clinics');
       }
-    } catch (error: any) {
-      console.error('Save error:', error.response?.data || error.message);
+    } catch (err: any) {
+      console.error('Save error:', err.response?.data || err.message);
+
+      const backendMessage = err.response?.data?.message;
+
+      if (typeof backendMessage === 'string') {
+        handleBackendError(backendMessage);
+      }
+
+      if (Array.isArray(backendMessage)) {
+        backendMessage.forEach((msg: string) => handleBackendError(msg));
+      }
+    }
+  };
+
+  const handleBackendError = (msg: string) => {
+    const lower = msg.toLowerCase();
+    if (lower.includes('phone')) {
+      setError('phone', { message: 'This phone is already in use' });
+    }
+    if (lower.includes('email')) {
+      setError('email', { message: 'This email is already in use' });
+    }
+    if (lower.includes('name')) {
+      setError('name', { message: msg });
+    }
+    if (lower.includes('address')) {
+      setError('address', { message: msg });
     }
   };
 
@@ -102,7 +134,13 @@ export default function ClinicForm({
         <input
           id="name"
           className="w-full border p-2 rounded"
-          {...register('name', { required: 'Name is required' })}
+          {...register('name', {
+            required: 'Name is required',
+            minLength: {
+              value: 2,
+              message: 'Name must be at least 2 characters',
+            },
+          })}
         />
         {errors.name && (
           <p className="text-red-600 text-sm mt-1">{errors.name.message}</p>
@@ -117,7 +155,10 @@ export default function ClinicForm({
         <input
           id="address"
           className="w-full border p-2 rounded"
-          {...register('address', { required: 'Address is required' })}
+          {...register('address', {
+            required: 'Address is required',
+          })}
+          onChange={() => clearErrors('address')}
         />
         {errors.address && (
           <p className="text-red-600 text-sm mt-1">{errors.address.message}</p>
@@ -136,11 +177,14 @@ export default function ClinicForm({
             required: 'Phone is required',
             validate: (value) => {
               const normalized = normalizePhoneFrontend(value);
-              return (
-                /^\+380\d{9}$/.test(normalized) || 'Invalid phone number format'
-              );
+              if (!normalized) return 'Invalid phone format';
+              if (!/^\+380\d{9}$/.test(normalized))
+                return 'Phone number must be in +380XXXXXXXXX format';
+              return true;
             },
           })}
+          onChange={() => clearErrors('phone')}
+          onKeyDown={handlePhoneKeyDown}
         />
         {errors.phone && (
           <p className="text-red-600 text-sm mt-1">{errors.phone.message}</p>
@@ -162,6 +206,7 @@ export default function ClinicForm({
               message: 'Invalid email address',
             },
           })}
+          onChange={() => clearErrors('email')}
         />
         {errors.email && (
           <p className="text-red-600 text-sm mt-1">{errors.email.message}</p>
@@ -172,7 +217,6 @@ export default function ClinicForm({
       <div>
         <div className="flex justify-between items-center mb-1">
           <label className="block font-semibold">Doctors</label>
-          {/* Sort toggle button */}
           <button
             type="button"
             onClick={toggleSortDir}
