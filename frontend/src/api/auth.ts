@@ -21,7 +21,11 @@ export function logout() {
 }
 
 export function refreshToken() {
-  return api.post<RefreshResponse>('/auth/refresh');
+  return api.post<RefreshResponse>(
+    '/auth/refresh',
+    {},
+    { withCredentials: true },
+  );
 }
 
 export function getProfile() {

@@ -20,12 +20,12 @@ export default function EditClinicPage() {
 
     const fetchData = async () => {
       try {
-        const [clinicRes, doctorsRes] = await Promise.all([
+        const [clinicData, doctorsData] = await Promise.all([
           clinicService.getById(Number(id)),
           doctorService.getAll(),
         ]);
-        setClinic(clinicRes.data);
-        setDoctors(doctorsRes.data);
+        setClinic(clinicData);
+        setDoctors(doctorsData);
       } catch {
         setError('Failed to load data');
       } finally {

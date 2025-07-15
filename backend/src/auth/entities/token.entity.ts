@@ -2,7 +2,6 @@ import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from './user.entity';
 import {
   TokenAccessTokenExpiresAtSwagger,
-  TokenAccessTokenSwagger,
   TokenIdSwagger,
   TokenIsBlockedSwagger,
   TokenJtiSwagger,
@@ -18,9 +17,6 @@ export class Token {
   id: number;
 
   // ------------------------------------------------------ Main fields ----------------------------------------------------------
-  @Column()
-  @TokenAccessTokenSwagger()
-  accessToken: string;
 
   @Column()
   @TokenRefreshTokenSwagger()

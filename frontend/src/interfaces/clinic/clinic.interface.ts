@@ -1,3 +1,5 @@
+import { Doctor } from '@/interfaces/doctor';
+
 export interface Clinic {
   id: number;
   name: string;
@@ -6,16 +8,5 @@ export interface Clinic {
   email?: string;
   createdAt: string;
   updatedAt: string;
-  doctors?: {
-    id: number;
-    firstName: string;
-    lastName: string;
-    email?: string;
-    phone?: string;
-    services?: {
-      id: number;
-      name: string;
-      description?: string;
-    }[];
-  }[];
+  doctors?: Doctor[];
 }

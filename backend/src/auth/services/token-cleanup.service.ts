@@ -23,7 +23,7 @@ export class TokenCleanupService {
     const deleteResult = await this.tokenRepository
       .createQueryBuilder()
       .delete()
-      .where('accessTokenExpiresAt <= :now OR isBlocked = :blocked', {
+      .where('refreshTokenExpiresAt <= :now OR isBlocked = :blocked', {
         now,
         blocked: true,
       })

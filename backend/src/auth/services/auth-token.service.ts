@@ -37,12 +37,6 @@ export class AuthTokenService {
   }
 
   async generateAndSaveTokens(user: User): Promise<ITokens> {
-    const existingToken = await this.tokenRepository.findOne({
-      where: { user: { id: user.id }, isBlocked: false },
-    });
-
-    if (existingToken) await this.blockToken(existingToken);
-
     const jti = this.generateJti();
     const payload = this.createPayload(user.id, user.email, user.role, jti);
 
@@ -53,7 +47,7 @@ export class AuthTokenService {
       expiresIn: `${this.refreshTokenExpiresIn}s`,
     });
 
-    await this.saveTokens(user, accessToken, refreshToken, jti);
+    await this.saveTokens(user, refreshToken, jti);
 
     return { accessToken, refreshToken };
   }
@@ -167,12 +161,10 @@ export class AuthTokenService {
 
   private async saveTokens(
     user: User,
-    accessToken: string,
     refreshToken: string,
     jti: string,
   ): Promise<void> {
     const tokenEntity = this.tokenRepository.create({
-      accessToken,
       refreshToken,
       accessTokenExpiresAt: new Date(
         Date.now() + this.accessTokenExpiresIn * 1000,

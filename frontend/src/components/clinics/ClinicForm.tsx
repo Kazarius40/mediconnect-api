@@ -6,22 +6,7 @@ import { useForm } from 'react-hook-form';
 import { Doctor } from '@/interfaces/doctor';
 import { CreateClinicDto } from '@/interfaces/clinic';
 import clinicService from '@/services/clinic.service';
-
-export function normalizePhoneFrontend(phone: string): string {
-  if (!phone) return phone;
-
-  const digits = phone.replace(/\D/g, '');
-
-  if (/^0\d{9}$/.test(digits)) {
-    return '+380' + digits.slice(1);
-  }
-
-  if (/^380\d{9}$/.test(digits)) {
-    return '+' + digits;
-  }
-
-  return phone;
-}
+import { normalizePhoneFrontend } from '@/utils/phone/normalize-phone.util';
 
 interface ClinicFormProps {
   initialValues?: Partial<CreateClinicDto>;
@@ -81,7 +66,7 @@ export default function ClinicForm({
 
       if (clinicId) {
         await clinicService.update(clinicId, normalizedData);
-        router.push(`/clinics/${clinicId}`);
+        router.push(`/admin/clinics/${clinicId}`);
       } else {
         await clinicService.create(normalizedData);
         router.push('/clinics');

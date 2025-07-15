@@ -4,30 +4,43 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import clinicService from '@/services/clinic.service';
 import { Clinic } from '@/interfaces/clinic';
+import { ConfirmModal } from '@/components/common/ConfirmModal';
 
 export default function ClinicDetailsPage() {
   const { id } = useParams();
   const router = useRouter();
+
   const [clinic, setClinic] = useState<Clinic | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return;
 
     clinicService
       .getById(Number(id))
-      .then((res) => setClinic(res.data))
+      .then((data) => setClinic(data))
       .catch(() => setError('Failed to load clinic details'))
       .finally(() => setLoading(false));
   }, [id]);
 
+  const handleDeleteClinic = async () => {
+    if (!clinic) return;
+    setLoading(true);
+    try {
+      await clinicService.delete(clinic.id);
+      router.push('/clinics');
+    } catch (err) {
+      console.error('Failed to delete clinic', err);
+      setLoading(false);
+    }
+  };
+
   if (loading) return <p>Loading clinic...</p>;
   if (error || !clinic)
-    return (
-      <p className="text-red-600">{error || 'ClinicInterface not found'}</p>
-    );
+    return <p className="text-red-600">{error || 'Clinic not found'}</p>;
 
   const filteredDoctors = clinic.doctors?.filter((doc) => {
     const searchLower = search.toLowerCase();
@@ -53,7 +66,23 @@ export default function ClinicDetailsPage() {
         ← Back to Clinics
       </button>
 
-      <h1 className="text-3xl font-bold mb-2">{clinic.name}</h1>
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-3xl font-bold">{clinic.name}</h1>
+        <div className="flex gap-2">
+          <button
+            onClick={() => router.push(`/clinics/${clinic.id}/edit`)}
+            className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Edit
+          </button>
+          <button
+            onClick={() => setIsConfirmOpen(true)}
+            className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
 
       <div className="space-y-2 mb-6">
         <p>
@@ -132,6 +161,17 @@ export default function ClinicDetailsPage() {
             <p className="text-gray-500">No doctors match your search.</p>
           )}
         </div>
+      )}
+
+      {isConfirmOpen && (
+        <ConfirmModal
+          title="Confirm deletion"
+          message={`Are you sure you want to delete clinic "${clinic.name}"? This action cannot be undone.`}
+          confirmText="Delete"
+          cancelText="Cancel"
+          onConfirm={handleDeleteClinic}
+          onCancel={() => setIsConfirmOpen(false)}
+        />
       )}
     </div>
   );

@@ -19,8 +19,8 @@ const ClinicsPage: React.FC = () => {
   useEffect(() => {
     clinicService
       .getAll()
-      .then((response) => {
-        setClinics(response.data);
+      .then((data) => {
+        setClinics(data);
         setLoading(false);
       })
       .catch(() => {

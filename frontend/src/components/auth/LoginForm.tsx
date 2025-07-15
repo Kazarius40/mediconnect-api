@@ -3,7 +3,7 @@
 import React, { FormEvent, useState } from 'react';
 import { AxiosError } from 'axios';
 import Link from 'next/link';
-import { setCookie } from '@/utils/cookies';
+import { setCookie } from '@/utils/cookies/cookies';
 import { login } from '@/api/auth';
 
 const LoginForm: React.FC = () => {

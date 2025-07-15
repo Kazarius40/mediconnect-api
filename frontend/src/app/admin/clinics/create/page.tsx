@@ -12,7 +12,7 @@ export default function CreateClinicPage() {
   useEffect(() => {
     doctorService
       .getAll()
-      .then((res) => setDoctors(res.data))
+      .then((data) => setDoctors(data))
       .finally(() => setLoading(false));
   }, []);
 

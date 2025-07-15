@@ -12,8 +12,8 @@ const DoctorsPage: React.FC = () => {
   useEffect(() => {
     doctorService
       .getAll()
-      .then((response) => {
-        setDoctors(response.data);
+      .then((data) => {
+        setDoctors(data);
         setLoading(false);
       })
       .catch(() => {

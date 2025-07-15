@@ -1,16 +1,16 @@
-import { AxiosResponse } from 'axios';
 import { Doctor } from '@/interfaces/doctor';
 import api from '@/api/axios';
 
-const getAll = (): Promise<AxiosResponse<Doctor[]>> => {
-  return api.get('/doctors');
+const doctorService = {
+  async getAll(): Promise<Doctor[]> {
+    const res = await api.get('/doctors');
+    return res.data;
+  },
+
+  async getById(id: number): Promise<Doctor> {
+    const res = await api.get(`/doctors/${id}`);
+    return res.data;
+  },
 };
 
-const getById = (id: number): Promise<AxiosResponse<Doctor>> => {
-  return api.get(`/doctors/${id}`);
-};
-
-export default {
-  getAll,
-  getById,
-};
+export default doctorService;

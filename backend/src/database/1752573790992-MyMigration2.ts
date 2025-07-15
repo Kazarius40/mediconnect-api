@@ -1,9 +1,10 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class MyMigrationName1751707218783 implements MigrationInterface {
-  name = 'MyMigrationName1751707218783';
+export class MyMigration21752573790992 implements MigrationInterface {
+  name = 'MyMigration21752573790992';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    // await queryRunner.query(`ALTER TABLE \`token\` DROP COLUMN \`accessToken\``);
     await queryRunner.query(
       `ALTER TABLE \`clinic\` ADD UNIQUE INDEX \`IDX_b3df084998059e1f2f31bfd1e8\` (\`phone\`)`,
     );
@@ -24,6 +25,9 @@ export class MyMigrationName1751707218783 implements MigrationInterface {
     );
     await queryRunner.query(
       `ALTER TABLE \`clinic\` DROP INDEX \`IDX_b3df084998059e1f2f31bfd1e8\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`token\` ADD \`accessToken\` varchar(255) NOT NULL`,
     );
   }
 }

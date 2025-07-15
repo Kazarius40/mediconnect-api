@@ -1,5 +1,6 @@
 import type { AxiosError, AxiosInstance } from 'axios';
-import { getCookie, setCookie } from '@/utils/cookies';
+import { getCookie, setCookie } from '@/utils/cookies/cookies';
+import { refreshToken } from '@/api/auth';
 
 interface PendingRequest {
   resolve: (token?: string) => void;
@@ -70,11 +71,7 @@ export function addAuthInterceptor(api: AxiosInstance) {
         tokenRefreshHandler.setRefreshing(true);
 
         try {
-          const response = await api.post<{ accessToken: string }>(
-            '/auth/refresh',
-            {},
-            { withCredentials: true },
-          );
+          const response = await refreshToken();
           const { accessToken } = response.data;
 
           setCookie('accessToken', accessToken, {

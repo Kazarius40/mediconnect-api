@@ -12,7 +12,7 @@ const dataSource = new DataSource({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
   entities: [path.join(__dirname, '**/*.entity{.ts,.js}')],
-  migrations: [path.join(__dirname, 'database/migrations/*{.ts,.js}')],
+  migrations: [path.join(__dirname, 'database/**/*{.ts,.js}')],
   synchronize: false,
 });
 

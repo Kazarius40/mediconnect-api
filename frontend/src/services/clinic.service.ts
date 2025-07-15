@@ -1,22 +1,29 @@
-import { AxiosResponse } from 'axios';
 import { Clinic, CreateClinicDto, UpdateClinicDto } from '@/interfaces/clinic';
 import api from '@/api/axios';
 
 const clinicService = {
-  getAll(): Promise<AxiosResponse<Clinic[]>> {
-    return api.get('/clinics');
+  async getAll(): Promise<Clinic[]> {
+    const res = await api.get<Clinic[]>('/clinics');
+    return res.data;
   },
 
-  getById(id: number): Promise<AxiosResponse<Clinic>> {
-    return api.get(`/clinics/${id}`);
+  async getById(id: number): Promise<Clinic> {
+    const res = await api.get<Clinic>(`/clinics/${id}`);
+    return res.data;
   },
 
-  create(data: CreateClinicDto): Promise<AxiosResponse<Clinic>> {
-    return api.post('/clinics', data);
+  async create(data: CreateClinicDto): Promise<Clinic> {
+    const res = await api.post<Clinic>('/clinics', data);
+    return res.data;
   },
 
-  update(id: number, data: UpdateClinicDto): Promise<AxiosResponse<Clinic>> {
-    return api.patch(`/clinics/${id}`, data);
+  async update(id: number, data: UpdateClinicDto): Promise<Clinic> {
+    const res = await api.patch<Clinic>(`/clinics/${id}`, data);
+    return res.data;
+  },
+
+  async delete(id: number): Promise<void> {
+    await api.delete(`/clinics/${id}`);
   },
 };
 

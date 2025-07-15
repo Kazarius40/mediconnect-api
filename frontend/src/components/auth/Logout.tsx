@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { setCookie } from '@/utils/cookies';
-import api from '@/api/axios';
+import { setCookie } from '@/utils/cookies/cookies';
+import { logout } from '@/api/auth';
 
 const LogoutButton: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -13,7 +13,7 @@ const LogoutButton: React.FC = () => {
     setError(null);
 
     try {
-      await api.post('/auth/logout');
+      await logout();
       setCookie('accessToken', '', { maxAge: 0 });
 
       window.location.href = '/auth/login';

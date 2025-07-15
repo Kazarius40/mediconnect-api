@@ -21,6 +21,8 @@ export async function handleDb<T>(
   try {
     result = await operation();
   } catch (error: unknown) {
+    console.error('DB operation error:', error);
+
     if (
       error instanceof QueryFailedError &&
       (error.driverError as { code?: string })?.code === 'ER_DUP_ENTRY'
