@@ -32,8 +32,6 @@ export default function ServiceView() {
   if (error || !service)
     return <p className="text-red-600">{error || 'Service not found'}</p>;
 
-  console.log('service.doctors:', service.doctors);
-
   const isAdmin = user?.role === 'ADMIN';
 
   return (
