@@ -34,44 +34,19 @@ services:
     ports:
       - "3307:3306"
 
-  migration:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: mediconnect-migration
-    depends_on:
-      db:
-        condition: service_healthy
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
-    environment:
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-      - DB_USERNAME=${DB_USERNAME}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_DATABASE=${DB_DATABASE}
-    env_file:
-      - .env
-    command: npm run migration:run
-
   api:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: mediconnect-api
     depends_on:
-      migration:
-        condition: service_completed_successfully
+      db:
+        condition: service_healthy
     env_file:
       - .env
     ports:
       - "3000:3000"
-    command: npm run start:prod
-#    command: npm run start:dev
-#    volumes:
-#      - ./backend:/app
-#      - /app/node_modules
+    command: ["sh", "./start.sh"]
 
 volumes:
   db_data:

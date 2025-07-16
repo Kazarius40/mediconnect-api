@@ -8,6 +8,8 @@ RUN npm install
 
 COPY . .
 
+RUN chmod +x start.sh
+
 RUN npm run build
 
-CMD ["node", "dist/main.js"]
+CMD ["sh", "./start.sh"]
