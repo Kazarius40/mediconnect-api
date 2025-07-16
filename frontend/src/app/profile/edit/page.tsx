@@ -4,15 +4,31 @@ import React, { useEffect, useState } from 'react';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import api from '@/api/axios';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { normalizePhoneFrontend } from '@/utils/phone/normalize-phone.util';
+import { FormField } from '@/components/common/FormField';
+
+interface ProfileFormData {
+  phone: string;
+}
 
 export default function EditProfilePage() {
   const router = useRouter();
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [phone, setPhone] = useState('');
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
+
+  const {
+    register,
+    setValue,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<ProfileFormData>({
+    defaultValues: { phone: '' },
+    mode: 'onChange',
+  });
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -21,18 +37,15 @@ export default function EditProfilePage() {
         const profile = res.data;
         setFirstName(profile.firstName || '');
         setLastName(profile.lastName || '');
-        setPhone(profile.phone || '');
-      } catch (err) {
-        console.error('Failed to fetch profile for editing');
+        setValue('phone', profile.phone || '');
+      } catch {
         router.push('/auth/login');
       }
     };
-
     void fetchProfile();
-  }, [router]);
+  }, [router, setValue]);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const onSubmit: SubmitHandler<ProfileFormData> = async (data) => {
     setError('');
     setSuccess('');
 
@@ -40,7 +53,7 @@ export default function EditProfilePage() {
       await api.patch('/auth/profile', {
         firstName,
         lastName,
-        phone,
+        phone: data.phone,
       });
       setSuccess('Profile updated successfully');
       setTimeout(() => router.push('/profile'), 1000);
@@ -57,7 +70,7 @@ export default function EditProfilePage() {
       {error && <div className="text-red-600 mb-4">{error}</div>}
       {success && <div className="text-green-600 mb-4">{success}</div>}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <input
           type="text"
           value={firstName}
@@ -74,20 +87,31 @@ export default function EditProfilePage() {
           className="w-full border p-2 rounded"
         />
 
-        <input
-          type="tel"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          placeholder="Phone"
-          className="w-full border p-2 rounded"
+        <FormField
+          label="Phone"
+          htmlFor="phone"
+          required
+          register={register('phone', {
+            required: 'Phone is required',
+            validate: (value) => {
+              const normalized = normalizePhoneFrontend(value);
+              if (!normalized) return 'Invalid phone format';
+              if (!/^\+380\d{9}$/.test(normalized))
+                return 'Phone number must be in +380XXXXXXXXX format';
+              return true;
+            },
+          })}
+          error={errors.phone}
+          placeholder="+380XXXXXXXXX"
         />
 
         <div className="flex gap-4">
           <button
             type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+            disabled={isSubmitting}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded disabled:opacity-50"
           >
-            Save Changes
+            {isSubmitting ? 'Saving...' : 'Save Changes'}
           </button>
           <button
             type="button"
