@@ -1,74 +1,48 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import React, { useState } from 'react';
+import { useParams } from 'next/navigation';
 import clinicApi from '@/services/clinicApi';
 import { Clinic } from '@/interfaces/clinic';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
 import { DoctorList } from '@/components/doctors/DoctorList';
+import { useEntityView } from '@/hooks/useEntityView';
+import { useEntityDelete } from '@/hooks/useEntityDelete';
+import { EntityHeader } from '@/components/common/EntityHeader';
+import { EntityDates } from '@/components/common/EntityDates';
+import { useUser } from '@/hooks/useUser';
 
 export default function ClinicView() {
   const { id } = useParams();
-  const router = useRouter();
+  const { user, loading: userLoading } = useUser(false);
 
-  const [clinic, setClinic] = useState<Clinic | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const {
+    entity: clinic,
+    loading,
+    error,
+  } = useEntityView<Clinic>(clinicApi.getById, id);
+  const { isConfirmOpen, setIsConfirmOpen, handleDelete } = useEntityDelete(
+    clinicApi.delete,
+    '/clinics',
+  );
   const [search, setSearch] = useState('');
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
-  useEffect(() => {
-    if (!id) return;
-
-    clinicApi
-      .getById(Number(id))
-      .then((data) => setClinic(data))
-      .catch(() => setError('Failed to load clinic details'))
-      .finally(() => setLoading(false));
-  }, [id]);
-
-  const handleDeleteClinic = async () => {
-    if (!clinic) return;
-    setLoading(true);
-    try {
-      await clinicApi.delete(clinic.id);
-      router.push('/clinics');
-    } catch (err) {
-      console.error('Failed to delete clinic', err);
-      setLoading(false);
-    }
-  };
-
-  if (loading) return <p>Loading clinic...</p>;
+  if (loading || userLoading) return <p>Loading clinic...</p>;
   if (error || !clinic)
     return <p className="text-red-600">{error || 'Clinic not found'}</p>;
 
+  const isAdmin = user?.role === 'ADMIN';
+
   return (
     <div className="container mx-auto p-4 max-w-3xl">
-      <button
-        onClick={() => router.back()}
-        className="mb-4 px-3 py-1 text-blue-600 rounded border border-transparent hover:border-blue-600 hover:text-blue-800 transition cursor-pointer"
-      >
-        ← Back to Clinics
-      </button>
-
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-3xl font-bold">{clinic.name}</h1>
-        <div className="flex gap-2">
-          <button
-            onClick={() => router.push(`/admin/clinics/${clinic.id}`)}
-            className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => setIsConfirmOpen(true)}
-            className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
-          >
-            Delete
-          </button>
-        </div>
-      </div>
+      {/* Header */}
+      <EntityHeader
+        title={clinic.name}
+        editPath={`/admin/clinics/${clinic.id}`}
+        backText="Back to Clinics"
+        onDeleteClick={() => setIsConfirmOpen(true)}
+        isAdmin={isAdmin}
+      />
 
       <div className="space-y-2 mb-6">
         <p>
@@ -82,20 +56,15 @@ export default function ClinicView() {
             <strong>Email:</strong> {clinic.email}
           </p>
         )}
-        <p>
-          <strong>Created:</strong>{' '}
-          {new Date(clinic.createdAt).toLocaleString()}
-        </p>
-        <p>
-          <strong>Updated:</strong>{' '}
-          {new Date(clinic.updatedAt).toLocaleString()}
-        </p>
+        <EntityDates
+          createdAt={clinic.createdAt}
+          updatedAt={clinic.updatedAt}
+        />
       </div>
 
-      {clinic.doctors && clinic.doctors.length > 0 && (
+      {clinic.doctors && clinic.doctors?.length > 0 && (
         <div className="mt-6">
           <h2 className="text-xl font-semibold mb-2">Doctors</h2>
-
           <input
             type="text"
             placeholder="Search doctors by name, email, phone or service..."
@@ -103,8 +72,7 @@ export default function ClinicView() {
             onChange={(e) => setSearch(e.target.value)}
             className="mb-4 w-full p-2 border border-gray-300 rounded shadow-sm"
           />
-
-          <DoctorList doctors={clinic.doctors ?? []} search={search} />
+          <DoctorList doctors={clinic.doctors} search={search} />
         </div>
       )}
 
@@ -114,7 +82,7 @@ export default function ClinicView() {
           message={`Are you sure you want to delete clinic "${clinic.name}"? This action cannot be undone.`}
           confirmText="Delete"
           cancelText="Cancel"
-          onConfirm={handleDeleteClinic}
+          onConfirm={() => handleDelete(clinic.id)}
           onCancel={() => setIsConfirmOpen(false)}
         />
       )}

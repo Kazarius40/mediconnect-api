@@ -1,6 +1,10 @@
-import { Clinic, CreateClinicDto, UpdateClinicDto } from '@/interfaces/clinic';
+import {
+  Clinic,
+  ClinicFilterDto,
+  CreateClinicDto,
+  UpdateClinicDto,
+} from '@/interfaces/clinic';
 import api from '@/api/axios';
-import { ClinicFilterDto } from '@/interfaces/clinic/clinic-filter.dto';
 
 const clinicApi = {
   async getAll(filters?: ClinicFilterDto): Promise<Clinic[]> {

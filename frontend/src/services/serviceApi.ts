@@ -1,16 +1,16 @@
-import { AxiosResponse } from 'axios';
 import { Service } from '@/interfaces/service';
 import api from '@/api/axios';
 
-const getAll = (): Promise<AxiosResponse<Service[]>> => {
-  return api.get('/services');
+const serviceApi = {
+  async getAll(): Promise<Service[]> {
+    const res = await api.get<Service[]>('/services');
+    return res.data;
+  },
+
+  async getById(id: number): Promise<Service> {
+    const res = await api.get<Service>(`/services/${id}`);
+    return res.data;
+  },
 };
 
-const getById = (id: number): Promise<AxiosResponse<Service>> => {
-  return api.get(`/services/${id}`);
-};
-
-export default {
-  getAll,
-  getById,
-};
+export default serviceApi;

@@ -4,6 +4,7 @@ import React from 'react';
 import { useParams } from 'next/navigation';
 import ClinicForm from '@/components/clinics/ClinicForm';
 import { useClinic } from '@/hooks/useClinic';
+import { EntityHeader } from '@/components/common/EntityHeader';
 
 export default function ClinicEdit() {
   const { id } = useParams();
@@ -15,7 +16,14 @@ export default function ClinicEdit() {
 
   return (
     <div className="max-w-3xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Edit Clinic</h1>
+      <EntityHeader
+        title="Edit Clinic"
+        editPath=""
+        backText="Back to Clinics"
+        onDeleteClick={() => {}}
+        isAdmin={false}
+      />
+
       <ClinicForm
         clinicId={clinic.id}
         allDoctors={doctors}

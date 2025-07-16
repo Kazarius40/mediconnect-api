@@ -32,6 +32,11 @@ export const FormField: React.FC<FormFieldProps> = ({
         type={type}
         placeholder={placeholder}
         {...register}
+        onBeforeInput={(e: any) => {
+          if (htmlFor === 'phone' && !/[\d+]/.test(e.data)) {
+            e.preventDefault();
+          }
+        }}
         className={`w-full border p-2 rounded ${
           error ? 'border-red-500' : 'border-gray-300'
         }`}

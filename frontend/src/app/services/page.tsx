@@ -15,8 +15,8 @@ const ServicesPage: React.FC = () => {
   useEffect(() => {
     serviceService
       .getAll()
-      .then((response) => {
-        setServices(response.data);
+      .then((data) => {
+        setServices(data);
         setLoading(false);
       })
       .catch(() => {

@@ -12,6 +12,8 @@ import {
   MultiSelect,
   MultiSelectOption,
 } from '@/components/common/MultiSelect';
+import { processBackendErrors } from '@/utils/errors/backend-error.util';
+import { normalizeFormData } from '@/utils/forms/normalize-form-data.util';
 
 interface ClinicFormProps {
   initialValues?: Partial<CreateClinicDto>;
@@ -52,14 +54,7 @@ export default function ClinicForm({
 
   const onSubmit = async (data: CreateClinicDto) => {
     try {
-      const normalizedData = {
-        ...data,
-        phone: normalizePhoneFrontend(data.phone),
-      };
-
-      if (!normalizedData.email || normalizedData.email.trim() === '') {
-        delete normalizedData.email;
-      }
+      const normalizedData = normalizeFormData(data);
 
       if (clinicId) {
         await clinicApi.update(clinicId, normalizedData);
@@ -69,33 +64,7 @@ export default function ClinicForm({
         router.push('/clinics');
       }
     } catch (err: any) {
-      console.error('Save error:', err.response?.data || err.message);
-
-      const backendMessage = err.response?.data?.message;
-
-      if (typeof backendMessage === 'string') {
-        handleBackendError(backendMessage);
-      }
-
-      if (Array.isArray(backendMessage)) {
-        backendMessage.forEach((msg: string) => handleBackendError(msg));
-      }
-    }
-  };
-
-  const handleBackendError = (msg: string) => {
-    const lower = msg.toLowerCase();
-    if (lower.includes('phone')) {
-      setError('phone', { message: 'This phone is already in use' });
-    }
-    if (lower.includes('email')) {
-      setError('email', { message: 'This email is already in use' });
-    }
-    if (lower.includes('name')) {
-      setError('name', { message: msg });
-    }
-    if (lower.includes('address')) {
-      setError('address', { message: msg });
+      processBackendErrors<CreateClinicDto>(err, setError);
     }
   };
 
