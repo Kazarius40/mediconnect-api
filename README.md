@@ -1,34 +1,24 @@
-# 🚀 Getting Started
+# 📋 Prerequisites
 
-## 📋 Prerequisites
+Docker Desktop – [Download and Install](https://www.docker.com/products/docker-desktop/) (includes Docker Compose)
 
-Make sure you have the following software installed:
+Run Docker environment and initialize the database:
 
--   **Docker Desktop** – [Download and Install](https://www.docker.com/products/docker-desktop/) (includes Docker Compose)
+# ✅ Create a .env file
 
-## Start the Docker environment and initialize the database:
-## Navigate to the root directory of your project in your terminal and run the following commands:
+Create a [.env]() file in the **`root`** of the project based on [.env.example]() and fill in your environment variables.
 
-# Build and start all services in detached mode
+From the root of the project, run:
 ```bash
-docker-compose up -d --build
+docker-compose up
 ```
 ---
+✅ This will start all services (backend + frontend) and initialize your database.
 
-🗂 Database Migrations
-This project uses TypeORM for database migrations.
+➡️ Once it’s up, open http://localhost:3001 in your browser to access the application.
 
-Generate a new migration
-Run the following command, replacing MigrationName with a descriptive name (no spaces):
+# 🌐 API Endpoints
 
-```bash
-npm run migration:generate:local -- ./src/database/MyMigrationName
-```
-This will create a new migration file in:
-
-./src/database/migrations/
-
-🌐 API Endpoints
 Base URL: http://localhost:3000
 
 🔑 Authentication
