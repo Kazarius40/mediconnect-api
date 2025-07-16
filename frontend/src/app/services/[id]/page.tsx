@@ -2,35 +2,37 @@
 
 import React, { useState } from 'react';
 import { useParams } from 'next/navigation';
-import clinicApi from '@/services/clinicApi';
-import { Clinic } from '@/interfaces/clinic';
+import serviceApi from '@/services/serviceApi';
+import { Service } from '@/interfaces/service';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
-import { DoctorList } from '@/components/doctors/DoctorList';
 import { useEntityView } from '@/hooks/useEntityView';
 import { useEntityDelete } from '@/hooks/useEntityDelete';
 import { EntityHeader } from '@/components/common/EntityHeader';
 import { EntityDates } from '@/components/common/EntityDates';
 import { useUser } from '@/hooks/useUser';
+import { DoctorList } from '@/components/doctors/DoctorList';
 
-export default function ClinicView() {
+export default function ServiceView() {
   const { id } = useParams();
   const { user, loading: userLoading } = useUser(false);
 
   const {
-    entity: clinic,
+    entity: service,
     loading,
     error,
-  } = useEntityView<Clinic>(clinicApi.getById, id);
+  } = useEntityView<Service>(serviceApi.getById, id);
 
   const { isConfirmOpen, setIsConfirmOpen, handleDelete } = useEntityDelete(
-    clinicApi.delete,
-    '/clinics',
+    serviceApi.delete,
+    '/services',
   );
   const [search, setSearch] = useState('');
 
-  if (loading || userLoading) return <p>Loading clinic...</p>;
-  if (error || !clinic)
-    return <p className="text-red-600">{error || 'Clinic not found'}</p>;
+  if (loading || userLoading) return <p>Loading service...</p>;
+  if (error || !service)
+    return <p className="text-red-600">{error || 'Service not found'}</p>;
+
+  console.log('service.doctors:', service.doctors);
 
   const isAdmin = user?.role === 'ADMIN';
 
@@ -38,9 +40,9 @@ export default function ClinicView() {
     <div className="container mx-auto p-4 max-w-3xl">
       {/* Header */}
       <EntityHeader
-        title={clinic.name}
-        editPath={`/admin/clinics/${clinic.id}`}
-        backText="Back to Clinics"
+        title={service.name}
+        editPath={`/admin/services/${service.id}`}
+        backText="Back to Services"
         onDeleteClick={() => setIsConfirmOpen(true)}
         isAdmin={isAdmin}
       />
@@ -48,34 +50,31 @@ export default function ClinicView() {
       {/* Basic info */}
       <div className="space-y-2 mb-6">
         <p>
-          <strong>Address:</strong> {clinic.address}
+          <strong>Description:</strong>{' '}
+          {service.description || 'No description available'}
         </p>
-        <p>
-          <strong>Phone:</strong> {clinic.phone}
-        </p>
-        {clinic.email && (
-          <p>
-            <strong>Email:</strong> {clinic.email}
-          </p>
-        )}
         <EntityDates
-          createdAt={clinic.createdAt}
-          updatedAt={clinic.updatedAt}
+          createdAt={service.createdAt}
+          updatedAt={service.updatedAt}
         />
       </div>
 
       {/* === Doctors Section === */}
-      {clinic.doctors && clinic.doctors?.length > 0 && (
+      {service.doctors && service.doctors.length > 0 && (
         <div className="mt-6">
           <h2 className="text-xl font-semibold mb-2">Doctors</h2>
           <input
             type="text"
-            placeholder="Search doctors by name, email, phone or service..."
+            placeholder="Search doctors by name, email, phone..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="mb-4 w-full p-2 border border-gray-300 rounded shadow-sm"
           />
-          <DoctorList doctors={clinic.doctors} search={search} />
+          <DoctorList
+            doctors={service.doctors}
+            search={search}
+            mode="withClinics"
+          />
         </div>
       )}
 
@@ -83,10 +82,10 @@ export default function ClinicView() {
       {isConfirmOpen && (
         <ConfirmModal
           title="Confirm deletion"
-          message={`Are you sure you want to delete clinic "${clinic.name}"? This action cannot be undone.`}
+          message={`Are you sure you want to delete service "${service.name}"? This action cannot be undone.`}
           confirmText="Delete"
           cancelText="Cancel"
-          onConfirm={() => handleDelete(clinic.id)}
+          onConfirm={() => handleDelete(service.id)}
           onCancel={() => setIsConfirmOpen(false)}
         />
       )}

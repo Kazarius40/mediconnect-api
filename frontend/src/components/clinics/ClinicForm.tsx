@@ -14,6 +14,7 @@ import {
 } from '@/components/common/MultiSelect';
 import { processBackendErrors } from '@/utils/errors/backend-error.util';
 import { normalizeFormData } from '@/utils/forms/normalize-form-data.util';
+import toast from 'react-hot-toast';
 
 interface ClinicFormProps {
   initialValues?: Partial<CreateClinicDto>;
@@ -58,13 +59,16 @@ export default function ClinicForm({
 
       if (clinicId) {
         await clinicApi.update(clinicId, normalizedData);
+        toast.success('Clinic updated successfully!');
         router.push(`/admin/clinics/${clinicId}`);
       } else {
         await clinicApi.create(normalizedData);
+        toast.success('Clinic created successfully!');
         router.push('/clinics');
       }
     } catch (err: any) {
       processBackendErrors<CreateClinicDto>(err, setError);
+      toast.error('Failed to save clinic. Please try again.');
     }
   };
 

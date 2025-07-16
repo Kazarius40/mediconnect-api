@@ -15,6 +15,7 @@ import {
 } from '@/components/common/MultiSelect';
 import { processBackendErrors } from '@/utils/errors/backend-error.util';
 import { normalizeFormData } from '@/utils/forms/normalize-form-data.util';
+import toast from 'react-hot-toast';
 
 interface DoctorFormProps {
   initialValues?: Partial<CreateDoctorDto>;
@@ -67,13 +68,16 @@ export default function DoctorForm({
 
       if (doctorId) {
         await doctorApi.update(doctorId, normalizedData);
+        toast.success('Doctor updated successfully!');
         router.push(`/admin/doctors/${doctorId}`);
       } else {
         await doctorApi.create(normalizedData);
+        toast.success('Doctor created successfully!');
         router.push('/doctors');
       }
     } catch (err: any) {
       processBackendErrors<CreateDoctorDto>(err, setError);
+      toast.error('Failed to save doctor. Please try again.');
     }
   };
 

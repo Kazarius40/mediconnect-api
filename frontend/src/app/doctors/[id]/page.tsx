@@ -21,6 +21,7 @@ export default function DoctorView() {
     loading,
     error,
   } = useEntityView<Doctor>(doctorApi.getById, id);
+
   const { isConfirmOpen, setIsConfirmOpen, handleDelete } = useEntityDelete(
     doctorApi.delete,
     '/doctors',
