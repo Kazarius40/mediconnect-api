@@ -1,7 +1,7 @@
 'use client';
 
 import React, { FormEvent, useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { AxiosError } from 'axios';
 import api from '@/api/axios';
 
@@ -12,15 +12,17 @@ const ResetPasswordForm: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
-    const match = document.cookie.match(/(^| )resetToken=([^;]+)/);
-    if (match) {
-      setToken(match[2]);
+    const tokenFromUrl = searchParams.get('token');
+
+    if (tokenFromUrl) {
+      setToken(tokenFromUrl);
     } else {
       setError('Missing reset token');
     }
-  }, []);
+  }, [searchParams]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -44,8 +46,6 @@ const ResetPasswordForm: React.FC = () => {
       });
 
       setSuccess(res.data.message);
-
-      document.cookie = 'resetToken=; Max-Age=0; path=/';
 
       setTimeout(() => router.push('/auth/login'), 3000);
     } catch (err) {

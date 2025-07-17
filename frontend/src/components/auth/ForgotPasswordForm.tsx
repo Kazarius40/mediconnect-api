@@ -8,23 +8,16 @@ const ForgotPasswordForm: React.FC = () => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [resetLink, setResetLink] = useState<string | null>(null);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
     setMessage(null);
-    setResetLink(null);
 
     try {
       const res = await api.post('/auth/forgot-password', { email });
 
       setMessage(res.data.message);
-
-      if (res.data.resetToken) {
-        document.cookie = `resetToken=${res.data.resetToken}; path=/`;
-        setResetLink('/auth/reset-password');
-      }
     } catch (err) {
       const axiosError = err as AxiosError<{ message: string }>;
       setError(axiosError.response?.data?.message || 'Something went wrong');
@@ -55,20 +48,6 @@ const ForgotPasswordForm: React.FC = () => {
       >
         Send Reset Link
       </button>
-
-      {resetLink && (
-        <p className="mt-4 break-all">
-          Reset link:{' '}
-          <a
-            href={resetLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 underline"
-          >
-            {resetLink}
-          </a>
-        </p>
-      )}
     </form>
   );
 };

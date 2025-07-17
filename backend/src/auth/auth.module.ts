@@ -17,6 +17,7 @@ import { AuthProfileController } from './controllers/auth-profile.controller';
 import { AuthAdminController } from './controllers/auth-admin.controller';
 import { AuthPasswordController } from './controllers/auth-password.controller';
 import { AuthSessionService } from './services/auth-session.service';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { AuthSessionService } from './services/auth-session.service';
       inject: [ConfigService],
     }),
     TypeOrmModule.forFeature([User, Token]),
+    MailModule,
   ],
   controllers: [
     AuthSessionController,

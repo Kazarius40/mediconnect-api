@@ -54,7 +54,8 @@ export function addAuthInterceptor(api: AxiosInstance) {
         !originalRequest._retry &&
         !originalRequest.url?.includes('/auth/login') &&
         !originalRequest.url?.includes('/auth/register') &&
-        !originalRequest.url?.includes('/auth/refresh')
+        !originalRequest.url?.includes('/auth/refresh') &&
+        !originalRequest.url?.includes('/auth/reset-password')
       ) {
         if (tokenRefreshHandler.getRefreshing()) {
           return new Promise((resolve, reject) => {

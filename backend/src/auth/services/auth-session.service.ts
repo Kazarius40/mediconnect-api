@@ -19,6 +19,7 @@ import { SafeUser } from '../interfaces/safe-user.interface';
 import { validateEntityUniqueness } from '../../shared/validators/validate-entity-uniqueness.util';
 import { handleDb } from '../../shared/utils/db/handle-db.util';
 import { RequestWithCookies } from '../../shared/request-with-cookies.interface';
+import { MailService } from '../../mail/mail.service';
 
 @Injectable()
 export class AuthSessionService {
@@ -26,6 +27,7 @@ export class AuthSessionService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly tokenService: AuthTokenService,
+    private readonly mailService: MailService,
   ) {}
 
   // -------------------
@@ -88,7 +90,7 @@ export class AuthSessionService {
   // -------------------
   async forgotPassword(
     dto: AuthForgotPasswordDto,
-  ): Promise<{ message: string; resetToken?: string }> {
+  ): Promise<{ message: string }> {
     const { email } = dto;
     const user = await this.userRepository.findOneBy({ email });
 
@@ -107,14 +109,13 @@ export class AuthSessionService {
 
     await handleDb(() => this.userRepository.save(user));
 
-    /*
+    const resetLink = `${process.env.FRONTEND_URL}/auth/reset-password?token=${resetToken}`;
+
     await this.mailService.sendPasswordResetEmail(user.email, resetLink);
-    */
 
     return {
       message:
         'If a user with that email exists, a password reset link has been sent.',
-      resetToken,
     };
   }
 
