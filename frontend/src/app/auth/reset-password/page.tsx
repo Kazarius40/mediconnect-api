@@ -1,11 +1,12 @@
 'use client';
 
 import ResetPasswordForm from '@/components/auth/ResetPasswordForm';
+import { Suspense } from 'react';
 
 export default function ResetPasswordPage() {
   return (
-    <div className="reset-password-page">
+    <Suspense fallback={<div>Loading reset form...</div>}>
       <ResetPasswordForm />
-    </div>
+    </Suspense>
   );
 }

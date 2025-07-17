@@ -35,6 +35,34 @@ docker-compose up
 
 ➡️ Once it’s up, open http://localhost:3001 in your browser to access the application.
 
+## ⚙️ Migration Instructions (For Testers and Developers)
+
+If you modify or add any entities and need to generate a new database migration, please follow these steps:
+
+Make sure your database container is running. To avoid conflicts, stop all containers first:
+
+```bash
+docker-compose down
+```
+Then start only the database container:
+```bash
+docker-compose up db
+```
+Navigate to the backend folder:
+```bash
+cd backend
+```
+Generate a new migration by running:
+```bash
+npm run typeorm -- migration:generate src/database/MigrationName -d ./src/data-source.ts
+
+```
+Replace MigrationName with a descriptive name for your migration. For example, if you add cascade delete for tokens on user deletion, you might name it:
+
+[AddCascadeDeleteOnTokenUser]()
+
+This will generate a new migration file inside the backend/src/database folder.
+
 # 🌐 API Endpoints
 
 Base URL: http://localhost:3000

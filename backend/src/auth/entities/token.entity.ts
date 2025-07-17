@@ -39,6 +39,8 @@ export class Token {
   jti: string;
 
   // ------------------------------------------------------ Relations ------------------------------------------------------------
-  @ManyToOne(() => User, (user) => user.tokens)
+  @ManyToOne(() => User, (user) => user.tokens, {
+    onDelete: 'CASCADE',
+  })
   user: User;
 }
