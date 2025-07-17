@@ -8,6 +8,24 @@ Run Docker environment and initialize the database:
 
 Create a [.env]() file in the **`root`** of the project based on [.env.example]() and fill in your environment variables.
 
+How to get SMTP_PASS (Gmail App Password)
+
+Go to your Google account security page:
+
+https://myaccount.google.com/security
+
+Enable 2-Step Verification if it’s not enabled yet.
+
+After enabling, go to App Passwords:
+
+https://myaccount.google.com/apppasswords
+
+Select Custom (Other), name it, for example, Mediconnect, and generate the password.
+
+Copy the generated password and paste it into SMTP_PASS in .env without spaces!
+
+
+
 From the root of the project, run:
 ```bash
 docker-compose up
