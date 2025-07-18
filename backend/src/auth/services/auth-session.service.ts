@@ -86,7 +86,7 @@ export class AuthSessionService {
   ): Promise<{ accessToken: string }> {
     const user = await this.validateUser(dto.email, dto.password);
 
-    if (!user.emailVerified) {
+    if (!user.emailVerified && user.verificationToken !== null) {
       throw new UnauthorizedException(
         'Please verify your email before logging in.',
       );
