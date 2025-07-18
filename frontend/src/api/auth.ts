@@ -31,3 +31,7 @@ export function refreshToken() {
 export function getProfile() {
   return api.get<AuthUser>('/auth/profile');
 }
+
+export function verifyEmail(token: string) {
+  return api.post<{ message: string }>('/auth/verify-email', { token });
+}

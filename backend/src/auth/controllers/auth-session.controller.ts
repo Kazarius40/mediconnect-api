@@ -35,6 +35,12 @@ export class AuthSessionController {
     return await this.sessionService.register(dto);
   }
 
+  @Post('verify-email')
+  @HttpCode(HttpStatus.OK)
+  async verifyEmail(@Body('token') token: string) {
+    return await this.sessionService.verifyEmail(token);
+  }
+
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @LoginDocs()

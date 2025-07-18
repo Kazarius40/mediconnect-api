@@ -1,12 +1,10 @@
 'use client';
 
 import React, { FormEvent, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { AxiosError } from 'axios';
 import { register } from '@/api/auth';
 
 const RegisterForm: React.FC = () => {
-  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -29,7 +27,6 @@ const RegisterForm: React.FC = () => {
       const response = await register({ email, password });
 
       setSuccess(response.data.message || 'Registration successful!');
-      setTimeout(() => router.push('/auth/login'), 2000);
     } catch (err) {
       const axiosError = err as AxiosError<{ message: string }>;
       setError(axiosError.response?.data?.message || 'Registration failed');

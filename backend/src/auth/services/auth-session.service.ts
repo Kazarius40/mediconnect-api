@@ -15,7 +15,6 @@ import { AuthForgotPasswordDto } from '../dto/auth-forgot-password.dto';
 import { AuthResetPasswordDto } from '../dto/auth-reset-password.dto';
 import { Response as ExpressResponse } from 'express';
 import { UserRole } from 'src/shared/enums/user-role.enum';
-import { SafeUser } from '../interfaces/safe-user.interface';
 import { validateEntityUniqueness } from '../../shared/validators/validate-entity-uniqueness.util';
 import { handleDb } from '../../shared/utils/db/handle-db.util';
 import { RequestWithCookies } from '../../shared/request-with-cookies.interface';
@@ -33,16 +32,52 @@ export class AuthSessionService {
   // -------------------
   // Registration & Authentication
   // -------------------
-  async register(dto: AuthRegisterDto): Promise<SafeUser> {
+  async register(dto: AuthRegisterDto): Promise<{ message: string }> {
     await validateEntityUniqueness(this.userRepository, dto);
 
     const user = this.userRepository.create({
       ...dto,
       role: UserRole.PATIENT,
+      emailVerified: false,
     });
 
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+    user.verificationToken = verificationToken;
+    user.verificationTokenExpires = verificationTokenExpires;
+
     await handleDb(() => this.userRepository.save(user));
-    return this.toSafeUser(user);
+
+    const verifyLink = `${process.env.FRONTEND_URL}/auth/verify-email?token=${verificationToken}`;
+
+    await this.mailService.sendVerificationEmail(user.email, verifyLink);
+
+    return {
+      message:
+        'Registration successful! Please check your email to verify your account.',
+    };
+  }
+
+  async verifyEmail(token: string): Promise<{ message: string }> {
+    const user = await this.userRepository.findOne({
+      where: {
+        verificationToken: token,
+        verificationTokenExpires: MoreThan(new Date()),
+      },
+    });
+
+    if (!user) {
+      throw new BadRequestException('Invalid or expired verification token');
+    }
+
+    user.emailVerified = true;
+    user.verificationToken = null;
+    user.verificationTokenExpires = null;
+
+    await handleDb(() => this.userRepository.save(user));
+
+    return { message: 'Email verified successfully! You can now log in.' };
   }
 
   async login(
@@ -50,10 +85,17 @@ export class AuthSessionService {
     res: ExpressResponse,
   ): Promise<{ accessToken: string }> {
     const user = await this.validateUser(dto.email, dto.password);
+
+    if (!user.emailVerified) {
+      throw new UnauthorizedException(
+        'Please verify your email before logging in.',
+      );
+    }
+
     const { accessToken, refreshToken } =
       await this.tokenService.generateAndSaveTokens(user);
-
     this.tokenService.setRefreshCookie(res, refreshToken);
+
     return { accessToken };
   }
 
@@ -155,9 +197,9 @@ export class AuthSessionService {
     return user;
   }
 
-  private toSafeUser(user: User): SafeUser {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...safeUser } = user;
-    return safeUser;
-  }
+  // private toSafeUser(user: User): SafeUser {
+  //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  //   const { password, ...safeUser } = user;
+  //   return safeUser;
+  // }
 }

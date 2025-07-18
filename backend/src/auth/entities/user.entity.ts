@@ -14,6 +14,7 @@ import { Token } from './token.entity';
 import {
   UserCreatedAtSwagger,
   UserEmailSwagger,
+  UserEmailVerifiedSwagger,
   UserFirstNameSwagger,
   UserIdSwagger,
   UserLastNameSwagger,
@@ -24,6 +25,8 @@ import {
   UserRoleSwagger,
   UserTokensSwagger,
   UserUpdatedAtSwagger,
+  UserVerificationTokenSwagger,
+  UserVerificationTokenExpiresSwagger,
 } from '../../swagger/methods/users/user-entity.swagger';
 
 @Entity()
@@ -57,6 +60,19 @@ export class User {
   @Column({ type: 'enum', enum: UserRole, default: UserRole.PATIENT })
   @UserRoleSwagger()
   role: UserRole;
+
+  // ------------------------------------------------------ Email verification ---------------------------------------------------
+  @Column({ default: false })
+  @UserEmailVerifiedSwagger()
+  emailVerified: boolean;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  @UserVerificationTokenSwagger()
+  verificationToken: string | null;
+
+  @Column({ type: 'timestamp', nullable: true })
+  @UserVerificationTokenExpiresSwagger()
+  verificationTokenExpires: Date | null;
 
   // ------------------------------------------------------ Password reset -------------------------------------------------------
   @Column({ nullable: true, type: 'varchar', length: 255 })

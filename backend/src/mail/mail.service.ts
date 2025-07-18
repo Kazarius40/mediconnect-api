@@ -30,4 +30,17 @@ export class MailService {
       `,
     });
   }
+
+  async sendVerificationEmail(to: string, verifyLink: string) {
+    await this.transporter.sendMail({
+      from: `"Your App" <${process.env.SMTP_USER}>`,
+      to,
+      subject: 'Verify Your Email Address',
+      html: `
+        <p>Welcome! Please verify your email by clicking the link below:</p>
+        <p><a href="${verifyLink}">${verifyLink}</a></p>
+        <p>This link will expire in 24 hours.</p>
+      `,
+    });
+  }
 }

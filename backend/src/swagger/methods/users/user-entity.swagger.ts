@@ -29,6 +29,29 @@ export function UserRoleSwagger() {
   });
 }
 
+export function UserEmailVerifiedSwagger() {
+  return ApiProperty({
+    example: false,
+    description: 'Indicates whether the user has verified their email',
+  });
+}
+
+export function UserVerificationTokenSwagger() {
+  return ApiProperty({
+    example: 'verification-token-abc123',
+    description: 'Email verification token (used to confirm email)',
+    nullable: true,
+  });
+}
+
+export function UserVerificationTokenExpiresSwagger() {
+  return ApiProperty({
+    example: '2025-07-19T15:00:00Z',
+    description: 'Expiration date for the email verification token',
+    nullable: true,
+  });
+}
+
 export function UserFirstNameSwagger() {
   return ApiProperty({
     example: 'Ivan',

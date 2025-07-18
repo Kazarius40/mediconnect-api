@@ -55,7 +55,6 @@ cd backend
 Generate a new migration by running:
 ```bash
 npm run typeorm -- migration:generate src/database/MigrationName -d ./src/data-source.ts
-
 ```
 Replace MigrationName with a descriptive name for your migration. For example, if you add cascade delete for tokens on user deletion, you might name it:
 
