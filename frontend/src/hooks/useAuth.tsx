@@ -12,10 +12,14 @@ interface AuthContextType {
 }
 
 const PUBLIC_PATHS = [
+  '/',
   '/auth/login',
-  '/auth/register',
+  '/register',
   '/auth/reset-password',
   '/auth/forgot-password',
+  '/clinics',
+  '/doctors',
+  '/services',
 ];
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,25 +31,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   const refreshUser = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
       const res = await authApi.getProfile();
       setUser(res.data);
     } catch {
       setUser(null);
-      router.push('/auth/login');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (PUBLIC_PATHS.some((path) => pathname.startsWith(path))) {
-      setUser(null);
+    const isPublic = PUBLIC_PATHS.some(
+      (path) => pathname === path || pathname.startsWith(path + '/'),
+    );
+
+    if (isPublic) {
       setLoading(false);
       return;
     }
-    void refreshUser();
+
+    void (async () => {
+      setLoading(true);
+      try {
+        const res = await authApi.getProfile();
+        setUser(res.data);
+      } catch {
+        setUser(null);
+        router.push('/auth/login');
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, [pathname]);
 
   return (
