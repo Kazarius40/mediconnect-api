@@ -17,6 +17,7 @@ import { findOrFail } from '../../shared/utils/typeorm/find-or-fail.util';
 import { handleDb } from '../../shared/utils/db/handle-db.util';
 import { AuthAdminUpdateUserDto } from '../dto/auth-admin-update-user.dto';
 import { validateEntityUniqueness } from '../../shared/validators/validate-entity-uniqueness.util';
+import { toSafeUser } from '../../shared/utils/entity/user.util';
 
 @Injectable()
 export class AuthAdminService implements OnModuleInit {
@@ -62,14 +63,14 @@ export class AuthAdminService implements OnModuleInit {
 
   async findAll(): Promise<SafeUser[]> {
     const users = await this.userRepository.find();
-    return users.map((user) => this.toSafeUser(user));
+    return users.map((user) => toSafeUser(user));
   }
 
   async findOne(id: number): Promise<SafeUser> {
     const user = await findOrFail(this.userRepository, id, {
       relations: ['tokens'],
     });
-    return this.toSafeUser(user);
+    return toSafeUser(user);
   }
 
   async update(
@@ -118,7 +119,7 @@ export class AuthAdminService implements OnModuleInit {
 
     await handleDb(() => this.userRepository.save(user));
 
-    return this.toSafeUser(user);
+    return toSafeUser(user);
   }
 
   async delete(id: number, currentUserId?: number): Promise<void> {
@@ -129,12 +130,6 @@ export class AuthAdminService implements OnModuleInit {
     const user = await this.findUserOrFail(id);
 
     await handleDb(() => this.userRepository.remove(user));
-  }
-
-  private toSafeUser(user: User): SafeUser {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...safeUser } = user;
-    return safeUser;
   }
 
   private async findUserOrFail(id: number): Promise<User> {

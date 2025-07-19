@@ -41,6 +41,12 @@ export class AuthSessionController {
     return await this.sessionService.verifyEmail(token);
   }
 
+  @Post('resend-verification')
+  @HttpCode(HttpStatus.OK)
+  async resendVerification(@Body('email') email: string) {
+    return await this.sessionService.resendVerification(email);
+  }
+
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @LoginDocs()

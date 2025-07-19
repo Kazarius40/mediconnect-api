@@ -9,7 +9,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { UserRequest } from '../interfaces/user-request.interface';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthProfileService } from '../services/auth-profile.service';
 import {
@@ -17,6 +16,7 @@ import {
   UpdateProfileDocs,
 } from '../../swagger/methods/auth/auth/auth-profile-docs.swagger';
 import { AuthUpdateProfileDto } from '../dto/auth-update-profile.dto';
+import { SafeUser } from '../interfaces/safe-user.interface';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -28,15 +28,15 @@ export class AuthProfileController {
   @Get('profile')
   @HttpCode(HttpStatus.OK)
   @GetProfileDocs()
-  getProfile(@Request() req: UserRequest) {
-    return this.authProfileService.getProfile(req.user);
+  getProfile(@Request() req: { user: SafeUser }): SafeUser {
+    return req.user;
   }
 
   @Patch('profile')
   @HttpCode(HttpStatus.OK)
   @UpdateProfileDocs()
   async updateProfile(
-    @Request() req: UserRequest,
+    @Request() req: { user: SafeUser },
     @Body() dto: AuthUpdateProfileDto,
   ) {
     return await this.authProfileService.updateProfile(req.user.id, dto);

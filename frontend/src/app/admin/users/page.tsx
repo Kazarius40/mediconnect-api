@@ -3,15 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/api/axios';
-
-interface User {
-  id: number;
-  email: string;
-  role: string;
-  firstName?: string;
-  lastName?: string;
-  phone?: string;
-}
+import { User } from '@/interfaces/user/user';
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([]);
@@ -65,9 +57,9 @@ export default function AdminUsersPage() {
               <td className="border p-2">{user.id}</td>
               <td className="border p-2">{user.email}</td>
               <td className="border p-2">
-                {user.firstName} {user.lastName}
+                {(user.firstName || '') + ' ' + (user.lastName || '')}
               </td>
-              <td className="border p-2">{user.phone}</td>
+              <td className="border p-2">{user.phone || '-'}</td>
               <td className="border p-2">{user.role}</td>
             </tr>
           ))}

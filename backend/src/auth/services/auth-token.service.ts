@@ -9,7 +9,7 @@ import { ITokens } from '../interfaces/tokens.interface';
 import { IJWTPayload } from '../interfaces/jwt-payload.interface';
 import { handleDb } from '../../shared/utils/db/handle-db.util';
 import { Response } from 'express';
-import { RequestWithCookies } from '../../shared/request-with-cookies.interface';
+import { RequestWithCookies } from '../../shared/interfaces/request-with-cookies.interface';
 
 @Injectable()
 export class AuthTokenService {

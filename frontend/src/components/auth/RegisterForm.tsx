@@ -3,6 +3,7 @@
 import React, { FormEvent, useState } from 'react';
 import { AxiosError } from 'axios';
 import { register } from '@/api/auth';
+import { useRouter } from 'next/navigation';
 
 const RegisterForm: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -10,6 +11,8 @@ const RegisterForm: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  const router = useRouter();
 
   const passwordsMatch = password === confirmPassword;
 
@@ -24,9 +27,9 @@ const RegisterForm: React.FC = () => {
     }
 
     try {
-      const response = await register({ email, password });
+      await register({ email, password });
 
-      setSuccess(response.data.message || 'Registration successful!');
+      router.push(`/auth/email-sent?email=${encodeURIComponent(email)}`);
     } catch (err) {
       const axiosError = err as AxiosError<{ message: string }>;
       setError(axiosError.response?.data?.message || 'Registration failed');

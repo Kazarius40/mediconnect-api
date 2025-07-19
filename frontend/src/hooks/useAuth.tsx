@@ -2,21 +2,23 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { AuthUser } from '@/interfaces/auth';
 import * as authApi from '@/api/auth';
+import { User } from '@/interfaces/user/user';
 
 interface AuthContextType {
-  user: AuthUser | null;
+  user: User | null;
   loading: boolean;
   refreshUser: () => Promise<void>;
 }
 
 const PUBLIC_PATHS = [
   '/',
-  '/auth/login',
   '/register',
-  '/auth/reset-password',
+  '/auth/email-sent',
   '/auth/forgot-password',
+  '/auth/login',
+  '/auth/reset-password',
+  '/auth/verify-email',
   '/clinics',
   '/doctors',
   '/services',
@@ -25,7 +27,7 @@ const PUBLIC_PATHS = [
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();

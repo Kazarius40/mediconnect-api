@@ -3,31 +3,32 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import api from '@/api/axios';
+import { User } from '@/interfaces/user/user';
 
-interface User {
-  id: number;
-  email: string;
-  role: string;
-  firstName?: string;
-  lastName?: string;
-  phone?: string;
-}
+type UserEditable = Pick<User, 'email' | 'firstName' | 'lastName' | 'phone'>;
 
 export default function UserEditPage() {
   const { id } = useParams();
   const router = useRouter();
+
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState<Partial<User>>({});
+  const [form, setForm] = useState<Partial<UserEditable>>({});
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!id) return;
     api
       .get<User>(`/auth/users/${id}`)
       .then((res) => {
         setUser(res.data);
-        setForm(res.data);
+        setForm({
+          email: res.data.email,
+          firstName: res.data.firstName,
+          lastName: res.data.lastName,
+          phone: res.data.phone,
+        });
       })
       .catch(() => setError('Failed to fetch user'))
       .finally(() => setLoading(false));
@@ -40,11 +41,17 @@ export default function UserEditPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const allowedFields = ['email', 'firstName', 'lastName', 'phone'];
+    const allowedFields: (keyof UserEditable)[] = [
+      'email',
+      'firstName',
+      'lastName',
+      'phone',
+    ];
+
     const filteredForm = Object.fromEntries(
       Object.entries(form).filter(
         ([key, value]) =>
-          allowedFields.includes(key) &&
+          allowedFields.includes(key as keyof UserEditable) &&
           typeof value === 'string' &&
           value.trim() !== '',
       ),

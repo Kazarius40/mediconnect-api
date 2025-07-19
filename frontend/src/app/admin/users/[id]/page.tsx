@@ -3,41 +3,21 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import api from '@/api/axios';
+import { User } from '@/interfaces/user/user';
 
-interface Token {
-  id: number;
-  accessToken: string;
-  refreshToken: string;
-  accessTokenExpiresAt: string;
-  refreshTokenExpiresAt: string;
-  isBlocked: boolean;
-  jti: string;
-}
-
-interface User {
-  id: number;
-  email: string;
-  role: string;
-  firstName?: string;
-  lastName?: string;
-  phone?: string;
-  createdAt?: string;
-  updatedAt?: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpires?: string | null;
-  tokens?: Token[];
-}
-
-const roles = ['ADMIN', 'PATIENT', 'DOCTOR'];
+const roles = ['ADMIN', 'PATIENT', 'DOCTOR'] as const;
+type Role = (typeof roles)[number];
 
 export default function UserDetailsPage() {
   const { id } = useParams();
   const router = useRouter();
+
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [newRole, setNewRole] = useState<string>('');
+
+  const [newRole, setNewRole] = useState<Role>('ADMIN');
 
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [deleteInput, setDeleteInput] = useState('');
@@ -50,14 +30,15 @@ export default function UserDetailsPage() {
       .get<User>(`/auth/users/${id}`)
       .then((res) => {
         setUser(res.data);
-        setNewRole(res.data.role);
+        setNewRole(res.data.role as Role);
+        setError(null);
       })
       .catch(() => setError('Failed to fetch user'))
       .finally(() => setLoading(false));
-  }, [id, router]);
+  }, [id]);
 
   const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setNewRole(e.target.value);
+    setNewRole(e.target.value as Role);
   };
 
   const handleRoleUpdate = async () => {
@@ -119,56 +100,12 @@ export default function UserDetailsPage() {
         </p>
         <p>
           <strong>Created At:</strong>{' '}
-          {new Date(user.createdAt!).toLocaleString()}
+          {user.createdAt ? new Date(user.createdAt).toLocaleString() : '-'}
         </p>
         <p>
           <strong>Updated At:</strong>{' '}
-          {new Date(user.updatedAt!).toLocaleString()}
+          {user.updatedAt ? new Date(user.updatedAt).toLocaleString() : '-'}
         </p>
-        <p>
-          <strong>Reset Password Token:</strong>{' '}
-          {user.resetPasswordToken || '-'}
-        </p>
-        <p>
-          <strong>Reset Password Expires:</strong>{' '}
-          {user.resetPasswordExpires
-            ? new Date(user.resetPasswordExpires).toLocaleString()
-            : '-'}
-        </p>
-
-        {user.tokens && user.tokens.length > 0 && (
-          <div>
-            <h2 className="text-xl font-semibold mt-4">Tokens</h2>
-            <table className="w-full border border-collapse mt-2 text-sm">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="border p-1">ID</th>
-                  <th className="border p-1">JTI</th>
-                  <th className="border p-1">Access Expires</th>
-                  <th className="border p-1">Refresh Expires</th>
-                  <th className="border p-1">Blocked</th>
-                </tr>
-              </thead>
-              <tbody>
-                {user.tokens.map((token) => (
-                  <tr key={token.id} className="hover:bg-gray-50">
-                    <td className="border p-1">{token.id}</td>
-                    <td className="border p-1 break-all">{token.jti}</td>
-                    <td className="border p-1">
-                      {new Date(token.accessTokenExpiresAt).toLocaleString()}
-                    </td>
-                    <td className="border p-1">
-                      {new Date(token.refreshTokenExpiresAt).toLocaleString()}
-                    </td>
-                    <td className="border p-1">
-                      {token.isBlocked ? 'Yes' : 'No'}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
 
         {user && (
           <div className="mt-6">
@@ -199,8 +136,13 @@ export default function UserDetailsPage() {
           ))}
         </select>
         <button
+          disabled={newRole === user?.role}
           onClick={handleRoleUpdate}
-          className="ml-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+          className={`ml-4 px-4 py-2 rounded text-white ${
+            newRole === user?.role
+              ? 'bg-gray-400 cursor-not-allowed'
+              : 'bg-green-600 hover:bg-green-700'
+          }`}
         >
           Update Role
         </button>

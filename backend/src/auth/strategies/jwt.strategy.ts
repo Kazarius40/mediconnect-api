@@ -4,24 +4,11 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Strategy, ExtractJwt } from 'passport-jwt';
-import { UserRole } from '../../shared/enums/user-role.enum';
 import { Token } from '../entities/token.entity';
 import { User } from '../entities/user.entity';
 import { IJWTPayload } from '../interfaces/jwt-payload.interface';
-
-interface ReturnedUserPayload {
-  id: number;
-  email: string;
-  role: UserRole;
-  firstName?: string;
-  lastName?: string;
-  phone?: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpires?: Date | null;
-  createdAt: Date;
-  updatedAt: Date;
-  jti: string;
-}
+import { toSafeUser } from '../../shared/utils/entity/user.util';
+import { SafeUser } from '../interfaces/safe-user.interface';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -33,7 +20,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     private readonly userRepository: Repository<User>,
   ) {
     const jwtSecret = configService.get<string>('JWT_SECRET');
-
     if (!jwtSecret) {
       throw new Error('JWT_SECRET is not defined in environment variables.');
     }
@@ -52,7 +38,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    * - Verify user exists
    * - Return safe user payload with jti
    */
-  async validate(payload: IJWTPayload): Promise<ReturnedUserPayload> {
+  async validate(payload: IJWTPayload): Promise<SafeUser> {
     if (!payload.jti) {
       throw new UnauthorizedException('Invalid token: jti is missing');
     }
@@ -70,13 +56,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('User not found');
     }
 
-    // Remove sensitive fields
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...safeUser } = user;
-
-    return {
-      ...safeUser,
-      jti: payload.jti,
-    } as ReturnedUserPayload;
+    return toSafeUser(user);
   }
 }

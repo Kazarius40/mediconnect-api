@@ -4,12 +4,13 @@ import React, { FormEvent, useState } from 'react';
 import { AxiosError } from 'axios';
 import Link from 'next/link';
 import { setCookie } from '@/utils/cookies/cookies';
-import { login } from '@/api/auth';
+import { login, resendVerification } from '@/api/auth';
 
 const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [showResend, setShowResend] = useState(false);
 
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -31,7 +32,12 @@ const LoginForm: React.FC = () => {
       }
     } catch (err) {
       const axiosError = err as AxiosError<{ message: string }>;
-      setError(axiosError.response?.data?.message || 'Login failed');
+      const msg = axiosError.response?.data?.message || 'Login failed';
+      setError(msg);
+
+      if (msg.includes('verify your email')) {
+        setShowResend(true);
+      }
     }
   };
 
@@ -40,6 +46,30 @@ const LoginForm: React.FC = () => {
       <h1 className="text-2xl font-bold">Login</h1>
 
       {error && <div className="text-red-600">{error}</div>}
+
+      {showResend && (
+        <div className="mt-2 text-center">
+          <button
+            type="button"
+            onClick={async () => {
+              try {
+                const res = await resendVerification(email);
+                setError(res.data.message || 'Verification email resent');
+                setShowResend(false);
+              } catch (err) {
+                const axiosError = err as AxiosError<{ message: string }>;
+                setError(
+                  axiosError.response?.data?.message || 'Failed to resend',
+                );
+              }
+            }}
+            className="text-blue-600 hover:underline cursor-pointer transition-colors duration-200 px-2 py-1 rounded hover:bg-blue-100"
+          >
+            Resend verification email
+          </button>
+        </div>
+      )}
+
       <label>
         <input
           type="email"

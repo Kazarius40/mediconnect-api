@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -17,7 +18,7 @@ import { Response as ExpressResponse } from 'express';
 import { UserRole } from 'src/shared/enums/user-role.enum';
 import { validateEntityUniqueness } from '../../shared/validators/validate-entity-uniqueness.util';
 import { handleDb } from '../../shared/utils/db/handle-db.util';
-import { RequestWithCookies } from '../../shared/request-with-cookies.interface';
+import { RequestWithCookies } from '../../shared/interfaces/request-with-cookies.interface';
 import { MailService } from '../../mail/mail.service';
 
 @Injectable()
@@ -33,7 +34,24 @@ export class AuthSessionService {
   // Registration & Authentication
   // -------------------
   async register(dto: AuthRegisterDto): Promise<{ message: string }> {
-    await validateEntityUniqueness(this.userRepository, dto);
+    try {
+      await validateEntityUniqueness(this.userRepository, dto);
+    } catch (e) {
+      if (e instanceof ConflictException) {
+        const existingUser = await this.userRepository.findOneBy({
+          email: dto.email,
+        });
+        if (existingUser && !existingUser.emailVerified) {
+          await this.generateAndSendVerification(existingUser);
+        }
+
+        return {
+          message:
+            'If the email is not registered, a verification email has been sent. Please check your inbox.',
+        };
+      }
+      throw e;
+    }
 
     const user = this.userRepository.create({
       ...dto,
@@ -41,21 +59,11 @@ export class AuthSessionService {
       emailVerified: false,
     });
 
-    const verificationToken = crypto.randomBytes(32).toString('hex');
-    const verificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-
-    user.verificationToken = verificationToken;
-    user.verificationTokenExpires = verificationTokenExpires;
-
-    await handleDb(() => this.userRepository.save(user));
-
-    const verifyLink = `${process.env.FRONTEND_URL}/auth/verify-email?token=${verificationToken}`;
-
-    await this.mailService.sendVerificationEmail(user.email, verifyLink);
+    await this.generateAndSendVerification(user);
 
     return {
       message:
-        'Registration successful! Please check your email to verify your account.',
+        'If the email is not registered, a verification email has been sent. Please check your inbox.',
     };
   }
 
@@ -78,6 +86,19 @@ export class AuthSessionService {
     await handleDb(() => this.userRepository.save(user));
 
     return { message: 'Email verified successfully! You can now log in.' };
+  }
+
+  async resendVerification(email: string): Promise<{ message: string }> {
+    const user = await this.userRepository.findOneBy({ email });
+
+    if (user && !user.emailVerified) {
+      await this.generateAndSendVerification(user);
+    }
+
+    return {
+      message:
+        'If an account with this email exists and is not yet verified, a new verification email has been sent.',
+    };
   }
 
   async login(
@@ -136,24 +157,19 @@ export class AuthSessionService {
     const { email } = dto;
     const user = await this.userRepository.findOneBy({ email });
 
-    if (!user) {
-      return {
-        message:
-          'If a user with that email exists, a password reset link has been sent.',
-      };
+    if (user) {
+      const resetToken = crypto.randomBytes(32).toString('hex');
+      const resetTokenExpires = new Date(Date.now() + 3600000);
+
+      user.resetPasswordToken = resetToken;
+      user.resetPasswordExpires = resetTokenExpires;
+
+      await handleDb(() => this.userRepository.save(user));
+
+      const resetLink = `${process.env.FRONTEND_URL}/auth/reset-password?token=${resetToken}`;
+
+      await this.mailService.sendPasswordResetEmail(user.email, resetLink);
     }
-
-    const resetToken = crypto.randomBytes(32).toString('hex');
-    const resetTokenExpires = new Date(Date.now() + 3600000);
-
-    user.resetPasswordToken = resetToken;
-    user.resetPasswordExpires = resetTokenExpires;
-
-    await handleDb(() => this.userRepository.save(user));
-
-    const resetLink = `${process.env.FRONTEND_URL}/auth/reset-password?token=${resetToken}`;
-
-    await this.mailService.sendPasswordResetEmail(user.email, resetLink);
 
     return {
       message:
@@ -197,9 +213,13 @@ export class AuthSessionService {
     return user;
   }
 
-  // private toSafeUser(user: User): SafeUser {
-  //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  //   const { password, ...safeUser } = user;
-  //   return safeUser;
-  // }
+  private async generateAndSendVerification(user: User): Promise<void> {
+    user.verificationToken = crypto.randomBytes(32).toString('hex');
+    user.verificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+    await handleDb(() => this.userRepository.save(user));
+
+    const verifyLink = `${process.env.FRONTEND_URL}/auth/verify-email?token=${user.verificationToken}`;
+    await this.mailService.sendVerificationEmail(user.email, verifyLink);
+  }
 }

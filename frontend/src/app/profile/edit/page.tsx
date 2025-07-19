@@ -7,16 +7,17 @@ import api from '@/api/axios';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { normalizePhoneFrontend } from '@/utils/phone/normalize-phone.util';
 import { FormField } from '@/components/common/FormField';
+import { User } from '@/interfaces/user/user';
 
 interface ProfileFormData {
+  firstName?: string;
+  lastName?: string;
   phone: string;
 }
 
 export default function EditProfilePage() {
   const router = useRouter();
 
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
 
@@ -26,17 +27,17 @@ export default function EditProfilePage() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<ProfileFormData>({
-    defaultValues: { phone: '' },
+    defaultValues: { firstName: '', lastName: '', phone: '' },
     mode: 'onChange',
   });
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await api.get('/auth/profile');
+        const res = await api.get<User>('/auth/profile');
         const profile = res.data;
-        setFirstName(profile.firstName || '');
-        setLastName(profile.lastName || '');
+        setValue('lastName', profile.lastName || '');
+        setValue('firstName', profile.firstName || '');
         setValue('phone', profile.phone || '');
       } catch {
         router.push('/auth/login');
@@ -50,11 +51,7 @@ export default function EditProfilePage() {
     setSuccess('');
 
     try {
-      await api.patch('/auth/profile', {
-        firstName,
-        lastName,
-        phone: data.phone,
-      });
+      await api.patch('/auth/profile', data);
       setSuccess('Profile updated successfully');
       setTimeout(() => router.push('/profile'), 1000);
     } catch (err) {
@@ -73,17 +70,15 @@ export default function EditProfilePage() {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <input
           type="text"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          placeholder="First Name"
+          {...register('lastName')}
+          placeholder="Last Name"
           className="w-full border p-2 rounded"
         />
 
         <input
           type="text"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          placeholder="Last Name"
+          {...register('firstName')}
+          placeholder="First Name"
           className="w-full border p-2 rounded"
         />
 
