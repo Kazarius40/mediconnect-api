@@ -6,15 +6,14 @@ import { useForm } from 'react-hook-form';
 import { Doctor } from '@/interfaces/doctor';
 import { CreateClinicDto } from '@/interfaces/clinic';
 import clinicApi from '@/services/clinicApi';
-import { normalizePhoneFrontend } from '@/utils/phone/normalize-phone.util';
 import { FormField } from '@/components/common/FormField';
 import {
   MultiSelect,
   MultiSelectOption,
 } from '@/components/common/MultiSelect';
 import { processBackendErrors } from '@/utils/errors/backend-error.util';
-import { normalizeFormData } from '@/utils/forms/normalize-form-data.util';
 import toast from 'react-hot-toast';
+import { cleanOptionalFields } from '@/utils/forms/normalize-form-data.util';
 
 interface ClinicFormProps {
   initialValues?: Partial<CreateClinicDto>;
@@ -55,7 +54,7 @@ export default function ClinicForm({
 
   const onSubmit = async (data: CreateClinicDto) => {
     try {
-      const normalizedData = normalizeFormData(data);
+      const normalizedData = cleanOptionalFields(data, ['email']);
 
       if (clinicId) {
         await clinicApi.update(clinicId, normalizedData);
@@ -113,9 +112,8 @@ export default function ClinicForm({
         register={register('phone', {
           required: 'Phone is required',
           validate: (value) => {
-            const normalized = normalizePhoneFrontend(value);
-            if (!normalized) return 'Invalid phone format';
-            if (!/^\+380\d{9}$/.test(normalized))
+            if (!value) return 'Phone is required';
+            if (!/^\+380\d{9}$/.test(value))
               return 'Phone number must be in +380XXXXXXXXX format';
             return true;
           },

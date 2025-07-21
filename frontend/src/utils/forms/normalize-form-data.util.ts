@@ -1,17 +1,19 @@
-import { normalizePhoneFrontend } from '@/utils/phone/normalize-phone.util';
-
-export function normalizeFormData<T extends { phone?: string; email?: string }>(
+export function cleanOptionalFields<T extends object, K extends keyof T>(
   data: T,
+  fields: K[],
 ): T {
   const copy = { ...data };
 
-  if (copy.phone) {
-    copy.phone = normalizePhoneFrontend(copy.phone);
-  }
-
-  if (!copy.email || copy.email.trim() === '') {
-    delete copy.email;
-  }
+  fields.forEach((field) => {
+    const value = copy[field];
+    if (
+      value === undefined ||
+      value === null ||
+      (typeof value === 'string' && value.trim() === '')
+    ) {
+      delete copy[field];
+    }
+  });
 
   return copy;
 }

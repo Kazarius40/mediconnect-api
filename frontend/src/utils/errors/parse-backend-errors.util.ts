@@ -1,13 +1,7 @@
-export interface BackendError {
-  field?: string;
-  message: string;
-}
-
-export interface BackendErrorResponse {
-  statusCode: number;
-  errors?: BackendError[];
-  message?: string | string[];
-}
+import {
+  BackendError,
+  BackendErrorResponse,
+} from '@/interfaces/errors/backend-error.interface';
 
 export function parseBackendErrors(err: any): BackendError[] {
   const data = err?.response?.data as BackendErrorResponse | undefined;

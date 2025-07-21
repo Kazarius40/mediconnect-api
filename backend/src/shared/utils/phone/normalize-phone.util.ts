@@ -1,19 +1,14 @@
 import { Transform } from 'class-transformer';
+import parsePhoneNumberFromString from 'libphonenumber-js';
 
 export function normalizePhone(phone: string): string {
   if (!phone) return phone;
 
-  const digits = phone.replace(/\D/g, '');
+  const parsed = parsePhoneNumberFromString(phone, 'UA');
 
-  if (/^0\d{9}$/.test(digits)) {
-    return '+380' + digits.slice(1);
-  }
+  if (!parsed || !parsed.isValid()) return phone;
 
-  if (/^380\d{9}$/.test(digits)) {
-    return '+' + digits;
-  }
-
-  return phone;
+  return parsed.format('E.164');
 }
 
 export function TransformNormalizePhone() {

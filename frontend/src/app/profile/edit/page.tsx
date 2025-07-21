@@ -4,8 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import api from '@/api/axios';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import { normalizePhoneFrontend } from '@/utils/phone/normalize-phone.util';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { FormField } from '@/components/common/FormField';
 import { User } from '@/interfaces/user/user';
 
@@ -89,9 +88,8 @@ export default function EditProfilePage() {
           register={register('phone', {
             required: 'Phone is required',
             validate: (value) => {
-              const normalized = normalizePhoneFrontend(value);
-              if (!normalized) return 'Invalid phone format';
-              if (!/^\+380\d{9}$/.test(normalized))
+              if (!value) return 'Phone is required';
+              if (!/^\+380\d{9}$/.test(value))
                 return 'Phone number must be in +380XXXXXXXXX format';
               return true;
             },
