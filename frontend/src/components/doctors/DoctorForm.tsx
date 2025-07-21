@@ -128,7 +128,7 @@ export default function DoctorForm({
         htmlFor="phone"
         register={register('phone', {
           validate: (value) => {
-            if (!value) return 'Phone is required';
+            if (!value) return true;
             if (!/^\+380\d{9}$/.test(value))
               return 'Phone number must be in +380XXXXXXXXX format';
             return true;

@@ -12,7 +12,12 @@ export function applyDtoToEntity<T extends object>(
   const { exclude = [] } = options;
 
   (Object.keys(dto) as (keyof T)[]).forEach((key) => {
-    const value = dto[key];
+    let value = dto[key];
+
+    if (value === '') {
+      value = null as unknown as T[keyof T];
+    }
+
     if (value !== undefined && !exclude.includes(key)) {
       entity[key] = value;
     }

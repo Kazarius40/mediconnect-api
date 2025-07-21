@@ -1,15 +1,20 @@
 import {
-  ExceptionFilter,
-  Catch,
   ArgumentsHost,
+  Catch,
+  ExceptionFilter,
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { Response } from 'express';
+import type { Response } from 'express';
+
+type ErrorResponseBody =
+  | { errors: Array<{ field?: string; message: string }> }
+  | { message: string | string[] }
+  | string;
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
-  catch(exception: unknown, host: ArgumentsHost) {
+  catch(exception: unknown, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
@@ -18,24 +23,32 @@ export class AllExceptionsFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    let errors: { field?: string; message: string }[];
+    let errors: Array<{ field?: string; message: string }> = [];
 
     if (exception instanceof HttpException) {
-      const responseBody = exception.getResponse();
+      const responseBody = exception.getResponse() as ErrorResponseBody;
 
       if (
         typeof responseBody === 'object' &&
         responseBody !== null &&
+        'errors' in responseBody
+      ) {
+        const errs = (
+          responseBody as { errors: Array<{ field?: string; message: string }> }
+        ).errors;
+        if (Array.isArray(errs)) {
+          errors = errs;
+        }
+      } else if (
+        typeof responseBody === 'object' &&
+        responseBody !== null &&
         'message' in responseBody
       ) {
-        const message: string | string[] = (
-          responseBody as { message: string | string[] }
-        ).message;
-
-        if (Array.isArray(message)) {
-          errors = message.map((msg) => ({ message: String(msg) }));
+        const msg = (responseBody as { message: string | string[] }).message;
+        if (Array.isArray(msg)) {
+          errors = msg.map((m) => ({ message: m }));
         } else {
-          errors = [{ message }];
+          errors = [{ message: msg }];
         }
       } else if (typeof responseBody === 'string') {
         errors = [{ message: responseBody }];
