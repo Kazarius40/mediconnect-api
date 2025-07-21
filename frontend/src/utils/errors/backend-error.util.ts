@@ -1,19 +1,23 @@
-import { FieldValues, UseFormSetError } from 'react-hook-form';
-import { handleBackendFieldError } from '@/utils/forms/map-backend-error.util';
+import { FieldValues, Path, UseFormSetError } from 'react-hook-form';
+import { mapBackendErrorToField } from '@/utils/errors/map-backend-error.util';
+import { parseBackendErrors } from '@/utils/errors/parse-backend-errors.util';
 
 export function processBackendErrors<T extends FieldValues>(
   err: any,
   setError: UseFormSetError<T>,
 ) {
-  console.error('Save error:', err.response?.data || err.message);
+  const errors = parseBackendErrors(err);
 
-  const backendMessage = err.response?.data?.message;
-
-  if (typeof backendMessage === 'string') {
-    handleBackendFieldError<T>(setError, backendMessage);
-  } else if (Array.isArray(backendMessage)) {
-    backendMessage.forEach((msg: string) =>
-      handleBackendFieldError<T>(setError, msg),
-    );
-  }
+  errors.forEach(({ field, message }) => {
+    if (field) {
+      setError(field as Path<T>, { type: 'manual', message });
+    } else {
+      const mappedField = mapBackendErrorToField<T>(message);
+      if (mappedField) {
+        setError(mappedField as Path<T>, { type: 'manual', message });
+      } else {
+        console.warn('Unmapped backend error:', message);
+      }
+    }
+  });
 }

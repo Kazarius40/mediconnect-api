@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Navbar from './Navbar';
-import { AuthProvider } from '@/hooks/useAuth';
+import { AuthProvider } from '@/providers/AuthProvider';
 
 export default function ClientRootLayout({
   children,

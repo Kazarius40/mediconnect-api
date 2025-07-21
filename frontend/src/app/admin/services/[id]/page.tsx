@@ -3,12 +3,12 @@
 import React from 'react';
 import { useParams } from 'next/navigation';
 import { EntityHeader } from '@/components/common/EntityHeader';
-import { useService } from '@/hooks/useService';
+import { useServiceHook } from '@/hooks/domain/useService.hook';
 import ServiceForm from '@/components/services/ServiceForm';
 
 export default function ServiceEdit() {
   const { id } = useParams();
-  const { service, doctors, loading, error } = useService(Number(id));
+  const { service, doctors, loading, error } = useServiceHook(Number(id));
 
   if (loading) return <p>Loading...</p>;
   if (error || !service)

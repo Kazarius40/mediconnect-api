@@ -3,12 +3,14 @@
 import React from 'react';
 import { useParams } from 'next/navigation';
 import DoctorForm from '@/components/doctors/DoctorForm';
-import { useDoctor } from '@/hooks/useDoctor';
+import { useDoctorHook } from '@/hooks/domain/useDoctor.hook';
 import { EntityHeader } from '@/components/common/EntityHeader';
 
 export default function DoctorEdit() {
   const { id } = useParams();
-  const { doctor, clinics, services, loading, error } = useDoctor(Number(id));
+  const { doctor, clinics, services, loading, error } = useDoctorHook(
+    Number(id),
+  );
 
   if (loading) return <p>Loading...</p>;
   if (error || !doctor)

@@ -1,11 +1,13 @@
-import type { AxiosError, AxiosInstance } from 'axios';
-import { getCookie, setCookie } from '@/utils/cookies/cookies';
+import { getCookie, setCookie } from '@/utils/cookies/cookies.util';
 import { refreshToken } from '@/api/auth';
+import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
 
 interface PendingRequest {
   resolve: (token?: string) => void;
   reject: (error: unknown) => void;
 }
+
+type RetryableRequestConfig = AxiosRequestConfig & { _retry?: boolean };
 
 class TokenRefreshHandler {
   private isRefreshing = false;
@@ -46,7 +48,7 @@ export function addAuthInterceptor(api: AxiosInstance) {
   api.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
-      const originalRequest = error.config as any;
+      const originalRequest = error.config as RetryableRequestConfig;
 
       if (
         error.response?.status === 401 &&

@@ -1,8 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { setupSwagger } from './swagger.config';
 import cookieParser from 'cookie-parser';
+import { AllExceptionsFilter } from './shared/filters/all-exceptions.filter';
 
 bootstrap().catch((err) => {
   console.error('Error during bootstrap:', err);
@@ -18,11 +19,25 @@ async function bootstrap(): Promise<void> {
     credentials: true,
   });
 
+  app.useGlobalFilters(new AllExceptionsFilter());
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
+      exceptionFactory: (validationErrors) => {
+        const errors = validationErrors.flatMap((error) => {
+          const field = error.property;
+          const constraints = Object.values(error.constraints ?? {});
+          return constraints.map((message) => ({ field, message }));
+        });
+
+        return new BadRequestException({
+          statusCode: 400,
+          errors,
+        });
+      },
     }),
   );
 

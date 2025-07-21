@@ -2,11 +2,11 @@
 
 import React from 'react';
 import DoctorForm from '@/components/doctors/DoctorForm';
-import { useDoctor } from '@/hooks/useDoctor';
+import { useDoctorHook } from '@/hooks/domain/useDoctor.hook';
 import { EntityHeader } from '@/components/common/EntityHeader';
 
 export default function DoctorCreate() {
-  const { clinics, services, loading } = useDoctor();
+  const { clinics, services, loading } = useDoctorHook();
 
   if (loading) return <p>Loading...</p>;
 

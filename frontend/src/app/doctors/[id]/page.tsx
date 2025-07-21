@@ -6,23 +6,23 @@ import doctorApi from '@/services/doctorApi';
 import { Doctor } from '@/interfaces/doctor';
 import { sortByName } from '@/utils/common/sort.util';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
-import { useEntityView } from '@/hooks/useEntityView';
-import { useEntityDelete } from '@/hooks/useEntityDelete';
+import { useEntityViewHook } from '@/hooks/core/useEntityView.hook';
+import { useEntityDeleteHook } from '@/hooks/core/useEntityDelete.hook';
 import { EntityHeader } from '@/components/common/EntityHeader';
 import { EntityDates } from '@/components/common/EntityDates';
-import { useUser } from '@/hooks/useUser';
+import { authProvider } from '@/providers/AuthProvider';
 
 export default function DoctorView() {
   const { id } = useParams();
-  const { user, loading: userLoading } = useUser(false);
+  const { user, loading: userLoading } = authProvider();
 
   const {
     entity: doctor,
     loading,
     error,
-  } = useEntityView<Doctor>(doctorApi.getById, id);
+  } = useEntityViewHook<Doctor>(doctorApi.getById, id);
 
-  const { isConfirmOpen, setIsConfirmOpen, handleDelete } = useEntityDelete(
+  const { isConfirmOpen, setIsConfirmOpen, handleDelete } = useEntityDeleteHook(
     doctorApi.delete,
     '/doctors',
   );

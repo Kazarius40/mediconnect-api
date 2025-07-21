@@ -6,23 +6,23 @@ import clinicApi from '@/services/clinicApi';
 import { Clinic } from '@/interfaces/clinic';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
 import { DoctorList } from '@/components/doctors/DoctorList';
-import { useEntityView } from '@/hooks/useEntityView';
-import { useEntityDelete } from '@/hooks/useEntityDelete';
+import { useEntityViewHook } from '@/hooks/core/useEntityView.hook';
+import { useEntityDeleteHook } from '@/hooks/core/useEntityDelete.hook';
 import { EntityHeader } from '@/components/common/EntityHeader';
 import { EntityDates } from '@/components/common/EntityDates';
-import { useUser } from '@/hooks/useUser';
+import { authProvider } from '@/providers/AuthProvider';
 
 export default function ClinicView() {
   const { id } = useParams();
-  const { user, loading: userLoading } = useUser(false);
+  const { user, loading: userLoading } = authProvider();
 
   const {
     entity: clinic,
     loading,
     error,
-  } = useEntityView<Clinic>(clinicApi.getById, id);
+  } = useEntityViewHook<Clinic>(clinicApi.getById, id);
 
-  const { isConfirmOpen, setIsConfirmOpen, handleDelete } = useEntityDelete(
+  const { isConfirmOpen, setIsConfirmOpen, handleDelete } = useEntityDeleteHook(
     clinicApi.delete,
     '/clinics',
   );

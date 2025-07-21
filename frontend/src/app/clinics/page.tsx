@@ -5,9 +5,9 @@ import ClinicCard from '@/components/clinics/ClinicCard';
 import { useRouter } from 'next/navigation';
 import clinicApi from '@/services/clinicApi';
 import { Clinic } from '@/interfaces/clinic';
-import { useUser } from '@/hooks/useUser';
 import { matchesSearch } from '@/utils/common/search.util';
 import SortControls from '@/components/common/SortControls';
+import { authProvider } from '@/providers/AuthProvider';
 
 const ClinicsPage: React.FC = () => {
   const [clinics, setClinics] = useState<Clinic[]>([]);
@@ -18,7 +18,7 @@ const ClinicsPage: React.FC = () => {
   const [sortBy, setSortBy] = useState<string>('name');
   const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('ASC');
 
-  const { user, loading: userLoading } = useUser(false);
+  const { user, loading: userLoading } = authProvider();
   const router = useRouter();
 
   const sortFields = [

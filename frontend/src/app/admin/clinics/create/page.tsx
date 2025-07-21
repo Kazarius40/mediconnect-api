@@ -2,11 +2,11 @@
 
 import React from 'react';
 import ClinicForm from '@/components/clinics/ClinicForm';
-import { useClinic } from '@/hooks/useClinic';
 import { EntityHeader } from '@/components/common/EntityHeader';
+import { useClinicHook } from '@/hooks/domain/useClinic.hook';
 
 export default function ClinicCreate() {
-  const { doctors, loading } = useClinic();
+  const { doctors, loading } = useClinicHook();
 
   if (loading) return <p>Loading...</p>;
 

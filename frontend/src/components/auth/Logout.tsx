@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { setCookie } from '@/utils/cookies/cookies';
+import { setCookie } from '@/utils/cookies/cookies.util';
 import { logout } from '@/api/auth';
 
 const LogoutButton: React.FC = () => {

@@ -5,9 +5,9 @@ import ServiceCard from '@/components/services/ServiceCard';
 import { useRouter } from 'next/navigation';
 import serviceApi from '@/services/serviceApi';
 import { Service } from '@/interfaces/service';
-import { useUser } from '@/hooks/useUser';
 import { matchesSearch } from '@/utils/common/search.util';
 import SortControls from '@/components/common/SortControls';
+import { authProvider } from '@/providers/AuthProvider';
 
 const ServicesPage: React.FC = () => {
   const [services, setServices] = useState<Service[]>([]);
@@ -18,7 +18,7 @@ const ServicesPage: React.FC = () => {
   const [sortBy, setSortBy] = useState<string>('name');
   const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('ASC');
 
-  const { user, loading: userLoading } = useUser(false);
+  const { user, loading: userLoading } = authProvider();
   const router = useRouter();
 
   const sortFields = [{ value: 'name', label: 'Name' }];

@@ -3,10 +3,10 @@
 import React from 'react';
 import Link from 'next/link';
 import LogoutButton from '@/components/auth/Logout';
-import { useUser } from '@/hooks/useUser';
+import { authProvider } from '@/providers/AuthProvider';
 
 export default function Navbar() {
-  const { user, loading } = useUser(false);
+  const { user, loading } = authProvider();
 
   const linkClass =
     'border border-gray-300 rounded px-3 py-1 cursor-pointer hover:bg-gray-100 transition';

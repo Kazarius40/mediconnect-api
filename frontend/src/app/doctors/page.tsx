@@ -5,9 +5,9 @@ import DoctorCard from '@/components/doctors/DoctorCard';
 import { useRouter } from 'next/navigation';
 import doctorApi from '@/services/doctorApi';
 import { Doctor } from '@/interfaces/doctor';
-import { useUser } from '@/hooks/useUser';
 import { matchesSearch } from '@/utils/common/search.util';
 import SortControls from '@/components/common/SortControls';
+import { authProvider } from '@/providers/AuthProvider';
 
 const DoctorsPage: React.FC = () => {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
@@ -18,7 +18,7 @@ const DoctorsPage: React.FC = () => {
   const [sortBy, setSortBy] = useState<string>('firstName');
   const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('ASC');
 
-  const { user, loading: userLoading } = useUser(false);
+  const { user, loading: userLoading } = authProvider();
   const router = useRouter();
 
   const sortFields = [

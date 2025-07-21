@@ -2,11 +2,11 @@
 
 import React from 'react';
 import { EntityHeader } from '@/components/common/EntityHeader';
-import { useService } from '@/hooks/useService';
+import { useServiceHook } from '@/hooks/domain/useService.hook';
 import ServiceForm from '@/components/services/ServiceForm';
 
 export default function ServiceCreate() {
-  const { doctors, loading } = useService();
+  const { doctors, loading } = useServiceHook();
 
   if (loading) return <p>Loading...</p>;
 

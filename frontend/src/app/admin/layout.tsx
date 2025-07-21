@@ -1,11 +1,11 @@
 'use client';
 
 import React, { ReactNode, useEffect } from 'react';
-import { useUser } from '@/hooks/useUser';
 import { useRouter } from 'next/navigation';
+import { authProvider } from '@/providers/AuthProvider';
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
-  const { user, loading } = useUser(false);
+  const { user, loading } = authProvider();
   const router = useRouter();
 
   useEffect(() => {

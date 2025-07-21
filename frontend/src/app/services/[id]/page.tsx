@@ -5,24 +5,24 @@ import { useParams } from 'next/navigation';
 import serviceApi from '@/services/serviceApi';
 import { Service } from '@/interfaces/service';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
-import { useEntityView } from '@/hooks/useEntityView';
-import { useEntityDelete } from '@/hooks/useEntityDelete';
+import { useEntityViewHook } from '@/hooks/core/useEntityView.hook';
+import { useEntityDeleteHook } from '@/hooks/core/useEntityDelete.hook';
 import { EntityHeader } from '@/components/common/EntityHeader';
 import { EntityDates } from '@/components/common/EntityDates';
-import { useUser } from '@/hooks/useUser';
 import { DoctorList } from '@/components/doctors/DoctorList';
+import { authProvider } from '@/providers/AuthProvider';
 
 export default function ServiceView() {
   const { id } = useParams();
-  const { user, loading: userLoading } = useUser(false);
+  const { user, loading: userLoading } = authProvider();
 
   const {
     entity: service,
     loading,
     error,
-  } = useEntityView<Service>(serviceApi.getById, id);
+  } = useEntityViewHook<Service>(serviceApi.getById, id);
 
-  const { isConfirmOpen, setIsConfirmOpen, handleDelete } = useEntityDelete(
+  const { isConfirmOpen, setIsConfirmOpen, handleDelete } = useEntityDeleteHook(
     serviceApi.delete,
     '/services',
   );

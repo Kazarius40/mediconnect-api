@@ -3,12 +3,12 @@
 import React from 'react';
 import { useParams } from 'next/navigation';
 import ClinicForm from '@/components/clinics/ClinicForm';
-import { useClinic } from '@/hooks/useClinic';
+import { useClinicHook } from '@/hooks/domain/useClinic.hook';
 import { EntityHeader } from '@/components/common/EntityHeader';
 
 export default function ClinicEdit() {
   const { id } = useParams();
-  const { clinic, doctors, loading, error } = useClinic(Number(id));
+  const { clinic, doctors, loading, error } = useClinicHook(Number(id));
 
   if (loading) return <p>Loading...</p>;
   if (error || !clinic)
