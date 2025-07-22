@@ -1,6 +1,7 @@
 import { getCookie, setCookie } from '@/utils/cookies/cookies.util';
 import { refreshToken } from '@/api/auth';
 import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
+import { isPublicPath } from '@/utils/routes/publicPaths';
 
 interface PendingRequest {
   resolve: (token?: string) => void;
@@ -90,12 +91,15 @@ export function addAuthInterceptor(api: AxiosInstance) {
           return api(originalRequest);
         } catch (err) {
           tokenRefreshHandler.processQueue(err, null);
+
           if (
             typeof window !== 'undefined' &&
-            window.location.pathname !== '/auth/login'
+            window.location.pathname !== '/auth/login' &&
+            !isPublicPath(window.location.pathname)
           ) {
             window.location.href = '/auth/login';
           }
+
           return Promise.reject(err);
         } finally {
           tokenRefreshHandler.setRefreshing(false);
