@@ -13,6 +13,7 @@ import {
 } from '@/components/common/MultiSelect';
 import { processBackendErrors } from '@/utils/errors/backend-error.util';
 import toast from 'react-hot-toast';
+import { mutate } from 'swr';
 
 interface ServiceFormProps {
   initialValues?: Partial<CreateServiceDto>;
@@ -53,8 +54,11 @@ export default function ServiceForm({
     try {
       if (serviceId) {
         await serviceApi.update(serviceId, data);
+
+        await mutate(`/services/${serviceId}`);
+
         toast.success('Service updated successfully!');
-        router.push(`/admin/services/${serviceId}`);
+        router.push(`/services`);
       } else {
         await serviceApi.create(data);
         toast.success('Service created successfully!');
@@ -101,7 +105,7 @@ export default function ServiceForm({
         label="Doctors"
         options={doctorOptions}
         selectedIds={doctorIds}
-        onChange={handleDoctorsChange}
+        onChangeAction={handleDoctorsChange}
         sortFields={['label']}
       />
 

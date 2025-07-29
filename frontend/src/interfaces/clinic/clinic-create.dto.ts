@@ -2,7 +2,7 @@ export interface CreateClinicDto {
   name: string;
   address: string;
   phone: string;
-  email?: string;
+  email: string | null;
   doctorIds?: number[];
 }
 

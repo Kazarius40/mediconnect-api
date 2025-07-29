@@ -133,6 +133,7 @@ export class AuthTokenService {
       httpOnly: true,
       secure: false,
       sameSite: 'lax',
+      path: '/',
       maxAge: this.refreshTokenExpiresIn * 1000,
     });
   }

@@ -6,7 +6,7 @@ interface ClinicCardProps {
   name: string;
   address: string;
   phone: string;
-  email: string | undefined;
+  email: string | null;
   onClick?: () => void;
 }
 

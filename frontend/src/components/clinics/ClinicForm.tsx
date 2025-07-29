@@ -59,7 +59,7 @@ export default function ClinicForm({
       if (clinicId) {
         await clinicApi.update(clinicId, normalizedData);
         toast.success('Clinic updated successfully!');
-        router.push(`/admin/clinics/${clinicId}`);
+        router.push(`/clinics`);
       } else {
         await clinicApi.create(normalizedData);
         toast.success('Clinic created successfully!');
@@ -140,7 +140,7 @@ export default function ClinicForm({
         label="Doctors"
         options={doctorOptions}
         selectedIds={doctorIds}
-        onChange={handleDoctorsChange}
+        onChangeAction={handleDoctorsChange}
         sortFields={['label']}
       />
 

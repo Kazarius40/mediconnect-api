@@ -8,7 +8,7 @@ interface EntityHeaderProps {
   editPath: string;
   backText: string;
   onBack?: () => void;
-  onDeleteClick: () => void;
+  onDeleteClick?: () => void;
   isAdmin?: boolean;
 }
 
@@ -54,7 +54,7 @@ export const EntityHeader: React.FC<EntityHeaderProps> = ({
             </button>
 
             <button
-              onClick={onDeleteClick}
+              onClick={onDeleteClick ?? (() => {})}
               className=" px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 cursor-pointer transform transition-transform duration-200 hover:scale-105"
             >
               Delete

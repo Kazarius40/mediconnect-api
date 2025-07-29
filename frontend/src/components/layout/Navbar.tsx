@@ -1,20 +1,24 @@
 'use client';
 
-import React from 'react';
 import Link from 'next/link';
+import { useAuth } from '@/providers/AuthProvider';
 import LogoutButton from '@/components/auth/Logout';
-import { authProvider } from '@/providers/AuthProvider';
+import React from 'react';
 
 export default function Navbar() {
-  const { user, loading } = authProvider();
+  const { user, loading } = useAuth();
 
   const linkClass =
     'border border-gray-300 rounded px-3 py-1 cursor-pointer hover:bg-gray-100 transition';
 
-  if (loading) return null;
+  const isAdmin = user?.role === 'ADMIN';
+
+  if (loading) {
+    return <NavbarSkeleton />;
+  }
 
   return (
-    <nav className="sticky top-0 z-50 bg-white border-b shadow-sm px-4 py-2 flex space-x-4">
+    <nav className="sticky top-0 z-50 bg-white text-black border-b shadow-sm px-4 py-2 flex space-x-4">
       <Link href="/" className={linkClass}>
         Home
       </Link>
@@ -25,7 +29,7 @@ export default function Navbar() {
             Profile
           </Link>
 
-          {user.role === 'ADMIN' && (
+          {isAdmin && (
             <Link href="/admin/users" className={linkClass}>
               Users
             </Link>
@@ -46,6 +50,23 @@ export default function Navbar() {
           </Link>
         </>
       )}
+    </nav>
+  );
+}
+
+function SkeletonLink() {
+  return (
+    <div className="h-8 w-24 bg-gray-200 rounded border border-gray-300 animate-pulse" />
+  );
+}
+
+function NavbarSkeleton() {
+  return (
+    <nav className="sticky top-0 z-50 bg-white border-b shadow-sm px-4 py-2 flex space-x-4">
+      <SkeletonLink />
+      <SkeletonLink />
+      <SkeletonLink />
+      <SkeletonLink />
     </nav>
   );
 }

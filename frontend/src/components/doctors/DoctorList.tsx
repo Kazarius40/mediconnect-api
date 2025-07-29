@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Doctor } from '@/interfaces/doctor';
-import { sortByFields, sortByName } from '@/utils/common/sort.util';
+import { sortByFields } from '@/utils/common/sort.util';
 import { matchesSearch } from '@/utils/common/search.util';
 
 interface DoctorListProps {
@@ -24,13 +24,9 @@ export function DoctorList({
       doc.lastName,
       doc.email,
       doc.phone,
-      ...(doc.services?.flatMap((s) => [s.name, s.description || undefined]) ??
+      ...(doc.services?.flatMap((s) => [s.name, s.description || null]) ?? []),
+      ...(doc.clinics?.flatMap((c) => [c.name, c.address, c.email || null]) ??
         []),
-      ...(doc.clinics?.flatMap((c) => [
-        c.name,
-        c.address,
-        c.email || undefined,
-      ]) ?? []),
     ]),
   );
 
@@ -41,8 +37,12 @@ export function DoctorList({
   return (
     <ul className="space-y-2">
       {filteredDoctors.map((doc) => {
-        const sortedServices = doc.services ? sortByName(doc.services) : [];
-        const sortedClinics = doc.clinics ? sortByName(doc.clinics) : [];
+        const sortedServices = doc.services
+          ? sortByFields(doc.services, ['name', 'description'])
+          : [];
+        const sortedClinics = doc.clinics
+          ? sortByFields(doc.clinics, ['name', 'address'])
+          : [];
 
         return (
           <li key={doc.id} className="border p-3 rounded shadow-sm">

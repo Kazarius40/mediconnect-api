@@ -5,18 +5,18 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { AxiosError } from 'axios';
 import api from '@/api/axios';
 
-const ResetPasswordForm: React.FC = () => {
+export default function ResetPasswordForm() {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [token, setToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
   const router = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
     const tokenFromUrl = searchParams.get('token');
-
     if (tokenFromUrl) {
       setToken(tokenFromUrl);
     } else {
@@ -40,11 +40,7 @@ const ResetPasswordForm: React.FC = () => {
     }
 
     try {
-      const res = await api.post('/auth/reset-password', {
-        token,
-        password,
-      });
-
+      const res = await api.post('/auth/reset-password', { token, password });
       setSuccess(res.data.message);
 
       setTimeout(() => router.push('/auth/login'), 3000);
@@ -91,6 +87,4 @@ const ResetPasswordForm: React.FC = () => {
       </button>
     </form>
   );
-};
-
-export default ResetPasswordForm;
+}

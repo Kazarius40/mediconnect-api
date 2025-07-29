@@ -5,10 +5,10 @@ export interface Doctor {
   id: number;
   firstName: string;
   lastName: string;
-  phone?: string;
-  email?: string;
+  phone: string | null;
+  email: string | null;
   createdAt: string;
   updatedAt: string;
-  clinics?: Clinic[];
-  services?: Service[];
+  clinics: Clinic[];
+  services: Service[];
 }

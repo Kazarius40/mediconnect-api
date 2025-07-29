@@ -1,28 +1,18 @@
 'use client';
 
-import { useSearchParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { resendVerification } from '@/api/auth';
+import { resendVerification } from '@/api/client/auth';
 import { AxiosError } from 'axios';
 
-export default function EmailSentClient() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const email = searchParams.get('email');
-
+export default function EmailSentClient({ email }: { email: string }) {
   const [status, setStatus] = useState<
     'idle' | 'loading' | 'success' | 'error'
   >('idle');
   const [message, setMessage] = useState('');
   const [cooldown, setCooldown] = useState(false);
 
-  if (!email) {
-    router.push('/auth/register');
-    return null;
-  }
-
   const handleResend = async () => {
-    if (!email || cooldown) return;
+    if (cooldown) return;
 
     setStatus('loading');
     setMessage('');
@@ -61,8 +51,7 @@ export default function EmailSentClient() {
       <h1 className="text-2xl font-bold">Verify your email</h1>
 
       <p>
-        We sent a verification link to <strong>{email}</strong>.
-        <br />
+        We sent a verification link to <strong>{email}</strong>.<br />
         Please check your inbox (and spam folder).
       </p>
 

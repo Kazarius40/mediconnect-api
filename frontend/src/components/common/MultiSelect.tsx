@@ -12,7 +12,7 @@ interface MultiSelectProps {
   label?: string;
   options: MultiSelectOption[];
   selectedIds: number[];
-  onChange: (newSelected: number[]) => void;
+  onChangeAction: (newSelected: number[]) => void;
   sortFields?: (keyof MultiSelectOption)[];
 }
 
@@ -20,7 +20,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
   label,
   options,
   selectedIds,
-  onChange,
+  onChangeAction,
   sortFields = ['label'],
 }) => {
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
@@ -42,12 +42,12 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
 
   const addOption = (id: number) => {
     if (!selectedIds.includes(id)) {
-      onChange([...selectedIds, id]);
+      onChangeAction([...selectedIds, id]);
     }
   };
 
   const removeOption = (id: number) => {
-    onChange(selectedIds.filter((sId) => sId !== id));
+    onChangeAction(selectedIds.filter((sId) => sId !== id));
   };
 
   const toggleSortDir = () =>

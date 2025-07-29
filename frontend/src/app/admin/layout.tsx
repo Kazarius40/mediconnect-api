@@ -1,22 +1,31 @@
-'use client';
+import { ReactNode } from 'react';
+import { redirect } from 'next/navigation';
+import { ssrFetchUser } from '@/lib/auth/ssrAuth';
 
-import React, { ReactNode, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { authProvider } from '@/providers/AuthProvider';
+export default async function AdminLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const { user } = await ssrFetchUser();
 
-export default function AdminLayout({ children }: { children: ReactNode }) {
-  const { user, loading } = authProvider();
-  const router = useRouter();
+  console.log('AdminLayout user:', user);
 
-  useEffect(() => {
-    if (!loading && (!user || user.role !== 'ADMIN')) {
-      router.replace('/');
-    }
-  }, [loading, user, router]);
+  if (!user || user.role !== 'ADMIN') {
+    console.log('Redirect to /auth/login from AdminLayout');
+    redirect('/auth/login');
+  }
 
-  if (loading) return <p>Loading...</p>;
+  // if (!user || user.role !== 'ADMIN') {
+  //   redirect('/auth/login');
+  // }
 
-  if (user?.role !== 'ADMIN') return null;
+  return (
+    <div>
+      <h1>Admin Layout Works!</h1>
+      {children}
+    </div>
+  );
 
-  return <>{children}</>;
+  // return <>{children}</>;
 }

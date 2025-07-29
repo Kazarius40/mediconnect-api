@@ -1,14 +1,14 @@
 import axios from 'axios';
-import { addAuthInterceptor } from '@/api/interceptors';
+import { BACKEND_URL } from '@/config/backend';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000',
+  baseURL: BACKEND_URL,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-addAuthInterceptor(api);
+// addAuthInterceptor(api);
 
 export default api;

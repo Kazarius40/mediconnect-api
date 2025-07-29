@@ -31,7 +31,7 @@ From the root of the project, run:
 docker-compose up
 ```
 ---
-✅ This will start all services (backend + frontend) and initialize your database.
+✅ This will start all services (backend and frontend) and initialize your database.
 
 ➡️ Once it’s up, open http://localhost:3001 in your browser to access the application.
 
@@ -111,7 +111,7 @@ JSON
     "email": "registered@example.com"
 }
 ```
-⚠️ Email is not sent; the token needs to be retrieved from the DB (users table, resetPasswordToken field).
+⚠️ Email is not sent; the token needs to be retrieved from the DB (user table, resetPasswordToken field).
 
 ## Password Reset:
 HTTP
@@ -212,5 +212,5 @@ This project follows modern backend best practices:
 - ✅ Full Swagger documentation for all endpoints
 - ✅ Role-based access control (RBAC) with guards
 - ✅ Typed responses using custom Swagger DTOs
-- ✅ RESTful conventions across all routes
+- ✅ REST_ful conventions across all routes
 - ✅ Designed for easy extension and maintenance

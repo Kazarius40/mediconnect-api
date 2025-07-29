@@ -4,23 +4,26 @@ import React, { FormEvent, useState } from 'react';
 import { AxiosError } from 'axios';
 import api from '@/api/axios';
 
-const ForgotPasswordForm: React.FC = () => {
+export default function ForgotPasswordForm() {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
     setMessage(null);
+    setLoading(true);
 
     try {
       const res = await api.post('/auth/forgot-password', { email });
-
-      setMessage(res.data.message);
+      setMessage(res.data.message || 'Check your email for reset instructions');
     } catch (err) {
       const axiosError = err as AxiosError<{ message: string }>;
       setError(axiosError.response?.data?.message || 'Something went wrong');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -44,12 +47,11 @@ const ForgotPasswordForm: React.FC = () => {
 
       <button
         type="submit"
-        className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+        disabled={loading}
+        className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 disabled:opacity-50"
       >
-        Send Reset Link
+        {loading ? 'Sending...' : 'Send Reset Link'}
       </button>
     </form>
   );
-};
-
-export default ForgotPasswordForm;
+}

@@ -1,0 +1,47 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { BACKEND_URL } from '@/config/backend';
+import { setRefreshCookieFromHeader } from '@/lib/auth/setRefreshCookie';
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+
+    const loginRes = await fetch(`${BACKEND_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    if (!loginRes.ok) {
+      const error = await loginRes.json();
+      return NextResponse.json(error, { status: loginRes.status });
+    }
+
+    const { accessToken } = await loginRes.json();
+    const setCookieHeader = loginRes.headers.get('set-cookie');
+
+    const profileRes = await fetch(`${BACKEND_URL}/auth/profile`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    if (!profileRes.ok) {
+      return NextResponse.json(
+        { message: 'Failed to fetch profile after login' },
+        { status: 500 },
+      );
+    }
+
+    const user = await profileRes.json();
+
+    const response = NextResponse.json({ accessToken, user });
+
+    setRefreshCookieFromHeader(setCookieHeader, response);
+
+    return response;
+  } catch (error) {
+    return NextResponse.json(
+      { message: 'Internal Server Error' },
+      { status: 500 },
+    );
+  }
+}

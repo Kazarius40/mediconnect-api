@@ -5,8 +5,8 @@ export interface Clinic {
   name: string;
   address: string;
   phone: string;
-  email?: string;
+  email: string | null;
   createdAt: string;
   updatedAt: string;
-  doctors?: Doctor[];
+  doctors: Doctor[];
 }

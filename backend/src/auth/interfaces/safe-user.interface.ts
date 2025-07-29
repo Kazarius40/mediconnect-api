@@ -4,9 +4,9 @@ export interface SafeUser {
   id: number;
   email: string;
   role: UserRole;
-  firstName?: string;
-  lastName?: string;
-  phone?: string;
+  firstName: string | null;
+  lastName: string | null;
+  phone: string | null;
   createdAt: Date;
   updatedAt: Date;
 }

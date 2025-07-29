@@ -6,5 +6,5 @@ export interface Service {
   description: string | null;
   createdAt: string;
   updatedAt: string;
-  doctors?: Doctor[];
+  doctors: Doctor[];
 }

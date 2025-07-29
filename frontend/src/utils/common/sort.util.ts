@@ -10,7 +10,3 @@ export function sortByFields<T>(
     return direction === 'asc' ? result : -result;
   });
 }
-
-export const sortByName = <T extends { name: string }>(items: T[]) => {
-  return [...items].sort((a, b) => a.name.localeCompare(b.name));
-};

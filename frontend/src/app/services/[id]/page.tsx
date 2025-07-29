@@ -1,92 +1,26 @@
-'use client';
-
-import React, { useState } from 'react';
-import { useParams } from 'next/navigation';
-import serviceApi from '@/services/serviceApi';
+import { redirect } from 'next/navigation';
 import { Service } from '@/interfaces/service';
-import { ConfirmModal } from '@/components/common/ConfirmModal';
-import { useEntityViewHook } from '@/hooks/core/useEntityView.hook';
-import { useEntityDeleteHook } from '@/hooks/core/useEntityDelete.hook';
-import { EntityHeader } from '@/components/common/EntityHeader';
-import { EntityDates } from '@/components/common/EntityDates';
-import { DoctorList } from '@/components/doctors/DoctorList';
-import { authProvider } from '@/providers/AuthProvider';
+import ServiceViewClient from '@/components/services/ServiceViewClient';
+import { getServiceById } from '@/lib/api/services';
 
-export default function ServiceView() {
-  const { id } = useParams();
-  const { user, loading: userLoading } = authProvider();
+export default async function ServiceViewPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const resolvedParams = await params;
+  const serviceId = Number(resolvedParams.id);
 
-  const {
-    entity: service,
-    loading,
-    error,
-  } = useEntityViewHook<Service>(serviceApi.getById, id);
+  if (!serviceId) redirect(`/services`);
 
-  const { isConfirmOpen, setIsConfirmOpen, handleDelete } = useEntityDeleteHook(
-    serviceApi.delete,
-    '/services',
-  );
-  const [search, setSearch] = useState('');
+  let service: Service | null = null;
 
-  if (loading || userLoading) return <p>Loading service...</p>;
-  if (error || !service)
-    return <p className="text-red-600">{error || 'Service not found'}</p>;
+  try {
+    service = await getServiceById(serviceId);
+  } catch (e) {
+    console.error('Failed to fetch service', e);
+    redirect(`/services`);
+  }
 
-  const isAdmin = user?.role === 'ADMIN';
-
-  return (
-    <div className="container mx-auto p-4 max-w-3xl">
-      {/* Header */}
-      <EntityHeader
-        title={service.name}
-        editPath={`/admin/services/${service.id}`}
-        backText="Back to Services"
-        onDeleteClick={() => setIsConfirmOpen(true)}
-        isAdmin={isAdmin}
-      />
-
-      {/* Basic info */}
-      <div className="space-y-2 mb-6">
-        <p>
-          <strong>Description:</strong>{' '}
-          {service.description || 'No description available'}
-        </p>
-        <EntityDates
-          createdAt={service.createdAt}
-          updatedAt={service.updatedAt}
-        />
-      </div>
-
-      {/* === Doctors Section === */}
-      {service.doctors && service.doctors.length > 0 && (
-        <div className="mt-6">
-          <h2 className="text-xl font-semibold mb-2">Doctors</h2>
-          <input
-            type="text"
-            placeholder="Search doctors by name, email, phone..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="mb-4 w-full p-2 border border-gray-300 rounded shadow-sm"
-          />
-          <DoctorList
-            doctors={service.doctors}
-            search={search}
-            mode="withClinics"
-          />
-        </div>
-      )}
-
-      {/* Confirm deletion */}
-      {isConfirmOpen && (
-        <ConfirmModal
-          title="Confirm deletion"
-          message={`Are you sure you want to delete service "${service.name}"? This action cannot be undone.`}
-          confirmText="Delete"
-          cancelText="Cancel"
-          onConfirm={() => handleDelete(service.id)}
-          onCancel={() => setIsConfirmOpen(false)}
-        />
-      )}
-    </div>
-  );
+  return <ServiceViewClient service={service} />;
 }

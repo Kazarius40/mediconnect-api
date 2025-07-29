@@ -38,8 +38,8 @@ export class Clinic {
   phone: string;
 
   @ClinicEmailSwagger()
-  @Column({ nullable: true, unique: true })
-  email?: string;
+  @Column({ type: 'varchar', nullable: true, unique: true })
+  email: string | null;
 
   // ------------------------------------------------------ Timestamps ------------------------------------------------------------
   @ClinicCreatedAtSwagger()

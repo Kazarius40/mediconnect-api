@@ -2,31 +2,26 @@
 
 import React from 'react';
 
-export interface SortField {
-  value: string;
-  label: string;
-}
-
-interface SortControlsProps {
-  sortFields: SortField[];
-  sortBy: string;
+type SortControlsProps<T extends string> = {
+  sortFields: { value: T; label: string }[];
+  sortBy: T;
   sortOrder: 'ASC' | 'DESC';
-  onSortByChange: (field: string) => void;
+  onSortByChange: (field: T) => void;
   onSortOrderChange: (order: 'ASC' | 'DESC') => void;
-}
+};
 
-const SortControls: React.FC<SortControlsProps> = ({
+const SortControls = <T extends string>({
   sortFields,
   sortBy,
   sortOrder,
   onSortByChange,
   onSortOrderChange,
-}) => {
+}: SortControlsProps<T>) => {
   return (
     <div className="flex gap-4 mb-4">
       <select
         value={sortBy}
-        onChange={(e) => onSortByChange(e.target.value)}
+        onChange={(e) => onSortByChange(e.target.value as T)}
         className="border p-2 rounded"
       >
         {sortFields.map((field) => (

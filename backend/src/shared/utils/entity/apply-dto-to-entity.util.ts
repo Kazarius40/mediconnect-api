@@ -5,23 +5,20 @@
 export function applyDtoToEntity<T extends object>(
   entity: T,
   dto: Partial<T>,
-  options: {
-    exclude?: (keyof T)[];
-  } = {},
+  { exclude = [] }: { exclude?: (keyof T)[] } = {},
 ): T {
-  const { exclude = [] } = options;
+  for (const key of Object.keys(dto) as (keyof T)[]) {
+    if (exclude.includes(key)) continue;
 
-  (Object.keys(dto) as (keyof T)[]).forEach((key) => {
-    let value = dto[key];
+    const value = dto[key];
+    if (value === undefined) continue;
 
-    if (value === '') {
-      value = null as unknown as T[keyof T];
+    if (typeof (value as unknown) === 'string') {
+      const trimmed = (value as string).trim();
+      entity[key] = (trimmed === '' ? null : trimmed) as T[keyof T];
+    } else {
+      entity[key] = value as T[keyof T];
     }
-
-    if (value !== undefined && !exclude.includes(key)) {
-      entity[key] = value;
-    }
-  });
-
+  }
   return entity;
 }

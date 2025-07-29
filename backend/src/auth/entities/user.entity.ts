@@ -37,17 +37,17 @@ export class User {
   id: number;
 
   // ------------------------------------------------------ Main fields ----------------------------------------------------------
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   @UserFirstNameSwagger()
-  firstName?: string;
+  firstName: string | null;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   @UserLastNameSwagger()
-  lastName?: string;
+  lastName: string | null;
 
-  @Column({ nullable: true, unique: true })
+  @Column({ type: 'varchar', nullable: true, unique: true })
   @UserPhoneSwagger()
-  phone?: string;
+  phone: string | null;
 
   @Column({ unique: true })
   @UserEmailSwagger()
@@ -77,11 +77,11 @@ export class User {
   // ------------------------------------------------------ Password reset -------------------------------------------------------
   @Column({ nullable: true, type: 'varchar', length: 255 })
   @UserResetPasswordTokenSwagger()
-  resetPasswordToken?: string | null;
+  resetPasswordToken: string | null;
 
   @Column({ type: 'timestamp', nullable: true })
   @UserResetPasswordExpiresSwagger()
-  resetPasswordExpires?: Date | null;
+  resetPasswordExpires: Date | null;
 
   // ------------------------------------------------------ Timestamps -----------------------------------------------------------
   @CreateDateColumn()

@@ -1,18 +1,75 @@
-'use client';
-
-import React from 'react';
-import { useParams } from 'next/navigation';
-import ClinicForm from '@/components/clinics/ClinicForm';
-import { useClinicHook } from '@/hooks/domain/useClinic.hook';
+import { redirect } from 'next/navigation';
+import { BACKEND_URL } from '@/config/backend';
+import { Doctor } from '@/interfaces/doctor';
+import { Clinic } from '@/interfaces/clinic';
 import { EntityHeader } from '@/components/common/EntityHeader';
+import ClinicForm from '@/components/clinics/ClinicForm';
+import { ssrFetchUser } from '@/lib/auth/ssrAuth';
 
-export default function ClinicEdit() {
-  const { id } = useParams();
-  const { clinic, doctors, loading, error } = useClinicHook(Number(id));
+type ClinicWithDoctors = Omit<Clinic, 'doctors'> & {
+  doctors: Pick<Doctor, 'id' | 'firstName' | 'lastName'>[];
+};
 
-  if (loading) return <p>Loading...</p>;
-  if (error || !clinic)
-    return <p className="text-red-600">{error || 'Clinic not found'}</p>;
+async function getDoctorsFromServer(
+  token: string,
+): Promise<Pick<Doctor, 'id' | 'firstName' | 'lastName'>[]> {
+  const res = await fetch(`${BACKEND_URL}/doctors`, {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: 'no-store',
+  });
+
+  if (!res.ok) {
+    console.error('Failed to fetch doctors', await res.text());
+    return [];
+  }
+
+  return res.json();
+}
+
+async function getClinicFromServer(
+  token: string,
+  id: number,
+): Promise<ClinicWithDoctors | null> {
+  const res = await fetch(`${BACKEND_URL}/clinics/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: 'no-store',
+  });
+
+  if (!res.ok) {
+    console.error('Failed to fetch clinic', await res.text());
+    return null;
+  }
+
+  return res.json();
+}
+
+export default async function ClinicEdit({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const resolvedParams = await params;
+  const clinicId = Number(resolvedParams.id);
+
+  if (!clinicId) redirect('/clinics');
+
+  const authResult = await ssrFetchUser();
+  const user = authResult.user;
+  const token = authResult.accessToken;
+  // const token = authResult.newAccessToken ?? null;
+
+  if (!user || user.role !== 'ADMIN' || !token) {
+    redirect('/');
+  }
+
+  const [clinic, doctors] = await Promise.all([
+    getClinicFromServer(token, clinicId),
+    getDoctorsFromServer(token),
+  ]);
+
+  if (!clinic) {
+    return <p className="text-red-600 text-center mt-4">Clinic not found</p>;
+  }
 
   return (
     <div className="max-w-3xl mx-auto p-4">
@@ -20,7 +77,6 @@ export default function ClinicEdit() {
         title="Edit Clinic"
         editPath=""
         backText="Back to Clinics"
-        onDeleteClick={() => {}}
         isAdmin={false}
       />
 

@@ -68,7 +68,8 @@ export default function DoctorForm({
       if (doctorId) {
         await doctorApi.update(doctorId, normalizedData);
         toast.success('Doctor updated successfully!');
-        router.push(`/admin/doctors/${doctorId}`);
+
+        router.push(`/doctors`);
       } else {
         await doctorApi.create(normalizedData);
         toast.success('Doctor created successfully!');
@@ -156,7 +157,7 @@ export default function DoctorForm({
         label="Clinics"
         options={clinicOptions}
         selectedIds={clinicIds}
-        onChange={handleClinicsChange}
+        onChangeAction={handleClinicsChange}
         sortFields={['label']}
       />
 
@@ -165,7 +166,7 @@ export default function DoctorForm({
         label="Services"
         options={serviceOptions}
         selectedIds={serviceIds}
-        onChange={handleServicesChange}
+        onChangeAction={handleServicesChange}
         sortFields={['label']}
       />
 

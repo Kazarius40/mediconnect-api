@@ -1,10 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
-import { setCookie } from '@/utils/cookies/cookies.util';
-import { logout } from '@/api/auth';
+import { useRouter } from 'next/navigation';
+import { logout } from '@/api/client/auth';
+import { useAuth } from '@/providers/AuthProvider';
 
 const LogoutButton: React.FC = () => {
+  const router = useRouter();
+  const { setUser } = useAuth();
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -14,10 +18,10 @@ const LogoutButton: React.FC = () => {
 
     try {
       await logout();
-      setCookie('accessToken', '', { maxAge: 0 });
-
-      window.location.href = '/auth/login';
+      setUser(null);
+      router.push('/auth/login');
     } catch (err) {
+      console.error('Logout failed:', err);
       setError('Logout failed');
     } finally {
       setLoading(false);

@@ -10,7 +10,7 @@ function omit<T, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
 }
 
 export function toSafeUser(user: User): SafeUser {
-  return omit(user, [
+  const safe = omit(user, [
     'password',
     'verificationToken',
     'verificationTokenExpires',
@@ -18,4 +18,11 @@ export function toSafeUser(user: User): SafeUser {
     'resetPasswordExpires',
     'tokens',
   ]);
+
+  return {
+    ...safe,
+    firstName: safe.firstName ?? null,
+    lastName: safe.lastName ?? null,
+    phone: safe.phone ?? null,
+  };
 }

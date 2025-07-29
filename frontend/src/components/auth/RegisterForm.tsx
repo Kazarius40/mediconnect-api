@@ -2,8 +2,8 @@
 
 import React, { FormEvent, useState } from 'react';
 import { AxiosError } from 'axios';
-import { register } from '@/api/auth';
 import { useRouter } from 'next/navigation';
+import { registerUser } from '@/api/client/auth';
 
 const RegisterForm: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -27,7 +27,7 @@ const RegisterForm: React.FC = () => {
     }
 
     try {
-      await register({ email, password });
+      await registerUser({ email, password });
 
       router.push(`/auth/email-sent?email=${encodeURIComponent(email)}`);
     } catch (err) {

@@ -5,8 +5,8 @@ import React from 'react';
 interface DoctorCardProps {
   firstName: string;
   lastName: string;
-  phone?: string;
-  email?: string;
+  phone: string | null;
+  email: string | null;
   onClick?: () => void;
 }
 

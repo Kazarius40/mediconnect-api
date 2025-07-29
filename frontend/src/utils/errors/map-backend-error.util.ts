@@ -10,5 +10,11 @@ export function mapBackendErrorToField<T extends FieldValues>(
       return field as keyof T;
     }
   }
+
+  const match = msg.match(/with (\w+) '.*' already exists/);
+  if (match) {
+    return match[1] as keyof T;
+  }
+
   return null;
 }

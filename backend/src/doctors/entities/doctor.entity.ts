@@ -35,12 +35,12 @@ export class Doctor {
   lastName: string;
 
   @DoctorPhoneSwagger()
-  @Column({ nullable: true, unique: true })
-  phone?: string;
+  @Column({ type: 'varchar', nullable: true, unique: true })
+  phone: string | null;
 
   @DoctorEmailSwagger()
-  @Column({ nullable: true, unique: true })
-  email?: string;
+  @Column({ type: 'varchar', nullable: true, unique: true })
+  email: string | null;
 
   // ------------------------------------------------------ Timestamps ------------------------------------------------------------
   @DoctorCreatedAtSwagger()
