@@ -2,7 +2,7 @@ import 'server-only';
 import { cookies } from 'next/headers';
 import { User } from '@/interfaces/user/user';
 
-const SSR_APP_URL =
+export const SSR_APP_URL =
   typeof window === 'undefined'
     ? process.env.INTERNAL_API_URL || 'http://nginx'
     : process.env.NEXT_PUBLIC_API_URL || '/api';
@@ -12,16 +12,11 @@ interface SSRFetchUserResult {
   accessToken: string | null;
 }
 
-export async function hasRefreshToken(): Promise<boolean> {
+export async function ssrFetchUser(): Promise<{ user: User | null }> {
   const cookieStore = await cookies();
-  return !!cookieStore.get('refreshToken')?.value;
-}
-
-export async function ssrFetchUser(): Promise<SSRFetchUserResult> {
-  const cookieStore = await cookies();
-
   const refreshToken = cookieStore.get('refreshToken')?.value;
-  if (!refreshToken) return { user: null, accessToken: null };
+
+  if (!refreshToken) return { user: null };
 
   try {
     const res = await fetch(`${SSR_APP_URL}/api/auth/refresh`, {
@@ -32,18 +27,12 @@ export async function ssrFetchUser(): Promise<SSRFetchUserResult> {
       cache: 'no-store',
     });
 
-    if (!res.ok) return { user: null, accessToken: null };
+    if (!res.ok) return { user: null };
 
-    const { accessToken, user } = await res.json();
-
-    console.log('accessToken', accessToken);
-    return { user, accessToken };
-  } catch (error) {
-    console.error(
-      'Server SSRFetchUser: Error fetching profile with access token:',
-      error,
-    );
+    const { user } = await res.json();
+    return { user };
+  } catch (err) {
+    console.error('SSR Fetch failed:', err);
+    return { user: null };
   }
-
-  return { user: null, accessToken: null };
 }

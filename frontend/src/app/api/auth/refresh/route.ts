@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { BACKEND_URL } from '@/config/backend';
-import { setRefreshCookieFromHeader } from '@/lib/auth/setRefreshCookie';
+import { setAccessCookie, setRefreshCookie } from '@/lib/auth/setCookie';
 
 export async function POST(req: NextRequest) {
   try {
@@ -24,10 +24,13 @@ export async function POST(req: NextRequest) {
     }
 
     const { accessToken } = await res.json();
+
     const setCookieHeader = res.headers.get('set-cookie');
 
     const profileRes = await fetch(`${BACKEND_URL}/auth/profile`, {
-      headers: { Authorization: `Bearer ${accessToken}` },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
     });
 
     if (!profileRes.ok) {
@@ -39,12 +42,15 @@ export async function POST(req: NextRequest) {
 
     const user = await profileRes.json();
 
-    const response = NextResponse.json({ accessToken, user });
+    const response = NextResponse.json({ user });
 
-    setRefreshCookieFromHeader(setCookieHeader, response);
+    setRefreshCookie(setCookieHeader, response);
+
+    setAccessCookie(accessToken, response);
 
     return response;
   } catch (error) {
+    console.error('Refresh API error:', error);
     return NextResponse.json(
       { message: 'Internal Server Error' },
       { status: 500 },

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/providers/AuthProvider';
 
 export default function LoginPage() {
-  const { setUser, setAccessToken } = useAuth();
+  const { setUser } = useAuth();
   const router = useRouter();
 
   const [email, setEmail] = useState('');
@@ -32,7 +32,6 @@ export default function LoginPage() {
         return;
       }
 
-      setAccessToken(data.accessToken);
       setUser(data.user);
       router.push('/');
     } catch {

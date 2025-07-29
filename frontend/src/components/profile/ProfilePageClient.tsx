@@ -2,15 +2,9 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { useAuth } from '@/providers/AuthProvider';
+import { User } from '@/interfaces/user/user';
 
-export default function ProfilePageClient() {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return <ProfileSkeleton />;
-  }
-
+export default function ProfilePageClient({ user }: { user: User | null }) {
   if (!user) {
     return (
       <div className="p-6 text-center text-red-600 text-lg">
@@ -74,33 +68,4 @@ function SafeDate({ label, value }: { label: string; value?: string }) {
   }, [value]);
 
   return <ProfileRow label={label} value={formatted} />;
-}
-
-function SkeletonRow() {
-  return (
-    <div className="flex justify-between items-center border-b border-gray-100 py-2">
-      <div className="h-5 w-32 bg-gray-200 rounded animate-pulse" />
-      <div className="h-5 w-48 bg-gray-200 rounded animate-pulse" />
-    </div>
-  );
-}
-
-function ProfileSkeleton() {
-  return (
-    <div className="max-w-3xl mx-auto p-6">
-      <h1 className="text-3xl font-semibold mb-6 text-center text-gray-800">
-        👤 Loading Profile...
-      </h1>
-
-      <div className="bg-white shadow-xl rounded-2xl p-6 space-y-4 border border-gray-200">
-        {Array.from({ length: 8 }).map((_, idx) => (
-          <SkeletonRow key={idx} />
-        ))}
-      </div>
-
-      <div className="mt-6 text-center">
-        <div className="h-10 w-40 bg-gray-300 rounded-xl mx-auto animate-pulse" />
-      </div>
-    </div>
-  );
 }

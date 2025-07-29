@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { BACKEND_URL } from '@/config/backend';
-import { setRefreshCookieFromHeader } from '@/lib/auth/setRefreshCookie';
+import { setAccessCookie, setRefreshCookie } from '@/lib/auth/setCookie';
 
 export async function POST(req: NextRequest) {
   try {
@@ -35,7 +35,8 @@ export async function POST(req: NextRequest) {
 
     const response = NextResponse.json({ accessToken, user });
 
-    setRefreshCookieFromHeader(setCookieHeader, response);
+    setRefreshCookie(setCookieHeader, response);
+    setAccessCookie(accessToken, response);
 
     return response;
   } catch (error) {

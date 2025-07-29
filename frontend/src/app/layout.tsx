@@ -17,12 +17,12 @@ export default async function RootLayout({
 }: {
   children: ReactNode;
 }) {
-  const { user, accessToken } = await ssrFetchUser();
+  const { user } = await ssrFetchUser();
 
   return (
     <html lang="en">
       <body className="min-h-screen flex flex-col">
-        <AuthProvider user={user} accessToken={accessToken}>
+        <AuthProvider user={user}>
           <SWRProvider>
             <Navbar />
             <main className="flex-grow container mx-auto p-4">{children}</main>
