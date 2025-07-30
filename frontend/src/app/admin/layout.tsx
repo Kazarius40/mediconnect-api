@@ -16,16 +16,10 @@ export default async function AdminLayout({
     redirect('/auth/login');
   }
 
-  // if (!user || user.role !== 'ADMIN') {
-  //   redirect('/auth/login');
-  // }
-
   return (
     <div>
       <h1>Admin Layout Works!</h1>
       {children}
     </div>
   );
-
-  // return <>{children}</>;
 }

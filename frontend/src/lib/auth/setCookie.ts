@@ -11,7 +11,7 @@ export function setRefreshCookie(
   if (match && match[1]) {
     response.cookies.set('refreshToken', match[1], {
       httpOnly: true,
-      secure: false,
+      secure: process.env.NODE_ENV === 'production',
       path: '/',
       maxAge: 60 * 60 * 24,
       sameSite: 'lax',
@@ -25,7 +25,7 @@ export function setAccessCookie(
 ): void {
   response.cookies.set('accessToken', accessToken, {
     httpOnly: true,
-    secure: false,
+    secure: process.env.NODE_ENV === 'production',
     path: '/',
     maxAge: 60 * 5,
     sameSite: 'lax',

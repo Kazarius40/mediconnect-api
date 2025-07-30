@@ -1,32 +1,60 @@
 'use server';
 
 import ProfilePageClient from '@/components/profile/ProfilePageClient';
-import { User } from '@/interfaces/user/user';
-import { FRONTEND_URL } from '@/config/frontend';
+import { BACKEND_URL } from '@/config/backend';
 import { cookies } from 'next/headers';
 
 export default async function ProfilePage() {
-  let user: User | null = null;
-
   try {
     const cookieStore = await cookies();
+
+    const refreshToken = cookieStore.get('refreshToken')?.value;
     const accessToken = cookieStore.get('accessToken')?.value;
-    const res = await fetch(`${FRONTEND_URL}/api/profile`, {
+
+    console.log('accessToken in ProfilePage:  ', accessToken);
+    console.log('refreshToken in ProfilePage:  ', refreshToken);
+
+    if (!refreshToken || !accessToken) return <ProfilePageClient user={null} />;
+    if (accessToken) {
+    }
+    const profileRes = await fetch(`${BACKEND_URL}/auth/profile`, {
+      method: 'GET',
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
       cache: 'no-store',
     });
 
-    if (res.ok) {
-      const data = await res.json();
-      user = data.user;
-    } else {
-      console.warn('API /api/profile failed with status:', res.status);
-    }
-  } catch (error) {
-    console.error('Error fetching user from /api/profile:', error);
-  }
+    if (profileRes.status === 401) {
+      const refreshRes = await fetch(`${BACKEND_URL}/auth/refresh`, {
+        method: 'POST',
+        headers: {
+          Cookie: `refreshToken=${refreshToken}`,
+        },
+      });
 
-  return <ProfilePageClient user={user} />;
+      if (!refreshRes.ok) return <ProfilePageClient user={null} />;
+
+      const { accessToken: newAccessToken } = await refreshRes.json();
+
+      const profileAfterRefresh = await fetch(`${BACKEND_URL}/auth/profile`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${newAccessToken}`,
+        },
+        cache: 'no-store',
+      });
+
+      if (!profileAfterRefresh.ok) return <ProfilePageClient user={null} />;
+
+      const user = await profileAfterRefresh.json();
+      return <ProfilePageClient user={user} />;
+    }
+
+    const user = await profileRes.json();
+    return <ProfilePageClient user={user} />;
+  } catch (err) {
+    console.error('SSR error in profile page:', err);
+    return <ProfilePageClient user={null} />;
+  }
 }

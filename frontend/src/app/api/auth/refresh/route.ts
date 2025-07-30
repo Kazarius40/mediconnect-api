@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
 
     const user = await profileRes.json();
 
-    const response = NextResponse.json({ user });
+    const response = NextResponse.json({ user, accessToken });
 
     setRefreshCookie(setCookieHeader, response);
 
