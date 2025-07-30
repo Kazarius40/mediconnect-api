@@ -14,14 +14,13 @@ export function decodeJwt<T = any>(token: string): T | null {
   }
 }
 
-let refreshTimerId: NodeJS.Timeout | null = null; // Внутрішня змінна для управління таймером
+let refreshTimerId: NodeJS.Timeout | null = null;
 
 export function scheduleTokenRefresh(
   token: string,
   onRefresh: () => void,
-  refreshBeforeMs = 2 * 60 * 1000, // За замовчуванням 2 хвилини до закінчення токена
+  refreshBeforeMs = 2 * 60 * 1000,
 ): NodeJS.Timeout | null {
-  // <-- ДОДАНО ТИП ПОВЕРНЕННЯ!
   if (refreshTimerId) {
     clearTimeout(refreshTimerId);
     refreshTimerId = null;
@@ -32,19 +31,17 @@ export function scheduleTokenRefresh(
     console.warn(
       '[JWT Util] No expiration time found in token, cannot schedule refresh.',
     );
-    return null; // Повертаємо null, якщо не можемо декодувати або немає exp
+    return null;
   }
 
-  const expireTime = decoded.exp * 1000; // Час закінчення токена в мілісекундах
-  const now = Date.now(); // Поточний час в мілісекундах
-  const refreshTime = expireTime - refreshBeforeMs - now; // Час до спрацювання рефрешу
-
+  const expireTime = decoded.exp * 1000;
+  const now = Date.now();
+  const refreshTime = expireTime - refreshBeforeMs - now;
   if (refreshTime <= 0) {
     onRefresh();
-    return null; // Повертаємо null, оскільки таймер не встановлюється
+    return null;
   }
 
-  // Встановлюємо новий таймер і зберігаємо його ID
   refreshTimerId = setTimeout(onRefresh, refreshTime);
-  return refreshTimerId; // <-- ПОВЕРТАЄМО ID ТАЙМЕРА!
+  return refreshTimerId;
 }

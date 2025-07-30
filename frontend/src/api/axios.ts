@@ -9,6 +9,4 @@ const api = axios.create({
   },
 });
 
-// addAuthInterceptor(api);
-
 export default api;

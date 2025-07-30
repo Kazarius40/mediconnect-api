@@ -24,20 +24,17 @@ export async function middleware(req: NextRequest) {
 
   const data = await refreshRes.json();
   const newAccess = data.accessToken;
+  const setCookieHeader = refreshRes.headers.get('set-cookie');
 
-  const redirectUrl = req.nextUrl.clone();
-  const res = NextResponse.redirect(redirectUrl);
+  const res = NextResponse.next();
 
   if (newAccess) {
     setAccessCookie(newAccess, res);
   }
 
-  const setCookieHeader = refreshRes.headers.get('set-cookie');
-  setRefreshCookie(setCookieHeader, res);
+  if (setCookieHeader) {
+    setRefreshCookie(setCookieHeader, res);
+  }
 
   return res;
 }
-
-export const config = {
-  matcher: ['/((?!api|_next|static|favicon.ico).*)'],
-};

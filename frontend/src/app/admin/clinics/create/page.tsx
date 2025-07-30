@@ -27,7 +27,6 @@ export default async function ClinicCreate() {
   const authResult = await ssrFetchUser();
   const user = authResult.user;
   const token = authResult.accessToken;
-  // const token = authResult.newAccessToken ?? null;
 
   if (!user || user.role !== 'ADMIN' || !token) {
     redirect('/');

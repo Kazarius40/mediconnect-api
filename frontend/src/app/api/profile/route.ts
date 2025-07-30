@@ -1,4 +1,3 @@
-// src/app/api/profile/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { BACKEND_URL } from '@/config/backend';
 

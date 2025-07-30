@@ -18,9 +18,7 @@ export default async function DoctorEdit({
   const authResult = await ssrFetchUser();
   const user = authResult.user;
   const token = authResult.accessToken;
-  // const token = authResult.newAccessToken ?? null;
 
-  // якщо немає користувача або не ADMIN → редірект
   if (!user || user.role !== 'ADMIN' || !token) {
     redirect('/');
   }

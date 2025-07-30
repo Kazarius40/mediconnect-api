@@ -9,7 +9,6 @@ export default async function ServiceCreate() {
   const authResult = await ssrFetchUser();
   const user = authResult.user;
   const token = authResult.accessToken;
-  // const token = authResult.newAccessToken ?? null;
 
   if (!user || user.role !== 'ADMIN' || !token) {
     redirect('/');

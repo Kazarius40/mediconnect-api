@@ -1,12 +1,7 @@
-// src/lib/auth/ssrFetchUser.ts
 import 'server-only';
 import { cookies } from 'next/headers';
 import { User } from '@/interfaces/user/user';
-
-export const SSR_APP_URL =
-  typeof window === 'undefined'
-    ? process.env.INTERNAL_API_URL || 'http://nginx'
-    : process.env.NEXT_PUBLIC_API_URL || '/api';
+import { FRONTEND_URL } from '@/config/frontend';
 
 export async function ssrFetchUser(): Promise<{ user: User | null }> {
   const cookieStore = await cookies();
@@ -14,9 +9,9 @@ export async function ssrFetchUser(): Promise<{ user: User | null }> {
 
   if (!accessToken) return { user: null };
 
-  const res = await fetch(`${SSR_APP_URL}/api/profile`, {
+  const res = await fetch(`${FRONTEND_URL}/api/profile`, {
     headers: {
-      Authorization: `Bearer ${accessToken}`,
+      cookie: `accessToken=${accessToken}`,
     },
     cache: 'no-store',
   });
@@ -24,5 +19,6 @@ export async function ssrFetchUser(): Promise<{ user: User | null }> {
   if (!res.ok) return { user: null };
 
   const { user } = await res.json();
+
   return { user };
 }

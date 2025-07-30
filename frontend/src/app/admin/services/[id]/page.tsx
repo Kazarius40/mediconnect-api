@@ -18,9 +18,7 @@ export default async function ServiceEdit({
   const authResult = await ssrFetchUser();
   const user = authResult.user;
   const token = authResult.accessToken;
-  // const token = authResult.newAccessToken ?? null;
 
-  // Якщо користувача нема або не ADMIN → редірект
   if (!user || user.role !== 'ADMIN' || !token) {
     redirect('/');
   }
