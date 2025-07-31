@@ -4,20 +4,10 @@ import Link from 'next/link';
 import { useAuth } from '@/providers/AuthProvider';
 
 export default function Home() {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
 
   const buttonClass =
     'block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded mb-4 transition';
-
-  if (loading) {
-    return (
-      <div className="max-w-md mx-auto mt-12 space-y-4">
-        <SkeletonButton />
-        <SkeletonButton />
-        <SkeletonButton />
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-md mx-auto mt-12">
@@ -40,8 +30,4 @@ export default function Home() {
       </Link>
     </div>
   );
-}
-
-function SkeletonButton() {
-  return <div className="w-full h-12 bg-gray-200 rounded animate-pulse" />;
 }

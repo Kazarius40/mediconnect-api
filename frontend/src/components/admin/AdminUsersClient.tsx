@@ -6,14 +6,14 @@ import { useAuth } from '@/providers/AuthProvider';
 import Link from 'next/link';
 
 export default function AdminUsersPageClient() {
-  const { user, accessToken, loading } = useAuth();
+  const { user } = useAuth();
 
   const [users, setUsers] = useState<User[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [fetching, setFetching] = useState(false);
 
   useEffect(() => {
-    if (!user || !accessToken) return;
+    if (!user) return;
 
     async function fetchUsers() {
       setFetching(true);
@@ -45,8 +45,6 @@ export default function AdminUsersPageClient() {
 
     void fetchUsers();
   }, [user, accessToken]);
-
-  if (loading) return <div className="p-4">Loading auth...</div>;
 
   if (!user) {
     return (
