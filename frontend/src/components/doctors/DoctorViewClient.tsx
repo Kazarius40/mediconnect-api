@@ -58,7 +58,7 @@ export default function DoctorViewClient({
 
   return (
     <div className="container mx-auto p-4 max-w-3xl">
-      {/* Header */}
+      {/* === Header === */}
       <EntityHeader
         title={`${doctor.lastName} ${doctor.firstName}`}
         editPath={`/admin/doctors/${doctor.id}`}
@@ -67,7 +67,7 @@ export default function DoctorViewClient({
         isAdmin={isAdmin}
       />
 
-      {/* Basic info */}
+      {/* === Basic info === */}
       <div className="space-y-2 mb-6">
         {doctor.phone && (
           <p>
@@ -159,7 +159,7 @@ export default function DoctorViewClient({
         )}
       </div>
 
-      {/* Confirm deletion */}
+      {/* === Confirm deletion === */}
       {isConfirmOpen && (
         <ConfirmModal
           title="Confirm deletion"

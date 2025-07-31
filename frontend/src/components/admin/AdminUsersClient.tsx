@@ -7,7 +7,6 @@ import Link from 'next/link';
 
 export default function AdminUsersPageClient() {
   const { user, accessToken, loading } = useAuth();
-  console.log('AdminUsersPageClient token: ', accessToken);
 
   const [users, setUsers] = useState<User[] | null>(null);
   const [error, setError] = useState<string | null>(null);

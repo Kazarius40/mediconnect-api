@@ -11,9 +11,6 @@ export default async function ProfilePage() {
     const refreshToken = cookieStore.get('refreshToken')?.value;
     const accessToken = cookieStore.get('accessToken')?.value;
 
-    console.log('accessToken in ProfilePage:  ', accessToken);
-    console.log('refreshToken in ProfilePage:  ', refreshToken);
-
     if (!refreshToken || !accessToken) return <ProfilePageClient user={null} />;
     if (accessToken) {
     }

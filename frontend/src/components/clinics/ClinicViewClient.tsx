@@ -48,7 +48,7 @@ export default function ClinicViewClient({
 
   return (
     <div className="container mx-auto p-4 max-w-3xl">
-      {/* Header */}
+      {/* === Header === */}
       <EntityHeader
         title={clinic.name}
         editPath={`/admin/clinics/${clinic.id}`}
@@ -57,7 +57,7 @@ export default function ClinicViewClient({
         isAdmin={isAdmin}
       />
 
-      {/* Basic info */}
+      {/* === Basic info === */}
       <div className="space-y-2 mb-6">
         <p>
           <strong>Address:</strong> {clinic.address}
@@ -99,7 +99,7 @@ export default function ClinicViewClient({
         )}
       </div>
 
-      {/* Confirm deletion */}
+      {/* === Confirm deletion === */}
       {isConfirmOpen && (
         <ConfirmModal
           title="Confirm deletion"

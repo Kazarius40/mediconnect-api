@@ -48,7 +48,7 @@ export default function ServiceViewClient({
 
   return (
     <div className="container mx-auto p-4 max-w-3xl">
-      {/* Header */}
+      {/* === Header === */}
       <EntityHeader
         title={service.name}
         editPath={`/admin/services/${service.id}`}
@@ -57,7 +57,7 @@ export default function ServiceViewClient({
         isAdmin={isAdmin}
       />
 
-      {/* Basic info */}
+      {/* === Basic info === */}
       <div className="space-y-2 mb-6">
         <p>
           <strong>Description:</strong>{' '}
@@ -96,7 +96,7 @@ export default function ServiceViewClient({
         )}
       </div>
 
-      {/* Confirm deletion */}
+      {/* === Confirm deletion === */}
       {isConfirmOpen && (
         <ConfirmModal
           title="Confirm deletion"

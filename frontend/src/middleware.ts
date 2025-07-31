@@ -7,9 +7,17 @@ export async function middleware(req: NextRequest) {
   const accessToken = req.cookies.get('accessToken')?.value;
   const refreshToken = req.cookies.get('refreshToken')?.value;
 
-  if (accessToken || !refreshToken) {
-    return NextResponse.next();
+  if (accessToken) {
+    const profileRes = await fetch(`${BACKEND_URL}/auth/profile`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    if (profileRes.ok) return NextResponse.next();
   }
+
+  if (!refreshToken) return NextResponse.next();
 
   const refreshRes = await fetch(`${BACKEND_URL}/auth/refresh`, {
     method: 'POST',
@@ -18,9 +26,7 @@ export async function middleware(req: NextRequest) {
     },
   });
 
-  if (!refreshRes.ok) {
-    return NextResponse.next();
-  }
+  if (!refreshRes.ok) return NextResponse.next();
 
   const data = await refreshRes.json();
   const newAccess = data.accessToken;
@@ -28,13 +34,8 @@ export async function middleware(req: NextRequest) {
 
   const res = NextResponse.next();
 
-  if (newAccess) {
-    setAccessCookie(newAccess, res);
-  }
-
-  if (setCookieHeader) {
-    setRefreshCookie(setCookieHeader, res);
-  }
+  if (newAccess) setAccessCookie(newAccess, res);
+  if (setCookieHeader) setRefreshCookie(setCookieHeader, res);
 
   return res;
 }

@@ -78,7 +78,7 @@ export default function ClinicForm({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-lg">
-      {/* Name */}
+      {/* === Name === */}
       <FormField
         label="Name"
         htmlFor="name"
@@ -93,7 +93,7 @@ export default function ClinicForm({
         error={errors.name}
       />
 
-      {/* Address */}
+      {/* === Address === */}
       <FormField
         label="Address"
         htmlFor="address"
@@ -104,7 +104,7 @@ export default function ClinicForm({
         error={errors.address}
       />
 
-      {/* Phone */}
+      {/* === Phone === */}
       <FormField
         label="Phone"
         htmlFor="phone"
@@ -121,7 +121,7 @@ export default function ClinicForm({
         error={errors.phone}
       />
 
-      {/* Email */}
+      {/* === Email === */}
       <FormField
         label="Email"
         htmlFor="email"
@@ -135,7 +135,7 @@ export default function ClinicForm({
         error={errors.email}
       />
 
-      {/* Doctors */}
+      {/* === Doctors === */}
       <MultiSelect
         label="Doctors"
         options={doctorOptions}
@@ -144,7 +144,7 @@ export default function ClinicForm({
         sortFields={['label']}
       />
 
-      {/* Submit */}
+      {/* === Submit === */}
       <button
         type="submit"
         disabled={isSubmitting}

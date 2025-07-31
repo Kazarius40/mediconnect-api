@@ -9,10 +9,7 @@ export default async function AdminLayout({
 }) {
   const { user } = await ssrFetchUser();
 
-  console.log('AdminLayout user:', user);
-
   if (!user || user.role !== 'ADMIN') {
-    console.log('Redirect to /auth/login from AdminLayout');
     redirect('/auth/login');
   }
 

@@ -26,7 +26,6 @@ export function AuthProvider({
 
   useEffect(() => {
     if (!user && !isPublicPath(pathname)) {
-      console.log('user in Provider:   ', user);
       router.replace('/auth/login');
     }
   }, [user, pathname, router]);

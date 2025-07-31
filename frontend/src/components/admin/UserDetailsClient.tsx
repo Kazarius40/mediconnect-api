@@ -80,7 +80,7 @@ export default function UserDetailsClient({
         </p>
       </div>
 
-      {/* Role update */}
+      {/* === Role update === */}
       <div className="mt-6">
         <label className="block mb-1 font-semibold">Change Role:</label>
         <select
@@ -112,7 +112,7 @@ export default function UserDetailsClient({
         {error && <p className="mt-2 text-red-600 font-medium">{error}</p>}
       </div>
 
-      {/* Danger Zone */}
+      {/* === Danger Zone === */}
       <div className="mt-10 border-t pt-6">
         <h2 className="text-lg font-bold text-red-600 mb-2">Danger Zone</h2>
 

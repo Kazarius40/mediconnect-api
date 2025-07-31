@@ -77,7 +77,7 @@ export default function ServiceForm({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-lg">
-      {/* Name */}
+      {/* === Name === */}
       <FormField
         label="Name"
         htmlFor="name"
@@ -92,7 +92,7 @@ export default function ServiceForm({
         error={errors.name}
       />
 
-      {/* Description */}
+      {/* === Description === */}
       <FormField
         label="Description"
         htmlFor="description"
@@ -100,7 +100,7 @@ export default function ServiceForm({
         error={errors.description}
       />
 
-      {/* Doctors */}
+      {/* === Doctors === */}
       <MultiSelect
         label="Doctors"
         options={doctorOptions}
@@ -109,7 +109,7 @@ export default function ServiceForm({
         sortFields={['label']}
       />
 
-      {/* Submit */}
+      {/* === Submit === */}
       <button
         type="submit"
         disabled={isSubmitting}

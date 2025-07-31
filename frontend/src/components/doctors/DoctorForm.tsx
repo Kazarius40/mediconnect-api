@@ -93,7 +93,7 @@ export default function DoctorForm({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-lg">
-      {/* First name */}
+      {/* === First name === */}
       <FormField
         label="First Name"
         htmlFor="firstName"
@@ -108,7 +108,7 @@ export default function DoctorForm({
         error={errors.firstName}
       />
 
-      {/* Last name */}
+      {/* === Last name === */}
       <FormField
         label="Last Name"
         htmlFor="lastName"
@@ -123,7 +123,7 @@ export default function DoctorForm({
         error={errors.lastName}
       />
 
-      {/* Phone */}
+      {/* === Phone === */}
       <FormField
         label="Phone"
         htmlFor="phone"
@@ -138,7 +138,7 @@ export default function DoctorForm({
         error={errors.phone}
       />
 
-      {/* Email */}
+      {/* === Email === */}
       <FormField
         label="Email"
         htmlFor="email"
@@ -152,7 +152,7 @@ export default function DoctorForm({
         error={errors.email}
       />
 
-      {/* Clinics */}
+      {/* === Clinics === */}
       <MultiSelect
         label="Clinics"
         options={clinicOptions}
@@ -161,7 +161,7 @@ export default function DoctorForm({
         sortFields={['label']}
       />
 
-      {/* Services */}
+      {/* === Services === */}
       <MultiSelect
         label="Services"
         options={serviceOptions}
@@ -170,7 +170,7 @@ export default function DoctorForm({
         sortFields={['label']}
       />
 
-      {/* Submit */}
+      {/* === Submit === */}
       <button
         type="submit"
         disabled={isSubmitting}
