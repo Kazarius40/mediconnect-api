@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { BACKEND_URL } from '@/config/backend';
-import { setAccessCookie, setRefreshCookie } from '@/lib/auth/setCookie';
+import {
+  clearAuthCookies,
+  setAccessCookie,
+  setRefreshCookie,
+} from '@/lib/auth/setCookie';
 
 export async function middleware(req: NextRequest) {
   const accessToken = req.cookies.get('accessToken')?.value;
@@ -26,7 +30,11 @@ export async function middleware(req: NextRequest) {
     },
   });
 
-  if (!refreshRes.ok) return NextResponse.next();
+  if (!refreshRes.ok) {
+    const failRes = NextResponse.redirect(new URL('/auth/login', req.url));
+    clearAuthCookies(failRes);
+    return failRes;
+  }
 
   const data = await refreshRes.json();
   const newAccess = data.accessToken;

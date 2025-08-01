@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { BACKEND_URL } from '@/config/backend';
-import { setAccessCookie, setRefreshCookie } from '@/lib/auth/setCookie';
+import {
+  clearAuthCookies,
+  setAccessCookie,
+  setRefreshCookie,
+} from '@/lib/auth/setCookie';
 
 export async function POST(req: NextRequest) {
   try {
@@ -20,7 +24,12 @@ export async function POST(req: NextRequest) {
     });
 
     if (!res.ok) {
-      return NextResponse.json({ message: 'Refresh failed' }, { status: 401 });
+      const failRes = NextResponse.json(
+        { message: 'Refresh failed' },
+        { status: 401 },
+      );
+      clearAuthCookies(failRes);
+      return failRes;
     }
 
     const { accessToken } = await res.json();
@@ -34,26 +43,28 @@ export async function POST(req: NextRequest) {
     });
 
     if (!profileRes.ok) {
-      return NextResponse.json(
+      const failRes = NextResponse.json(
         { message: 'Profile fetch failed' },
         { status: 500 },
       );
+      clearAuthCookies(failRes);
+      return failRes;
     }
 
     const user = await profileRes.json();
-
     const response = NextResponse.json({ user, accessToken });
 
-    setRefreshCookie(setCookieHeader, response);
-
-    setAccessCookie(accessToken, response);
+    if (accessToken) setAccessCookie(accessToken, response);
+    if (setCookieHeader) setRefreshCookie(setCookieHeader, response);
 
     return response;
   } catch (error) {
     console.error('Refresh API error:', error);
-    return NextResponse.json(
+    const failRes = NextResponse.json(
       { message: 'Internal Server Error' },
       { status: 500 },
     );
+    clearAuthCookies(failRes);
+    return failRes;
   }
 }

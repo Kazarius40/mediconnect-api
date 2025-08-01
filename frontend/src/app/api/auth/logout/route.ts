@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { BACKEND_URL } from '@/config/backend';
+import { clearAuthCookies } from '@/lib/auth/setCookie';
 
 export async function POST(req: NextRequest) {
   const refreshToken = req.cookies.get('refreshToken')?.value;
@@ -15,13 +16,7 @@ export async function POST(req: NextRequest) {
 
   const response = NextResponse.json({ message: 'Logged out' });
 
-  response.cookies.set('refreshToken', '', {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'strict',
-    path: '/',
-    maxAge: 0,
-  });
+  clearAuthCookies(response);
 
   return response;
 }

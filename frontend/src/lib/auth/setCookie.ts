@@ -31,3 +31,20 @@ export function setAccessCookie(
     sameSite: 'lax',
   });
 }
+
+export function clearAuthCookies(response: NextResponse): void {
+  response.cookies.set('accessToken', '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    maxAge: 0,
+    sameSite: 'lax',
+  });
+  response.cookies.set('refreshToken', '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    maxAge: 0,
+    sameSite: 'lax',
+  });
+}
