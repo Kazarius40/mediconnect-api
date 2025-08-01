@@ -14,16 +14,16 @@ export async function ssrFetchUser(): Promise<{ user: User | null }> {
 
   if (!accessToken) return { user: null };
 
-  const res = await fetch(`${FRONTEND_URL}/api/auth/profile`, {
+  const profileRes = await fetch(`${FRONTEND_URL}/api/auth/profile`, {
     headers: {
-      cookie: `accessToken=${accessToken}`,
+      Cookie: `accessToken=${accessToken}`,
     },
     cache: 'no-store',
   });
 
-  if (!res.ok) return { user: null };
+  if (!profileRes.ok) return { user: null };
 
-  const { user } = await res.json();
+  const { user } = await profileRes.json();
 
   return { user };
 }

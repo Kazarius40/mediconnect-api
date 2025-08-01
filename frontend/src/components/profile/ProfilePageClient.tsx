@@ -1,17 +1,20 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { User } from '@/interfaces/user/user';
+import { useAuth } from '@/providers/AuthProvider';
 
 export default function ProfilePageClient({ user }: { user: User | null }) {
-  if (!user) {
-    return (
-      <div className="p-6 text-center text-red-600 text-lg">
-        Failed to load user profile
-      </div>
-    );
-  }
+  const { setUser } = useAuth();
+
+  useEffect(() => {
+    if (user === null) {
+      setUser(null);
+    }
+  }, [user, setUser]);
+
+  if (!user) return null;
 
   return (
     <div className="max-w-3xl mx-auto p-6">
