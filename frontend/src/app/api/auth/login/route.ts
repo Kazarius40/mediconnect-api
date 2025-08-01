@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     if (!profileRes.ok) {
       return NextResponse.json(
         { message: 'Failed to fetch profile after login' },
-        { status: 500 },
+        { status: profileRes.status },
       );
     }
 

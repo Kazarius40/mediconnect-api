@@ -1,61 +1,14 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { User } from '@/interfaces/user/user';
-import { useAuth } from '@/providers/AuthProvider';
 import Link from 'next/link';
 
-export default function AdminUsersPageClient() {
-  const { user } = useAuth();
+interface Props {
+  users: User[];
+}
 
-  const [users, setUsers] = useState<User[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [fetching, setFetching] = useState(false);
-
-  useEffect(() => {
-    if (!user) return;
-
-    async function fetchUsers() {
-      setFetching(true);
-      setError(null);
-      try {
-        const res = await fetch('/api/users', {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-
-        if (!res.ok) {
-          const errorText = await res.text();
-          setError(errorText);
-          setUsers(null);
-          return;
-        }
-
-        const data: User[] = await res.json();
-        setUsers(data);
-      } catch (e) {
-        console.error('Failed to load users', e);
-        setError('Failed to load users');
-        setUsers(null);
-      } finally {
-        setFetching(false);
-      }
-    }
-
-    void fetchUsers();
-  }, [user, accessToken]);
-
-  if (!user) {
-    return (
-      <div className="p-4 text-red-500">Access denied. Please log in.</div>
-    );
-  }
-
-  if (fetching) return <div className="p-4">Loading users...</div>;
-
-  if (error) return <div className="p-4 text-red-500">{error}</div>;
-
+export default function AdminUsersPageClient({ users }: Props) {
   if (!users || users.length === 0) {
     return <div className="p-4">No users found</div>;
   }

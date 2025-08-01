@@ -1,23 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAllUsersFromServer } from '@/lib/api';
+import { BACKEND_URL } from '@/config/backend';
+import { User } from '@/interfaces/user/user';
 
 export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get('authorization');
+  const accessToken = req.cookies.get('accessToken')?.value;
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return NextResponse.json({ error: 'No access token' }, { status: 401 });
+  const usersRes = await fetch(`${BACKEND_URL}/auth/users`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!usersRes.ok) {
+    return NextResponse.json({ user: null }, { status: usersRes.status });
   }
 
-  const token = authHeader.replace('Bearer ', '');
-
-  try {
-    const users = await getAllUsersFromServer(token);
-    return NextResponse.json(users);
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch users' },
-      { status: 500 },
-    );
-  }
+  const users: User[] = await usersRes.json();
+  return NextResponse.json({ users });
 }

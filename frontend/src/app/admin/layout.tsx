@@ -13,10 +13,5 @@ export default async function AdminLayout({
     redirect('/auth/login');
   }
 
-  return (
-    <div>
-      <h1>Admin Layout Works!</h1>
-      {children}
-    </div>
-  );
+  return <div>{children}</div>;
 }
