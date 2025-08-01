@@ -20,11 +20,7 @@ const phoneValidation = {
     'Phone number must be in +380XXXXXXXXX format',
 };
 
-export default function EditProfilePageComponent({
-  user,
-}: {
-  user: User | null;
-}) {
+export default function EditProfileComponent({ user }: { user: User | null }) {
   const router = useRouter();
 
   const [success, setSuccess] = useState('');

@@ -1,6 +1,7 @@
 'use server';
 
-import ProfilePageComponent from '@/components/profile/ProfilePageComponent';
+import ProfilePageComponent from '@/components/profile/ProfileComponent';
+import ProfileComponent from '@/components/profile/ProfileComponent';
 import { cookies } from 'next/headers';
 import { FRONTEND_URL } from '@/config/frontend';
 
@@ -24,6 +25,6 @@ export default async function ProfilePage() {
     return <ProfilePageComponent user={user} />;
   } catch (err) {
     console.error('Error in profile page:', err);
-    return <ProfilePageComponent user={null} />;
+    return <ProfileComponent user={null} />;
   }
 }

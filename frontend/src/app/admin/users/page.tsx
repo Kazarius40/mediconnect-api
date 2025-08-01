@@ -2,10 +2,10 @@
 
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
-import AdminUsersPageClient from '@/components/admin/AdminUsersClient';
 import { FRONTEND_URL } from '@/config/frontend';
+import UsersComponent from '@/components/admin/UsersComponent';
 
-export default async function AdminUsersPage() {
+export default async function UsersPage() {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
 
@@ -22,5 +22,5 @@ export default async function AdminUsersPage() {
 
   const { users } = await usersRes.json();
 
-  return <AdminUsersPageClient users={users} />;
+  return <UsersComponent users={users} />;
 }

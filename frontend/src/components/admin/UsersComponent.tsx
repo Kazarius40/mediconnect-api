@@ -8,7 +8,7 @@ interface Props {
   users: User[];
 }
 
-export default function AdminUsersPageClient({ users }: Props) {
+export default function UsersComponent({ users }: Props) {
   if (!users || users.length === 0) {
     return <div className="p-4">No users found</div>;
   }
