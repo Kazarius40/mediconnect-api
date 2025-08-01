@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { User } from '@/interfaces/user/user';
 import { useAuth } from '@/providers/AuthProvider';
 
-export default function ProfilePageClient({ user }: { user: User | null }) {
+export default function ProfilePageComponent({ user }: { user: User | null }) {
   const { setUser } = useAuth();
 
   useEffect(() => {

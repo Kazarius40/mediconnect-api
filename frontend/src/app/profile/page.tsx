@@ -1,6 +1,6 @@
 'use server';
 
-import ProfilePageClient from '@/components/profile/ProfilePageClient';
+import ProfilePageComponent from '@/components/profile/ProfilePageComponent';
 import { cookies } from 'next/headers';
 import { FRONTEND_URL } from '@/config/frontend';
 
@@ -9,7 +9,7 @@ export default async function ProfilePage() {
     const cookieStore = await cookies();
     const accessToken = cookieStore.get('accessToken')?.value;
 
-    if (!accessToken) return <ProfilePageClient user={null} />;
+    if (!accessToken) return <ProfilePageComponent user={null} />;
 
     const profileRes = await fetch(`${FRONTEND_URL}/api/auth/profile`, {
       headers: {
@@ -18,10 +18,12 @@ export default async function ProfilePage() {
       cache: 'no-store',
     });
 
+    if (!profileRes.ok) return <ProfilePageComponent user={null} />;
+
     const { user } = await profileRes.json();
-    return <ProfilePageClient user={user} />;
+    return <ProfilePageComponent user={user} />;
   } catch (err) {
     console.error('Error in profile page:', err);
-    return <ProfilePageClient user={null} />;
+    return <ProfilePageComponent user={null} />;
   }
 }

@@ -1,120 +1,27 @@
-'use client';
+'use server';
 
-import React, { useEffect, useState } from 'react';
-import { AxiosError } from 'axios';
-import { useRouter } from 'next/navigation';
-import api from '@/api/axios';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { FormField } from '@/components/common/FormField';
-import { User } from '@/interfaces/user/user';
+import { cookies } from 'next/headers';
+import { FRONTEND_URL } from '@/config/frontend';
+import EditProfilePageComponent from '@/components/profile/EditProfilePageComponent';
 
-interface ProfileFormData {
-  firstName?: string;
-  lastName?: string;
-  phone: string;
-}
+export default async function EditProfilePage() {
+  try {
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get('accessToken')?.value;
 
-export default function EditProfilePage() {
-  const router = useRouter();
+    if (!accessToken) return <EditProfilePageComponent user={null} />;
 
-  const [success, setSuccess] = useState('');
-  const [error, setError] = useState('');
+    const res = await fetch(`${FRONTEND_URL}/api/auth/profile`, {
+      headers: { Cookie: `accessToken=${accessToken}` },
+      cache: 'no-store',
+    });
 
-  const {
-    register,
-    setValue,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<ProfileFormData>({
-    defaultValues: { firstName: '', lastName: '', phone: '' },
-    mode: 'onChange',
-  });
+    if (!res.ok) return <EditProfilePageComponent user={null} />;
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const res = await api.get<User>('/auth/profile');
-        const profile = res.data;
-        setValue('lastName', profile.lastName || '');
-        setValue('firstName', profile.firstName || '');
-        setValue('phone', profile.phone || '');
-      } catch {
-        router.push('/auth/login');
-      }
-    };
-    void fetchProfile();
-  }, [router, setValue]);
+    const { user } = await res.json();
 
-  const onSubmit: SubmitHandler<ProfileFormData> = async (data) => {
-    setError('');
-    setSuccess('');
-
-    try {
-      await api.patch('/auth/profile', data);
-      setSuccess('Profile updated successfully');
-      setTimeout(() => router.push('/profile'), 1000);
-    } catch (err) {
-      const axiosError = err as AxiosError<{ message: string }>;
-      setError(axiosError.response?.data?.message || 'Update failed');
-    }
-  };
-
-  return (
-    <div className="max-w-md mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Edit Profile</h1>
-
-      {error && <div className="text-red-600 mb-4">{error}</div>}
-      {success && <div className="text-green-600 mb-4">{success}</div>}
-
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <input
-          type="text"
-          {...register('lastName')}
-          placeholder="Last Name"
-          className="w-full border p-2 rounded"
-        />
-
-        <input
-          type="text"
-          {...register('firstName')}
-          placeholder="First Name"
-          className="w-full border p-2 rounded"
-        />
-
-        <FormField
-          label="Phone"
-          htmlFor="phone"
-          required
-          register={register('phone', {
-            required: 'Phone is required',
-            validate: (value) => {
-              if (!value) return 'Phone is required';
-              if (!/^\+380\d{9}$/.test(value))
-                return 'Phone number must be in +380XXXXXXXXX format';
-              return true;
-            },
-          })}
-          error={errors.phone}
-          placeholder="+380XXXXXXXXX"
-        />
-
-        <div className="flex gap-4">
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded disabled:opacity-50"
-          >
-            {isSubmitting ? 'Saving...' : 'Save Changes'}
-          </button>
-          <button
-            type="button"
-            onClick={() => router.push('/profile')}
-            className="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded"
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
-    </div>
-  );
+    return <EditProfilePageComponent user={user} />;
+  } catch (error) {
+    return <EditProfilePageComponent user={null} />;
+  }
 }
