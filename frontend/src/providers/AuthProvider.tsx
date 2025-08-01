@@ -21,7 +21,6 @@ export function AuthProvider({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-
   const [user, setUser] = useState<User | null>(initialUser);
 
   useEffect(() => {
