@@ -5,11 +5,6 @@ import { FRONTEND_URL } from '@/config/frontend';
 
 export async function ssrFetchUser(): Promise<{ user: User | null }> {
   const cookieStore = await cookies();
-
-  if (cookieStore.get('authInvalid')) {
-    return { user: null };
-  }
-
   const accessToken = cookieStore.get('accessToken')?.value;
 
   if (!accessToken) return { user: null };
