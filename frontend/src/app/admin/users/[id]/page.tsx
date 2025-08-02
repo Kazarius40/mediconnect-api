@@ -1,14 +1,18 @@
 import { redirect } from 'next/navigation';
-import { getUserDetailsFromServer } from '@/lib/api';
 import { User } from '@/interfaces/user/user';
 import UserDetailsClient from '@/components/admin/UserDetailsClient';
 import { ssrFetchUser } from '@/lib/auth/ssrAuth';
+import { cookies } from 'next/headers';
+import { FRONTEND_URL } from '@/config/frontend';
 
 export default async function UserDetailsPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get('accessToken')?.value;
+
   const resolvedParams = await params;
   const userId = Number(resolvedParams.id);
 
@@ -16,17 +20,26 @@ export default async function UserDetailsPage({
 
   const authResult = await ssrFetchUser();
   const user = authResult.user;
-  const token = authResult.accessToken;
 
-  if (!user || user.role !== 'ADMIN' || !token) {
+  if (!user || user.role !== 'ADMIN' || !accessToken) {
     redirect('/admin/users');
   }
 
   let userDetails: User | null = null;
   try {
-    userDetails = await getUserDetailsFromServer(token, userId);
+    const res = await fetch(`${FRONTEND_URL}/api/users/${userId}`, {
+      headers: {
+        Cookie: `accessToken=${accessToken}`,
+      },
+      cache: 'no-store',
+    });
+
+    if (res.ok) {
+      const json = await res.json();
+      userDetails = json.user;
+    }
   } catch (e) {
-    console.error(e);
+    console.error('Fetch user by ID failed:', e);
   }
 
   if (!userDetails) {
