@@ -2,12 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { BACKEND_URL } from '@/config/backend';
 import { User } from '@/interfaces/user/user';
 
-export async function GET(
-  req: NextRequest,
-  context: Promise<{ params: { id: string } }>,
-) {
-  const { params } = await context;
-  const userId = Number(params.id);
+export async function GET(req: NextRequest) {
+  const url = new URL(req.url);
+  const userIdStr = url.pathname.split('/').pop();
+  const userId = Number(userIdStr);
 
   const accessToken = req.cookies.get('accessToken')?.value;
 
