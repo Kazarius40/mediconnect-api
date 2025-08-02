@@ -2,13 +2,15 @@
 
 import React from 'react';
 import { User } from '@/interfaces/user/user';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface Props {
   users: User[];
 }
 
 export default function UsersComponent({ users }: Props) {
+  const router = useRouter();
+
   if (!users || users.length === 0) {
     return <div className="p-4">No users found</div>;
   }
@@ -31,15 +33,11 @@ export default function UsersComponent({ users }: Props) {
             <tr
               key={u.id}
               className="hover:bg-blue-100 cursor-pointer transition-colors duration-200"
+              onClick={() => router.push(`/admin/users/${u.id}`)}
             >
               <td className="border p-2">{u.id}</td>
-              <td className="border p-2">
-                <Link
-                  href={`/admin/users/${u.id}`}
-                  className="text-blue-600 hover:underline"
-                >
-                  {u.email}
-                </Link>
+              <td className="border p-2 text-blue-600 hover:underline">
+                {u.email}
               </td>
               <td className="border p-2">{`${u.firstName || ''} ${u.lastName || ''}`}</td>
               <td className="border p-2">{u.phone || '-'}</td>
