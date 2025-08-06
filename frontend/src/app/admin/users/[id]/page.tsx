@@ -1,3 +1,5 @@
+'use server';
+
 import { redirect } from 'next/navigation';
 import { User } from '@/interfaces/user/user';
 import UserDetailsClient from '@/components/admin/UserDetailsClient';
