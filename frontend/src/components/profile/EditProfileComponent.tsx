@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { FormField } from '@/components/common/FormField';
 import { User } from '@/interfaces/user/user';
+import { useState } from 'react';
+import { AxiosError } from 'axios';
 
 interface ProfileFormData {
   firstName?: string;
@@ -30,25 +30,14 @@ export default function EditProfileComponent({ user }: { user: User | null }) {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    reset,
   } = useForm<ProfileFormData>({
     defaultValues: {
-      firstName: '',
-      lastName: '',
-      phone: '',
+      firstName: user?.firstName || '',
+      lastName: user?.lastName || '',
+      phone: user?.phone || '',
     },
     mode: 'onChange',
   });
-
-  useEffect(() => {
-    if (user) {
-      reset({
-        firstName: user.firstName || '',
-        lastName: user.lastName || '',
-        phone: user.phone || '',
-      });
-    }
-  }, [user, reset]);
 
   const onSubmit: SubmitHandler<ProfileFormData> = async (data) => {
     setError('');
@@ -62,12 +51,16 @@ export default function EditProfileComponent({ user }: { user: User | null }) {
       });
 
       setSuccess('Profile updated successfully');
-      router.push('/profile');
+      router.replace('/profile');
     } catch (err) {
       const axiosError = err as AxiosError<{ message: string }>;
       setError(axiosError.response?.data?.message || 'Update failed');
     }
   };
+
+  if (!user) {
+    return <div className="text-center text-red-600">Unauthorized</div>;
+  }
 
   return (
     <div className="max-w-md mx-auto p-6">
