@@ -1,20 +1,8 @@
-'use client';
-
-import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { User } from '@/interfaces/user/user';
-import { useAuth } from '@/providers/AuthProvider';
 
 export default function ProfileComponent({ user }: { user: User | null }) {
-  const { setUser } = useAuth();
-
-  useEffect(() => {
-    if (user === null) {
-      setUser(null);
-    }
-  }, [user, setUser]);
-
-  if (!user) return null;
+  if (!user) return <div>Not logged in</div>;
 
   return (
     <div className="max-w-3xl mx-auto p-6">
@@ -29,8 +17,8 @@ export default function ProfileComponent({ user }: { user: User | null }) {
         <ProfileRow label="Last Name" value={user.lastName} />
         <ProfileRow label="First Name" value={user.firstName} />
         <ProfileRow label="Phone" value={user.phone} />
-        <SafeDate label="Created At" value={user.createdAt} />
-        <SafeDate label="Updated At" value={user.updatedAt} />
+        <ProfileRow label="Created At" value={formatDate(user.createdAt)} />
+        <ProfileRow label="Updated At" value={formatDate(user.updatedAt)} />
       </div>
 
       <div className="mt-6 text-center">
@@ -59,16 +47,11 @@ function ProfileRow({
   );
 }
 
-function SafeDate({ label, value }: { label: string; value?: string }) {
-  const [formatted, setFormatted] = React.useState<string>('');
-
-  React.useEffect(() => {
-    if (value) {
-      setFormatted(new Date(value).toLocaleString());
-    } else {
-      setFormatted('-');
-    }
-  }, [value]);
-
-  return <ProfileRow label={label} value={formatted} />;
+function formatDate(value?: string): string {
+  if (!value) return '-';
+  try {
+    return new Date(value).toLocaleString();
+  } catch {
+    return '-';
+  }
 }
