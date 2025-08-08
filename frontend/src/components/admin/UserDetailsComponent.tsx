@@ -8,7 +8,7 @@ import { User } from '@/interfaces/user/user';
 const roles = ['ADMIN', 'PATIENT', 'DOCTOR'] as const;
 type Role = (typeof roles)[number];
 
-export default function UserDetailsClient({
+export default function UserDetailsComponent({
   user: initialUser,
 }: {
   user: User;

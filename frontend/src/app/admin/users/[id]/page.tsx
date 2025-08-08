@@ -2,10 +2,10 @@
 
 import { redirect } from 'next/navigation';
 import { User } from '@/interfaces/user/user';
-import UserDetailsClient from '@/components/admin/UserDetailsClient';
 import { ssrFetchUser } from '@/lib/auth/ssrAuth';
 import { cookies } from 'next/headers';
 import { FRONTEND_URL } from '@/config/frontend';
+import UserDetailsComponent from '@/components/admin/UserDetailsComponent';
 
 export default async function UserDetailsPage({
   params,
@@ -48,5 +48,5 @@ export default async function UserDetailsPage({
     return <p className="text-red-600 text-center mt-4">User not found</p>;
   }
 
-  return <UserDetailsClient user={userDetails} />;
+  return <UserDetailsComponent user={userDetails} />;
 }
