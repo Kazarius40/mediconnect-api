@@ -2,8 +2,9 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import api from '@/api/axios';
 import { User } from '@/interfaces/user/user';
+import { InfoRow } from '../common/InfoRow';
+import { formatDate } from '@/utils/formatDate';
 
 const roles = ['ADMIN', 'PATIENT', 'DOCTOR'] as const;
 type Role = (typeof roles)[number];
@@ -26,13 +27,23 @@ export default function UserDetailsComponent({
 
   const handleRoleUpdate = async () => {
     try {
-      await api.patch(`/auth/users/${user.id}/role`, { role: newRole });
+      const res = await fetch(`/api/users/${user.id}/role`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role: newRole }),
+      });
+      if (!res.ok) {
+        const { message } = await res.json();
+        setError(message);
+        setMessage(null);
+        return;
+      }
       setUser({ ...user, role: newRole });
       setMessage('Role updated successfully');
       setError(null);
     } catch (err: any) {
       console.error(err);
-      setError(err.response?.data?.message || err.message);
+      setError(err.message);
       setMessage(null);
     }
   };
@@ -43,41 +54,34 @@ export default function UserDetailsComponent({
       return;
     }
     try {
-      await api.delete(`/auth/users/${user.id}`);
+      const res = await fetch(`/api/users/${user.id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const { message } = await res.json();
+        setDeleteError(message);
+        return;
+      }
       router.push('/admin/users');
     } catch (err: any) {
       console.error(err);
-      setDeleteError(err.response?.data?.message || err.message);
+      setDeleteError(err.message);
     }
   };
 
   return (
     <div className="max-w-4xl mx-auto space-y-4">
       <h1 className="text-2xl font-bold">User Details</h1>
-      <div className="border p-4 rounded shadow-sm space-y-2">
-        <p>
-          <strong>ID:</strong> {user.id}
-        </p>
-        <p>
-          <strong>Email:</strong> {user.email}
-        </p>
-        <p>
-          <strong>Name:</strong> {user.firstName || '-'} {user.lastName || '-'}
-        </p>
-        <p>
-          <strong>Phone:</strong> {user.phone || '-'}
-        </p>
-        <p>
-          <strong>Role:</strong> {user.role}
-        </p>
-        <p>
-          <strong>Created At:</strong>{' '}
-          {user.createdAt ? new Date(user.createdAt).toLocaleString() : '-'}
-        </p>
-        <p>
-          <strong>Updated At:</strong>{' '}
-          {user.updatedAt ? new Date(user.updatedAt).toLocaleString() : '-'}
-        </p>
+
+      <div className="border p-4 rounded shadow-sm space-y-2 bg-white">
+        <InfoRow label="ID" value={user.id} />
+        <InfoRow label="Email" value={user.email} />
+        <InfoRow
+          label="Name"
+          value={`${user.firstName || '-'} ${user.lastName || '-'}`}
+        />
+        <InfoRow label="Phone" value={user.phone} />
+        <InfoRow label="Role" value={user.role} />
+        <InfoRow label="Created At" value={formatDate(user.createdAt)} />
+        <InfoRow label="Updated At" value={formatDate(user.updatedAt)} />
       </div>
 
       {/* === Role update === */}

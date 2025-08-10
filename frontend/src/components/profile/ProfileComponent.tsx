@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { User } from '@/interfaces/user/user';
+import { InfoRow } from '@/components/common/InfoRow';
+import { formatDate } from '@/utils/formatDate';
 
 export default function ProfileComponent({ user }: { user: User | null }) {
   if (!user) return <div>Not logged in</div>;
@@ -11,14 +13,14 @@ export default function ProfileComponent({ user }: { user: User | null }) {
       </h1>
 
       <div className="bg-white shadow-xl rounded-2xl p-6 space-y-4 border border-gray-200">
-        <ProfileRow label="ID" value={user.id} />
-        <ProfileRow label="Email" value={user.email} />
-        <ProfileRow label="Role" value={user.role} />
-        <ProfileRow label="Last Name" value={user.lastName} />
-        <ProfileRow label="First Name" value={user.firstName} />
-        <ProfileRow label="Phone" value={user.phone} />
-        <ProfileRow label="Created At" value={formatDate(user.createdAt)} />
-        <ProfileRow label="Updated At" value={formatDate(user.updatedAt)} />
+        <InfoRow label="ID" value={user.id} />
+        <InfoRow label="Email" value={user.email} />
+        <InfoRow label="Role" value={user.role} />
+        <InfoRow label="Last Name" value={user.lastName} />
+        <InfoRow label="First Name" value={user.firstName} />
+        <InfoRow label="Phone" value={user.phone} />
+        <InfoRow label="Created At" value={formatDate(user.createdAt)} />
+        <InfoRow label="Updated At" value={formatDate(user.updatedAt)} />
       </div>
 
       <div className="mt-6 text-center">
@@ -32,26 +34,26 @@ export default function ProfileComponent({ user }: { user: User | null }) {
   );
 }
 
-function ProfileRow({
-  label,
-  value,
-}: {
-  label: string;
-  value?: string | number;
-}) {
-  return (
-    <div className="flex justify-between items-center border-b border-gray-100 py-2">
-      <span className="text-gray-600 font-medium">{label}:</span>
-      <span className="text-gray-900">{value || '-'}</span>
-    </div>
-  );
-}
-
-function formatDate(value?: string): string {
-  if (!value) return '-';
-  try {
-    return new Date(value).toLocaleString();
-  } catch {
-    return '-';
-  }
-}
+// export function ProfileRow({
+//   label,
+//   value,
+// }: {
+//   label: string;
+//   value?: string | number;
+// }) {
+//   return (
+//     <div className="flex justify-between items-center border-b border-gray-100 py-2">
+//       <span className="text-gray-600 font-medium">{label}:</span>
+//       <span className="text-gray-900">{value || '-'}</span>
+//     </div>
+//   );
+// }
+//
+// export function formatDate(value?: string): string {
+//   if (!value) return '-';
+//   try {
+//     return new Date(value).toISOString();
+//   } catch {
+//     return '-';
+//   }
+// }
