@@ -1,7 +1,8 @@
+'use server';
+
 import { redirect } from 'next/navigation';
-import { Clinic } from '@/interfaces/clinic';
 import ClinicViewClient from '@/components/clinics/ClinicViewClient';
-import { getClinicById } from '@/lib/api/clinics';
+import { FRONTEND_URL } from '@/config/frontend';
 
 export default async function ClinicViewPage({
   params,
@@ -13,14 +14,20 @@ export default async function ClinicViewPage({
 
   if (!clinicId) redirect('/clinics');
 
-  let clinic: Clinic | null = null;
-
   try {
-    clinic = await getClinicById(clinicId);
-  } catch (e) {
-    console.error('Failed to fetch clinic', e);
+    const res = await fetch(`${FRONTEND_URL}/api/clinics/${clinicId}`, {
+      cache: 'no-store',
+    });
+
+    if (!res.ok) {
+      redirect('/clinics');
+    }
+
+    const { clinic } = await res.json();
+
+    return <ClinicViewClient clinic={clinic} />;
+  } catch (error) {
+    console.error('Error fetching clinic:', error);
     redirect('/clinics');
   }
-
-  return <ClinicViewClient clinic={clinic} />;
 }

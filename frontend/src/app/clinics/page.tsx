@@ -1,17 +1,21 @@
+'use server';
+
 import ClinicsClientPage from '@/components/clinics/ClinicsClientPage';
-import { getClinics } from '@/lib/api/clinics';
-import { Clinic } from '@/interfaces/clinic';
-import { redirect } from 'next/navigation';
+import { FRONTEND_URL } from '@/config/frontend';
 
 export default async function ClinicsPage() {
-  let clinics: Clinic[] = [];
-
   try {
-    clinics = await getClinics();
-  } catch (e) {
-    console.error('Failed to fetch clinics', e);
-    redirect('/');
-  }
+    const res = await fetch(`${FRONTEND_URL}/api/clinics`, {
+      cache: 'no-store',
+    });
 
-  return <ClinicsClientPage clinics={clinics} />;
+    if (!res.ok) return <ClinicsClientPage clinics={[]} />;
+
+    const { clinics } = await res.json();
+
+    return <ClinicsClientPage clinics={clinics} />;
+  } catch (error) {
+    console.error('Error fetching clinics:', error);
+    return <ClinicsClientPage clinics={[]} />;
+  }
 }
