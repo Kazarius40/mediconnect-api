@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Clinic } from '@/interfaces/clinic';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
 import { DoctorList } from '@/components/doctors/DoctorList';
@@ -10,7 +10,6 @@ import { EntityDates } from '@/components/common/EntityDates';
 import clinicApi from '@/services/clinicApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { useRouter } from 'next/navigation';
-import { useClinic } from '@/hooks/api/useClinic';
 import { useSortedSearch } from '@/hooks/useSortedSearch';
 import { sortByFields } from '@/utils/common/sort.util';
 
@@ -22,8 +21,7 @@ export default function ClinicViewClient({
   const router = useRouter();
   const { user } = useAuth();
   const isAdmin = user?.role === 'ADMIN';
-
-  const { data: clinic } = useClinic(initialClinic.id, initialClinic);
+  const [clinic] = useState<Clinic>(initialClinic);
 
   const doctors = clinic.doctors ?? [];
 
