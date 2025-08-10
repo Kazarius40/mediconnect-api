@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { User } from '@/interfaces/user/user';
 import { InfoRow } from '../common/InfoRow';
-import { formatDate } from '@/utils/formatDate';
+import { EntityDates } from '@/components/common/EntityDates';
 
 const roles = ['ADMIN', 'PATIENT', 'DOCTOR'] as const;
 type Role = (typeof roles)[number];
@@ -74,14 +74,11 @@ export default function UserDetailsComponent({
       <div className="border p-4 rounded shadow-sm space-y-2 bg-white">
         <InfoRow label="ID" value={user.id} />
         <InfoRow label="Email" value={user.email} />
-        <InfoRow
-          label="Name"
-          value={`${user.firstName || '-'} ${user.lastName || '-'}`}
-        />
+        <InfoRow label="Name" value={`${user.firstName} ${user.lastName}`} />
         <InfoRow label="Phone" value={user.phone} />
         <InfoRow label="Role" value={user.role} />
-        <InfoRow label="Created At" value={formatDate(user.createdAt)} />
-        <InfoRow label="Updated At" value={formatDate(user.updatedAt)} />
+
+        <EntityDates createdAt={user.createdAt} updatedAt={user.updatedAt} />
       </div>
 
       {/* === Role update === */}

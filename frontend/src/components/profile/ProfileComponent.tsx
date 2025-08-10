@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { User } from '@/interfaces/user/user';
 import { InfoRow } from '@/components/common/InfoRow';
-import { formatDate } from '@/utils/formatDate';
+import { EntityDates } from '@/components/common/EntityDates';
 
 export default function ProfileComponent({ user }: { user: User | null }) {
   if (!user) return <div>Not logged in</div>;
@@ -19,8 +19,8 @@ export default function ProfileComponent({ user }: { user: User | null }) {
         <InfoRow label="Last Name" value={user.lastName} />
         <InfoRow label="First Name" value={user.firstName} />
         <InfoRow label="Phone" value={user.phone} />
-        <InfoRow label="Created At" value={formatDate(user.createdAt)} />
-        <InfoRow label="Updated At" value={formatDate(user.updatedAt)} />
+
+        <EntityDates createdAt={user.createdAt} updatedAt={user.updatedAt} />
       </div>
 
       <div className="mt-6 text-center">
@@ -33,27 +33,3 @@ export default function ProfileComponent({ user }: { user: User | null }) {
     </div>
   );
 }
-
-// export function ProfileRow({
-//   label,
-//   value,
-// }: {
-//   label: string;
-//   value?: string | number;
-// }) {
-//   return (
-//     <div className="flex justify-between items-center border-b border-gray-100 py-2">
-//       <span className="text-gray-600 font-medium">{label}:</span>
-//       <span className="text-gray-900">{value || '-'}</span>
-//     </div>
-//   );
-// }
-//
-// export function formatDate(value?: string): string {
-//   if (!value) return '-';
-//   try {
-//     return new Date(value).toISOString();
-//   } catch {
-//     return '-';
-//   }
-// }

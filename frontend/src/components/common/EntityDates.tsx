@@ -1,15 +1,10 @@
-'use client';
-
 import React from 'react';
-import { format } from 'date-fns';
+import { formatDate } from '@/utils/formatDate';
 
 export const EntityDates: React.FC<{
   createdAt?: string;
   updatedAt?: string;
 }> = ({ createdAt, updatedAt }) => {
-  const formatDate = (date: string) =>
-    format(new Date(date), 'dd.MM.yyyy, HH:mm:ss');
-
   return (
     <>
       {createdAt && (
