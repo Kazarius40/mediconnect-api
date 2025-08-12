@@ -13,8 +13,6 @@ export async function middleware(req: NextRequest) {
   const refreshToken = req.cookies.get('refreshToken')?.value;
   const redirectUrl = new URL('/auth/login', req.url);
 
-  console.log('Перевірка заходження в middleware!!!!!!!!!!!!!!!!!!!!!!');
-
   const redirectToLogin = () => {
     const res = NextResponse.redirect(redirectUrl);
     clearAuthCookies(res);

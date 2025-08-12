@@ -2,7 +2,6 @@
 
 import { redirect } from 'next/navigation';
 import { User } from '@/interfaces/user/user';
-import { ssrFetchUser } from '@/lib/auth/ssrAuth';
 import { cookies } from 'next/headers';
 import { FRONTEND_URL } from '@/config/frontend';
 import UserDetailsComponent from '@/components/admin/UserDetailsComponent';
@@ -18,12 +17,7 @@ export default async function UserDetailsPage({
   const resolvedParams = await params;
   const userId = Number(resolvedParams.id);
 
-  if (!userId) redirect('/admin/users');
-
-  const authResult = await ssrFetchUser();
-  const user = authResult.user;
-
-  if (!user || user.role !== 'ADMIN' || !accessToken) {
+  if (!userId) {
     redirect('/admin/users');
   }
 
