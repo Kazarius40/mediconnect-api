@@ -23,7 +23,7 @@ export default async function UserDetailsPage({
 
   let userDetails: User | null = null;
   try {
-    const res = await fetch(`${FRONTEND_URL}/api/users/${userId}`, {
+    const res = await fetch(`${FRONTEND_URL}/api/admin/users/${userId}`, {
       headers: {
         Cookie: `accessToken=${accessToken}`,
       },

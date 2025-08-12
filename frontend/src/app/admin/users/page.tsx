@@ -12,7 +12,7 @@ export default async function UsersPage() {
     return <UsersComponent users={[]} />;
   }
 
-  const usersRes = await fetch(`${FRONTEND_URL}/api/users`, {
+  const usersRes = await fetch(`${FRONTEND_URL}/api/admin/users`, {
     headers: {
       Cookie: `accessToken=${accessToken}`,
     },
