@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { User } from '@/interfaces/user/user';
 import { InfoRow } from '../common/InfoRow';
 import { EntityDates } from '@/components/common/EntityDates';
-import { useAuth } from '@/providers/AuthProvider';
 
 const roles = ['ADMIN', 'PATIENT', 'DOCTOR'] as const;
 type Role = (typeof roles)[number];
@@ -15,12 +14,6 @@ export default function UserDetailsComponent({
 }: {
   user: User;
 }) {
-  const { user: currentUser } = useAuth();
-
-  if (!currentUser || currentUser.role !== 'ADMIN') {
-    return <p>Access denied</p>;
-  }
-
   const router = useRouter();
 
   const [user, setUser] = useState(initialUser);

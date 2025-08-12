@@ -3,19 +3,12 @@
 import React from 'react';
 import { User } from '@/interfaces/user/user';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/providers/AuthProvider';
 
 interface Props {
   users: User[];
 }
 
 export default function UsersComponent({ users }: Props) {
-  const { user: currentUser } = useAuth();
-
-  if (!currentUser || currentUser.role !== 'ADMIN') {
-    return <p>Access denied</p>;
-  }
-
   const router = useRouter();
 
   if (!users || users.length === 0) {
