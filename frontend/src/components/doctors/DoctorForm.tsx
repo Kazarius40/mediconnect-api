@@ -6,7 +6,6 @@ import { useForm } from 'react-hook-form';
 import { CreateDoctorDto } from '@/interfaces/doctor';
 import { Clinic } from '@/interfaces/clinic';
 import { Service } from '@/interfaces/service';
-import doctorApi from '@/services/doctorApi';
 import { FormField } from '@/components/common/FormField';
 import {
   MultiSelect,
@@ -65,16 +64,31 @@ export default function DoctorForm({
     try {
       const normalizedData = cleanOptionalFields(data, ['email']);
 
-      if (doctorId) {
-        await doctorApi.update(doctorId, normalizedData);
-        toast.success('Doctor updated successfully!');
+      const res = doctorId
+        ? await fetch(`/api/admin/doctors/${doctorId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(normalizedData),
+          })
+        : await fetch(`/api/admin/doctors`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(normalizedData),
+          });
 
-        router.push(`/doctors`);
-      } else {
-        await doctorApi.create(normalizedData);
-        toast.success('Doctor created successfully!');
-        router.push('/doctors');
+      if (!res.ok) {
+        const err = await res.json();
+        processBackendErrors<CreateDoctorDto>(err, setError);
+        toast.error('Failed to save doctor. Please try again.');
+        return;
       }
+
+      toast.success(
+        doctorId
+          ? 'Doctor updated successfully!'
+          : 'Doctor created successfully!',
+      );
+      router.push('/doctors');
     } catch (err: any) {
       processBackendErrors<CreateDoctorDto>(err, setError);
       toast.error('Failed to save doctor. Please try again.');

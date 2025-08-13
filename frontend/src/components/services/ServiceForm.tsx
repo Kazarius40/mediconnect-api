@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { Doctor } from '@/interfaces/doctor';
 import { CreateServiceDto } from '@/interfaces/service';
-import serviceApi from '@/services/serviceApi';
 import { FormField } from '@/components/common/FormField';
 import {
   MultiSelect,
@@ -13,7 +12,6 @@ import {
 } from '@/components/common/MultiSelect';
 import { processBackendErrors } from '@/utils/errors/backend-error.util';
 import toast from 'react-hot-toast';
-import { mutate } from 'swr';
 
 interface ServiceFormProps {
   initialValues?: Partial<CreateServiceDto>;
@@ -52,18 +50,31 @@ export default function ServiceForm({
 
   const onSubmit = async (data: CreateServiceDto) => {
     try {
-      if (serviceId) {
-        await serviceApi.update(serviceId, data);
+      const res = serviceId
+        ? await fetch(`/api/admin/services/${serviceId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+          })
+        : await fetch(`/api/admin/services`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+          });
 
-        await mutate(`/services/${serviceId}`);
-
-        toast.success('Service updated successfully!');
-        router.push(`/services`);
-      } else {
-        await serviceApi.create(data);
-        toast.success('Service created successfully!');
-        router.push('/services');
+      if (!res.ok) {
+        const err = await res.json();
+        processBackendErrors<CreateServiceDto>(err, setError);
+        toast.error('Failed to save service. Please try again.');
+        return;
       }
+
+      toast.success(
+        serviceId
+          ? 'Service updated successfully!'
+          : 'Service created successfully!',
+      );
+      router.push('/services');
     } catch (err: any) {
       processBackendErrors<CreateServiceDto>(err, setError);
       toast.error('Failed to save service. Please try again.');
