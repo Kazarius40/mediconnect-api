@@ -6,8 +6,7 @@ export async function GET(
   _req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const resolvedParams = await params;
-  const clinicId = resolvedParams.id;
+  const clinicId = (await params).id;
 
   try {
     const clinicRes = await fetch(`${BACKEND_URL}/clinics/${clinicId}`);

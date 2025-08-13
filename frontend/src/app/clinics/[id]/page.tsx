@@ -9,8 +9,7 @@ export default async function ClinicViewPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const resolvedParams = await params;
-  const clinicId = Number(resolvedParams.id);
+  const clinicId = Number((await params).id);
 
   if (!clinicId) redirect('/clinics');
 

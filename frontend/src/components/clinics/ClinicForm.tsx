@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { Doctor } from '@/interfaces/doctor';
 import { CreateClinicDto } from '@/interfaces/clinic';
-import clinicApi from '@/services/clinicApi';
 import { FormField } from '@/components/common/FormField';
 import {
   MultiSelect,
@@ -55,16 +54,35 @@ export default function ClinicForm({
   const onSubmit = async (data: CreateClinicDto) => {
     try {
       const normalizedData = cleanOptionalFields(data, ['email']);
+      let res;
 
       if (clinicId) {
-        await clinicApi.update(clinicId, normalizedData);
-        toast.success('Clinic updated successfully!');
-        router.push(`/clinics`);
+        res = await fetch(`/api/admin/clinics/${clinicId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(normalizedData),
+        });
       } else {
-        await clinicApi.create(normalizedData);
-        toast.success('Clinic created successfully!');
-        router.push('/clinics');
+        res = await fetch(`/api/admin/clinics`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(normalizedData),
+        });
       }
+
+      if (!res.ok) {
+        const err = await res.json();
+        processBackendErrors<CreateClinicDto>(err, setError);
+        toast.error('Failed to save clinic. Please try again.');
+        return;
+      }
+
+      toast.success(
+        clinicId
+          ? 'Clinic updated successfully!'
+          : 'Clinic created successfully!',
+      );
+      router.push('/clinics');
     } catch (err: any) {
       processBackendErrors<CreateClinicDto>(err, setError);
       toast.error('Failed to save clinic. Please try again.');

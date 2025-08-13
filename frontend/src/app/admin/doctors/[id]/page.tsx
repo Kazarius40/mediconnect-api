@@ -21,13 +21,11 @@ export default async function DoctorEdit({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
-  const doctorId = Number(id);
+  const doctorId = Number((await params).id);
 
   if (!doctorId) redirect('/doctors');
 
   const { user } = await ssrFetchUser();
-
   if (!user || user.role !== 'ADMIN') redirect('/');
 
   try {

@@ -7,7 +7,6 @@ import { DoctorList } from '@/components/doctors/DoctorList';
 import { useEntityDeleteHook } from '@/hooks/core/useEntityDelete.hook';
 import { EntityHeader } from '@/components/common/EntityHeader';
 import { EntityDates } from '@/components/common/EntityDates';
-import clinicApi from '@/services/clinicApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { useRouter } from 'next/navigation';
 import { useSortedSearch } from '@/hooks/useSortedSearch';
@@ -27,7 +26,9 @@ export default function ClinicViewClient({
 
   const { isConfirmOpen, setIsConfirmOpen, handleDelete } = useEntityDeleteHook(
     async (id) => {
-      await clinicApi.delete(id);
+      await fetch(`/api/admin/clinics/${id}`, {
+        method: 'DELETE',
+      });
 
       router.push('/clinics');
     },

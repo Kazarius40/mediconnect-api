@@ -16,8 +16,7 @@ export default async function ClinicEdit({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
-  const clinicId = Number(id);
+  const clinicId = Number((await params).id);
 
   if (!clinicId) redirect('/clinics');
 

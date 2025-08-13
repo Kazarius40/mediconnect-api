@@ -5,8 +5,7 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const resolvedParams = await params;
-  const userId = resolvedParams.id;
+  const userId = (await params).id;
 
   const accessToken = req.cookies.get('accessToken')?.value;
   if (!accessToken) {

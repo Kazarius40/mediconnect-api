@@ -9,8 +9,7 @@ export default async function ServiceViewPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const resolvedParams = await params;
-  const serviceId = Number(resolvedParams.id);
+  const serviceId = Number((await params).id);
 
   if (!serviceId) redirect(`/services`);
 

@@ -6,8 +6,7 @@ export async function GET(
   _req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const resolvedParams = await params;
-  const serviceId = resolvedParams.id;
+  const serviceId = (await params).id;
 
   try {
     const serviceRes = await fetch(`${BACKEND_URL}/services/${serviceId}`);

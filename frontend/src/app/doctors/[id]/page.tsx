@@ -9,8 +9,7 @@ export default async function DoctorViewPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const resolvedParams = await params;
-  const doctorId = Number(resolvedParams.id);
+  const doctorId = Number((await params).id);
 
   if (!doctorId) redirect('/doctors');
 

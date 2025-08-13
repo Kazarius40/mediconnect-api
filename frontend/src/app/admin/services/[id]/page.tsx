@@ -17,8 +17,7 @@ export default async function ServiceEdit({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
-  const serviceId = Number(id);
+  const serviceId = Number((await params).id);
 
   if (!serviceId) redirect('/services');
 
