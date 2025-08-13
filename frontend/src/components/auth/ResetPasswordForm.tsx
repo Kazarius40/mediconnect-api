@@ -1,9 +1,9 @@
 'use client';
 
-import React, { FormEvent, useState, useEffect } from 'react';
+import React, { FormEvent, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AxiosError } from 'axios';
-import api from '@/api/axios';
+import { resetPassword } from '@/api/client/auth';
 
 export default function ResetPasswordForm() {
   const [password, setPassword] = useState('');
@@ -40,7 +40,7 @@ export default function ResetPasswordForm() {
     }
 
     try {
-      const res = await api.post('/auth/reset-password', { token, password });
+      const res = await resetPassword(token, password);
       setSuccess(res.data.message);
 
       setTimeout(() => router.push('/auth/login'), 3000);

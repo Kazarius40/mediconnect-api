@@ -2,7 +2,7 @@
 
 import React, { FormEvent, useState } from 'react';
 import { AxiosError } from 'axios';
-import api from '@/api/axios';
+import { forgotPassword } from '@/api/client/auth';
 
 export default function ForgotPasswordForm() {
   const [email, setEmail] = useState('');
@@ -17,7 +17,7 @@ export default function ForgotPasswordForm() {
     setLoading(true);
 
     try {
-      const res = await api.post('/auth/forgot-password', { email });
+      const res = await forgotPassword(email);
       setMessage(res.data.message || 'Check your email for reset instructions');
     } catch (err) {
       const axiosError = err as AxiosError<{ message: string }>;

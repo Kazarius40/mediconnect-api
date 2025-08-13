@@ -54,7 +54,9 @@ export default function UserDetailsComponent({
       return;
     }
     try {
-      const res = await fetch(`/api/users/${user.id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/admin/users/${user.id}`, {
+        method: 'DELETE',
+      });
       if (!res.ok) {
         const { message } = await res.json();
         setDeleteError(message);

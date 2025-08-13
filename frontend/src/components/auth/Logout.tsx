@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { logout } from '@/api/client/auth';
 import { useAuth } from '@/providers/AuthProvider';
 
 const LogoutButton: React.FC = () => {
@@ -17,7 +16,10 @@ const LogoutButton: React.FC = () => {
     setError(null);
 
     try {
-      await logout();
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
       setUser(null);
       router.push('/auth/login');
     } catch (err) {

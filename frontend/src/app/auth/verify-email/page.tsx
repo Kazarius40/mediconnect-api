@@ -1,11 +1,10 @@
-import { verifyEmail } from '@/api/auth-server';
 import Link from 'next/link';
+import { verifyEmail } from '@/api/client/auth';
 
-export default async function VerifyEmailPage(props: unknown) {
-  const { searchParams } = props as {
-    searchParams?: { token?: string };
-  };
-
+export default async function VerifyEmailPage(props: {
+  searchParams: Promise<{ token?: string }>;
+}) {
+  const searchParams = await props.searchParams;
   const token = searchParams?.token;
 
   if (!token) {
@@ -27,7 +26,7 @@ export default async function VerifyEmailPage(props: unknown) {
 
   try {
     const response = await verifyEmail(token);
-    message = response.message ?? 'Email verified successfully!';
+    message = response.data?.message ?? 'Email verified successfully!';
   } catch (err: any) {
     status = 'error';
     message = err?.message ?? 'Verification failed';

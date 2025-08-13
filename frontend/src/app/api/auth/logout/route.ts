@@ -15,7 +15,6 @@ export async function POST(req: NextRequest) {
   }
 
   const response = NextResponse.json({ message: 'Logged out' });
-
   clearAuthCookies(response);
 
   return response;
