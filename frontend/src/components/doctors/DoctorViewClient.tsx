@@ -6,7 +6,6 @@ import { ConfirmModal } from '@/components/common/ConfirmModal';
 import { useEntityDeleteHook } from '@/hooks/core/useEntityDelete.hook';
 import { EntityHeader } from '@/components/common/EntityHeader';
 import { EntityDates } from '@/components/common/EntityDates';
-import doctorApi from '@/services/doctorApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { useSortedSearch } from '@/hooks/useSortedSearch';
 import { useRouter } from 'next/navigation';
@@ -29,7 +28,9 @@ export default function DoctorViewClient({
 
   const { isConfirmOpen, setIsConfirmOpen, handleDelete } = useEntityDeleteHook(
     async (id) => {
-      await doctorApi.delete(id);
+      await fetch(`/api/admin/doctors/${id}`, {
+        method: 'DELETE',
+      });
 
       router.push('/doctors');
     },

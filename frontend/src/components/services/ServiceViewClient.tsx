@@ -7,7 +7,6 @@ import { useEntityDeleteHook } from '@/hooks/core/useEntityDelete.hook';
 import { EntityHeader } from '@/components/common/EntityHeader';
 import { EntityDates } from '@/components/common/EntityDates';
 import { DoctorList } from '@/components/doctors/DoctorList';
-import serviceApi from '@/services/serviceApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { useRouter } from 'next/navigation';
 import { useService } from '@/hooks/api/useService';
@@ -29,7 +28,9 @@ export default function ServiceViewClient({
 
   const { isConfirmOpen, setIsConfirmOpen, handleDelete } = useEntityDeleteHook(
     async (id) => {
-      await serviceApi.delete(id);
+      await fetch(`/api/admin/services/${id}`, {
+        method: 'DELETE',
+      });
 
       router.push('/services');
     },
