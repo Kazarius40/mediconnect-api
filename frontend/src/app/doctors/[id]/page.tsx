@@ -1,7 +1,8 @@
+'use server';
+
 import { redirect } from 'next/navigation';
-import { Doctor } from '@/interfaces/doctor';
 import DoctorViewClient from '@/components/doctors/DoctorViewClient';
-import { getDoctorById } from '@/lib/api/doctors';
+import { FRONTEND_URL } from '@/config/frontend';
 
 export default async function DoctorViewPage({
   params,
@@ -13,14 +14,20 @@ export default async function DoctorViewPage({
 
   if (!doctorId) redirect('/doctors');
 
-  let doctor: Doctor | null = null;
-
   try {
-    doctor = await getDoctorById(doctorId);
-  } catch (e) {
-    console.error('Failed to fetch doctor', e);
+    const res = await fetch(`${FRONTEND_URL}/api/doctors/${doctorId}`, {
+      cache: 'no-store',
+    });
+
+    if (!res.ok) {
+      redirect('/doctors');
+    }
+
+    const { doctor } = await res.json();
+
+    return <DoctorViewClient doctor={doctor} />;
+  } catch (error) {
+    console.error('Error fetching doctor:', error);
     redirect('/doctors');
   }
-
-  return <DoctorViewClient doctor={doctor} />;
 }

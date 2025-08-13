@@ -1,7 +1,8 @@
+'use server';
+
 import { redirect } from 'next/navigation';
-import { Service } from '@/interfaces/service';
+import { FRONTEND_URL } from '@/config/frontend';
 import ServiceViewClient from '@/components/services/ServiceViewClient';
-import { getServiceById } from '@/lib/api/services';
 
 export default async function ServiceViewPage({
   params,
@@ -13,14 +14,20 @@ export default async function ServiceViewPage({
 
   if (!serviceId) redirect(`/services`);
 
-  let service: Service | null = null;
-
   try {
-    service = await getServiceById(serviceId);
-  } catch (e) {
-    console.error('Failed to fetch service', e);
-    redirect(`/services`);
-  }
+    const res = await fetch(`${FRONTEND_URL}/api/services/${serviceId}`, {
+      cache: 'no-store',
+    });
 
-  return <ServiceViewClient service={service} />;
+    if (!res.ok) {
+      redirect('/services');
+    }
+
+    const { service } = await res.json();
+
+    return <ServiceViewClient service={service} />;
+  } catch (error) {
+    console.error('Error fetching service:', error);
+    redirect('/services');
+  }
 }
