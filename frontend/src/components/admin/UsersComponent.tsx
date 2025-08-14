@@ -4,11 +4,7 @@ import React from 'react';
 import { User } from '@/interfaces/user/user';
 import { useRouter } from 'next/navigation';
 
-interface Props {
-  users: User[];
-}
-
-export default function UsersComponent({ users }: Props) {
+export default function UsersComponent({ users }: { users: User[] }) {
   const router = useRouter();
 
   if (!users || users.length === 0) {
