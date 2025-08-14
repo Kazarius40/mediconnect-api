@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Service } from '@/interfaces/service';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
 import { useEntityDeleteHook } from '@/hooks/core/useEntityDelete.hook';
@@ -9,7 +9,6 @@ import { EntityDates } from '@/components/common/EntityDates';
 import { DoctorList } from '@/components/doctors/DoctorList';
 import { useAuth } from '@/providers/AuthProvider';
 import { useRouter } from 'next/navigation';
-import { useService } from '@/hooks/api/useService';
 import { useSortedSearch } from '@/hooks/useSortedSearch';
 import { sortByFields } from '@/utils/common/sort.util';
 
@@ -21,8 +20,7 @@ export default function ServiceViewClient({
   const router = useRouter();
   const { user } = useAuth();
   const isAdmin = user?.role === 'ADMIN';
-
-  const { data: service } = useService(initialService.id, initialService);
+  const [service] = useState<Service>(initialService);
 
   const doctors = service.doctors ?? [];
 

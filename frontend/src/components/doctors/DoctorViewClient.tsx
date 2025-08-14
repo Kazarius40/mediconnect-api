@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Doctor } from '@/interfaces/doctor';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
 import { useEntityDeleteHook } from '@/hooks/core/useEntityDelete.hook';
@@ -9,7 +9,6 @@ import { EntityDates } from '@/components/common/EntityDates';
 import { useAuth } from '@/providers/AuthProvider';
 import { useSortedSearch } from '@/hooks/useSortedSearch';
 import { useRouter } from 'next/navigation';
-import { useDoctor } from '@/hooks/api/useDoctor';
 import { sortByFields } from '@/utils/common/sort.util';
 
 export default function DoctorViewClient({
@@ -20,8 +19,7 @@ export default function DoctorViewClient({
   const router = useRouter();
   const { user } = useAuth();
   const isAdmin = user?.role === 'ADMIN';
-
-  const { data: doctor } = useDoctor(initialDoctor.id, initialDoctor);
+  const [doctor] = useState<Doctor>(initialDoctor);
 
   const services = doctor.services ?? [];
   const clinics = doctor.clinics ?? [];
