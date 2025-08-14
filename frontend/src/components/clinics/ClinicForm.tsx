@@ -3,7 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
-import { Doctor } from '@/interfaces/doctor';
+import { DoctorShort } from '@/interfaces/doctor';
 import { CreateClinicDto } from '@/interfaces/clinic';
 import { FormField } from '@/components/common/FormField';
 import {
@@ -16,7 +16,7 @@ import { cleanOptionalFields } from '@/utils/forms/normalize-form-data.util';
 
 interface ClinicFormProps {
   initialValues?: Partial<CreateClinicDto>;
-  allDoctors: Pick<Doctor, 'id' | 'firstName' | 'lastName'>[];
+  allDoctors: DoctorShort[];
   clinicId?: number;
 }
 
@@ -91,7 +91,7 @@ export default function ClinicForm({
 
   const doctorOptions: MultiSelectOption[] = allDoctors.map((doc) => ({
     id: doc.id,
-    label: `${doc.lastName} ${doc.firstName}`,
+    label: `${doc.lastName ?? ''} ${doc.firstName ?? ''}`.trim(),
   }));
 
   return (

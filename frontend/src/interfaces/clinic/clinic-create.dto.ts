@@ -5,5 +5,3 @@ export interface CreateClinicDto {
   email: string | null;
   doctorIds?: number[];
 }
-
-export type UpdateClinicDto = Partial<CreateClinicDto>;

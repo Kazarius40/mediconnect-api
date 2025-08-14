@@ -25,7 +25,7 @@ export default async function VerifyEmailPage(props: {
   let message;
 
   try {
-    const response = await verifyEmail(token);
+    const response = await verifyEmail({ token });
     message = response.data?.message ?? 'Email verified successfully!';
   } catch (err: any) {
     status = 'error';

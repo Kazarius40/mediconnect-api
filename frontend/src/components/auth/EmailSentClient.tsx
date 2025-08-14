@@ -18,7 +18,7 @@ export default function EmailSentClient({ email }: { email: string }) {
     setMessage('');
 
     try {
-      const res = await resendVerification(email);
+      const res = await resendVerification({ email });
       setMessage(res.data.message || 'Verification email resent successfully!');
       setStatus('success');
 

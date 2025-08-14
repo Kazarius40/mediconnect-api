@@ -12,3 +12,5 @@ export interface Doctor {
   clinics: Clinic[];
   services: Service[];
 }
+
+export type DoctorShort = Pick<Doctor, 'id' | 'firstName' | 'lastName'>;

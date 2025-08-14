@@ -5,10 +5,9 @@ import { EntityHeader } from '@/components/common/EntityHeader';
 import ClinicForm from '@/components/clinics/ClinicForm';
 import { ssrFetchUser } from '@/lib/auth/ssrAuth';
 import { FRONTEND_URL } from '@/config/frontend';
-import { Doctor } from '@/interfaces/doctor';
+import { DoctorShort } from '@/interfaces/doctor';
 import { Clinic } from '@/interfaces/clinic';
 
-type DoctorShort = Pick<Doctor, 'id' | 'firstName' | 'lastName'>;
 type ClinicWithDoctors = Omit<Clinic, 'doctors'> & { doctors: DoctorShort[] };
 
 export default async function ClinicEdit({

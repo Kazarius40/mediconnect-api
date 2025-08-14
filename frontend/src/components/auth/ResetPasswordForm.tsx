@@ -40,7 +40,7 @@ export default function ResetPasswordForm() {
     }
 
     try {
-      const res = await resetPassword(token, password);
+      const res = await resetPassword({ token, password });
       setSuccess(res.data.message);
 
       setTimeout(() => router.push('/auth/login'), 3000);

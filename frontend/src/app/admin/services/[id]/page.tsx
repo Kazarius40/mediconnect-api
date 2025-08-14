@@ -6,10 +6,9 @@ import ServiceForm from '@/components/services/ServiceForm';
 import { redirect } from 'next/navigation';
 import { ssrFetchUser } from '@/lib/auth/ssrAuth';
 import { FRONTEND_URL } from '@/config/frontend';
-import { Doctor } from '@/interfaces/doctor';
+import { DoctorShort } from '@/interfaces/doctor';
 import { Service } from '@/interfaces/service';
 
-type DoctorShort = Pick<Doctor, 'id' | 'firstName' | 'lastName'>;
 type ServiceFull = Omit<Service, 'doctors'> & { doctors: DoctorShort[] };
 
 export default async function ServiceEdit({

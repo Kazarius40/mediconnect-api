@@ -8,7 +8,11 @@ import { matchesSearch } from '@/utils/common/search.util';
 import SortControls from '@/components/common/SortControls';
 import { useAuth } from '@/providers/AuthProvider';
 
-type SortableFields = keyof Pick<Clinic, 'name' | 'address' | 'email'>;
+type StringKeysOf<T> = {
+  [K in keyof T]: T[K] extends string | null ? K : never;
+}[keyof T];
+
+type SortableFields = StringKeysOf<Clinic>;
 
 export default function ClinicsClientPage({ clinics }: { clinics: Clinic[] }) {
   const router = useRouter();
@@ -24,23 +28,25 @@ export default function ClinicsClientPage({ clinics }: { clinics: Clinic[] }) {
     { value: 'email', label: 'Email' },
   ];
 
+  const searchFields = ['name', 'address', 'phone', 'email'] as const;
+
   const filteredAndSorted = useMemo(() => {
     const filtered = clinics.filter((clinic) =>
-      matchesSearch(searchTerm, [
-        clinic.name,
-        clinic.address,
-        clinic.phone,
-        clinic.email,
-      ]),
+      matchesSearch(
+        searchTerm,
+        searchFields.map((f) => clinic[f] ?? ''),
+      ),
     );
 
-    return filtered.sort((a, b) => {
-      const fieldA = a[sortBy] ?? '';
-      const fieldB = b[sortBy] ?? '';
+    const compareClinics = (a: Clinic, b: Clinic) => {
+      const fieldA = String(a[sortBy] ?? '');
+      const fieldB = String(b[sortBy] ?? '');
       return sortOrder === 'ASC'
         ? fieldA.localeCompare(fieldB)
         : fieldB.localeCompare(fieldA);
-    });
+    };
+
+    return filtered.sort(compareClinics);
   }, [clinics, searchTerm, sortBy, sortOrder]);
 
   return (
@@ -79,10 +85,7 @@ export default function ClinicsClientPage({ clinics }: { clinics: Clinic[] }) {
       {filteredAndSorted.map((clinic) => (
         <ClinicCard
           key={clinic.id}
-          name={clinic.name}
-          address={clinic.address}
-          phone={clinic.phone}
-          email={clinic.email}
+          clinic={clinic}
           onClick={() => router.push(`/clinics/${clinic.id}`)}
         />
       ))}
