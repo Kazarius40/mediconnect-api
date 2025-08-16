@@ -44,7 +44,7 @@ export default async function ServiceEdit({
           title="Edit Service"
           editPath=""
           backText="Back to Services"
-          isAdmin={false}
+          showControls={false}
         />
 
         <ServiceForm

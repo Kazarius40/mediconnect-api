@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
 import { useSortedSearch } from '@/hooks/useSortedSearch';
 import { sortByFields } from '@/utils/common/sort.util';
 
-export default function ClinicViewClient({
+export default function ClinicComponent({
   clinic: initialClinic,
 }: {
   clinic: Clinic;
@@ -53,7 +53,7 @@ export default function ClinicViewClient({
         editPath={`/admin/clinics/${clinic.id}`}
         backText="Back to Clinics"
         onDeleteClick={() => setIsConfirmOpen(true)}
-        isAdmin={isAdmin}
+        showControls={isAdmin}
       />
 
       {/* === Basic info === */}

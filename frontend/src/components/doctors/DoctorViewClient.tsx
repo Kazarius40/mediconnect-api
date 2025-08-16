@@ -63,7 +63,7 @@ export default function DoctorViewClient({
         editPath={`/admin/doctors/${doctor.id}`}
         backText="Back to Doctors"
         onDeleteClick={() => setIsConfirmOpen(true)}
-        isAdmin={isAdmin}
+        showControls={isAdmin}
       />
 
       {/* === Basic info === */}

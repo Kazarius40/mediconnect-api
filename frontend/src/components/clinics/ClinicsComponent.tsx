@@ -14,7 +14,7 @@ type StringKeysOf<T> = {
 
 type SortableFields = StringKeysOf<Clinic>;
 
-export default function ClinicsClientPage({ clinics }: { clinics: Clinic[] }) {
+export default function ClinicsComponent({ clinics }: { clinics: Clinic[] }) {
   const router = useRouter();
   const { user } = useAuth();
 

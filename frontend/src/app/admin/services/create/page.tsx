@@ -34,7 +34,7 @@ export default async function ServiceCreate() {
         title="Create Service"
         editPath=""
         backText="Back to Services"
-        isAdmin={false}
+        showControls={false}
       />
 
       <ServiceForm allDoctors={doctors} />

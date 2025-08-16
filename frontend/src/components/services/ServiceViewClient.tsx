@@ -53,7 +53,7 @@ export default function ServiceViewClient({
         editPath={`/admin/services/${service.id}`}
         backText="Back to Services"
         onDeleteClick={() => setIsConfirmOpen(true)}
-        isAdmin={isAdmin}
+        showControls={isAdmin}
       />
 
       {/* === Basic info === */}

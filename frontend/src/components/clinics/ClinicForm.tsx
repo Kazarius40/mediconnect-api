@@ -4,7 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { DoctorShort } from '@/interfaces/doctor';
-import { CreateClinicDto } from '@/interfaces/clinic';
+import { Clinic, CreateClinicDto } from '@/interfaces/clinic';
 import { FormField } from '@/components/common/FormField';
 import {
   MultiSelect,
@@ -15,16 +15,11 @@ import toast from 'react-hot-toast';
 import { cleanOptionalFields } from '@/utils/forms/normalize-form-data.util';
 
 interface ClinicFormProps {
-  initialValues?: Partial<CreateClinicDto>;
+  clinic?: Clinic;
   allDoctors: DoctorShort[];
-  clinicId?: number;
 }
 
-export default function ClinicForm({
-  initialValues,
-  allDoctors,
-  clinicId,
-}: ClinicFormProps) {
+export default function ClinicForm({ clinic, allDoctors }: ClinicFormProps) {
   const router = useRouter();
 
   const {
@@ -36,11 +31,11 @@ export default function ClinicForm({
     setError,
   } = useForm<CreateClinicDto>({
     defaultValues: {
-      name: initialValues?.name || '',
-      address: initialValues?.address || '',
-      phone: initialValues?.phone || '',
-      email: initialValues?.email || '',
-      doctorIds: initialValues?.doctorIds || [],
+      name: clinic?.name || '',
+      address: clinic?.address || '',
+      phone: clinic?.phone || '',
+      email: clinic?.email || '',
+      doctorIds: clinic?.doctors.map((d) => d.id) || [],
     },
     mode: 'onChange',
   });
@@ -56,8 +51,8 @@ export default function ClinicForm({
       const normalizedData = cleanOptionalFields(data, ['email']);
       let res;
 
-      if (clinicId) {
-        res = await fetch(`/api/admin/clinics/${clinicId}`, {
+      if (clinic?.id) {
+        res = await fetch(`/api/admin/clinics/${clinic.id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(normalizedData),
@@ -78,7 +73,7 @@ export default function ClinicForm({
       }
 
       toast.success(
-        clinicId
+        clinic?.id
           ? 'Clinic updated successfully!'
           : 'Clinic created successfully!',
       );
@@ -170,7 +165,7 @@ export default function ClinicForm({
       >
         {isSubmitting
           ? 'Saving...'
-          : clinicId
+          : clinic?.id
             ? 'Save Changes'
             : 'Create Clinic'}
       </button>

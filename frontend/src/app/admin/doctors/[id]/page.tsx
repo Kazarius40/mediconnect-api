@@ -51,7 +51,7 @@ export default async function DoctorEdit({
           title="Edit Doctor"
           editPath=""
           backText="Back to Doctors"
-          isAdmin={false}
+          showControls={false}
         />
 
         <DoctorForm

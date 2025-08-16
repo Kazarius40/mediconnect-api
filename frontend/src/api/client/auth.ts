@@ -1,24 +1,26 @@
-import {
-  ForgotPasswordDto,
-  MessageResponse,
-  RegisterDto,
-  ResendVerificationDto,
-  ResetPasswordDto,
-  VerifyEmailDto,
-} from '@/interfaces/auth/auth';
 import api from '../axios';
 
+export interface RegisterDto {
+  email: string;
+  password: string;
+}
+
+export interface ResetPasswordDto {
+  token: string;
+  password: string;
+}
+
 export const registerUser = (data: RegisterDto) =>
-  api.post<MessageResponse>('/auth/register', data);
+  api.post<{ message: string }>('/auth/register', data);
 
-export const resendVerification = (data: ResendVerificationDto) =>
-  api.post<MessageResponse>('/auth/resend-verification', data);
+export const resendVerification = (data: { email: string }) =>
+  api.post<{ message: string }>('/auth/resend-verification', data);
 
-export const forgotPassword = (data: ForgotPasswordDto) =>
-  api.post<MessageResponse>('/auth/forgot-password', data);
+export const forgotPassword = (data: { email: string }) =>
+  api.post<{ message: string }>('/auth/forgot-password', data);
 
 export const resetPassword = (data: ResetPasswordDto) =>
-  api.post<MessageResponse>('/auth/reset-password', data);
+  api.post<{ message: string }>('/auth/reset-password', data);
 
-export const verifyEmail = (data: VerifyEmailDto) =>
-  api.post<MessageResponse>('/auth/verify-email', data);
+export const verifyEmail = (data: { token: string }) =>
+  api.post<{ message: string }>('/auth/verify-email', data);

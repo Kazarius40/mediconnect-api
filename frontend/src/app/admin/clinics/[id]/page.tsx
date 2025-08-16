@@ -8,8 +8,6 @@ import { FRONTEND_URL } from '@/config/frontend';
 import { DoctorShort } from '@/interfaces/doctor';
 import { Clinic } from '@/interfaces/clinic';
 
-type ClinicWithDoctors = Omit<Clinic, 'doctors'> & { doctors: DoctorShort[] };
-
 export default async function ClinicEdit({
   params,
 }: {
@@ -41,7 +39,7 @@ export default async function ClinicEdit({
     );
   }
 
-  const { clinic }: { clinic: ClinicWithDoctors } = await clinicRes.json();
+  const { clinic }: { clinic: Clinic } = await clinicRes.json();
   const { doctors }: { doctors: DoctorShort[] } = await doctorsRes.json();
 
   return (
@@ -50,20 +48,10 @@ export default async function ClinicEdit({
         title="Edit Clinic"
         editPath=""
         backText="Back to Clinics"
-        isAdmin={false}
+        showControls={false}
       />
 
-      <ClinicForm
-        clinicId={clinic.id}
-        allDoctors={doctors}
-        initialValues={{
-          name: clinic.name,
-          address: clinic.address,
-          phone: clinic.phone,
-          email: clinic.email,
-          doctorIds: clinic.doctors?.map((d) => d.id) || [],
-        }}
-      />
+      <ClinicForm clinic={clinic} allDoctors={doctors} />
     </div>
   );
 }

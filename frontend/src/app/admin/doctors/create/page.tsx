@@ -41,7 +41,7 @@ export default async function DoctorCreate() {
         title="Create Doctor"
         editPath=""
         backText="Back to Doctors"
-        isAdmin={false}
+        showControls={false}
       />
 
       <DoctorForm allClinics={clinics} allServices={services} />

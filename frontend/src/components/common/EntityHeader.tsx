@@ -9,7 +9,7 @@ interface EntityHeaderProps {
   backText: string;
   onBack?: () => void;
   onDeleteClick?: () => void;
-  isAdmin?: boolean;
+  showControls?: boolean;
 }
 
 export const EntityHeader: React.FC<EntityHeaderProps> = ({
@@ -18,7 +18,7 @@ export const EntityHeader: React.FC<EntityHeaderProps> = ({
   backText,
   onBack,
   onDeleteClick,
-  isAdmin = false,
+  showControls = false,
 }) => {
   const router = useRouter();
   return (
@@ -44,7 +44,7 @@ export const EntityHeader: React.FC<EntityHeaderProps> = ({
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl font-bold">{title}</h1>
 
-        {isAdmin && (
+        {showControls && (
           <div className="flex gap-2">
             <button
               onClick={() => router.push(editPath)}

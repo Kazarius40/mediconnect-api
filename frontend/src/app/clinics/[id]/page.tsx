@@ -1,10 +1,10 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import ClinicViewClient from '@/components/clinics/ClinicViewClient';
+import ClinicComponent from '@/components/clinics/ClinicComponent';
 import { FRONTEND_URL } from '@/config/frontend';
 
-export default async function ClinicViewPage({
+export default async function ClinicPage({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -24,7 +24,7 @@ export default async function ClinicViewPage({
 
     const { clinic } = await res.json();
 
-    return <ClinicViewClient clinic={clinic} />;
+    return <ClinicComponent clinic={clinic} />;
   } catch (error) {
     console.error('Error fetching clinic:', error);
     redirect('/clinics');
