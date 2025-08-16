@@ -7,10 +7,11 @@ import { matchesSearch } from '@/utils/common/search.util';
 import SortControls from '@/components/common/SortControls';
 import DoctorCard from '@/components/doctors/DoctorCard';
 import { useAuth } from '@/providers/AuthProvider';
+import { StringKeysOf } from '@/utils/common/filter.util';
 
-type SortableFields = keyof Pick<Doctor, 'firstName' | 'lastName' | 'email'>;
+type SortableFields = StringKeysOf<Doctor>;
 
-export default function DoctorsPageClient({ doctors }: { doctors: Doctor[] }) {
+export default function DoctorsComponent({ doctors }: { doctors: Doctor[] }) {
   const router = useRouter();
   const { user } = useAuth();
 
@@ -24,14 +25,19 @@ export default function DoctorsPageClient({ doctors }: { doctors: Doctor[] }) {
     { value: 'email', label: 'Email' },
   ];
 
+  const DOCTOR_SEARCH_FIELDS = [
+    'firstName',
+    'lastName',
+    'phone',
+    'email',
+  ] as const;
+
   const filteredAndSorted = useMemo(() => {
     const filtered = doctors.filter((doctor) =>
-      matchesSearch(searchTerm, [
-        doctor.firstName,
-        doctor.lastName,
-        doctor.phone,
-        doctor.email,
-      ]),
+      matchesSearch(
+        searchTerm,
+        DOCTOR_SEARCH_FIELDS.map((f) => doctor[f] ?? ''),
+      ),
     );
 
     return filtered.sort((a, b) => {
@@ -79,10 +85,7 @@ export default function DoctorsPageClient({ doctors }: { doctors: Doctor[] }) {
       {filteredAndSorted.map((doctor) => (
         <DoctorCard
           key={doctor.id}
-          firstName={doctor.firstName}
-          lastName={doctor.lastName}
-          phone={doctor.phone}
-          email={doctor.email}
+          doctor={doctor}
           onClick={() => router.push(`/doctors/${doctor.id}`)}
         />
       ))}

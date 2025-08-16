@@ -30,14 +30,22 @@ export default function ClinicComponent({ clinic }: { clinic: Clinic }) {
     '/clinics',
   );
 
+  const DOCTOR_SORT_FIELDS = ['lastName', 'firstName'] as const;
+  const DOCTOR_SEARCH_FIELDS = [
+    'firstName',
+    'lastName',
+    'email',
+    'phone',
+  ] as const;
+
   const {
     search,
     setSearch,
     filteredItems: filteredDoctors,
   } = useSortedSearch(
     doctors,
-    (items) => sortByFields(items, ['lastName', 'firstName']),
-    ['firstName', 'lastName', 'email', 'phone'],
+    (items) => sortByFields(items, [...DOCTOR_SORT_FIELDS]),
+    [...DOCTOR_SEARCH_FIELDS],
   );
 
   return (

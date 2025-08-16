@@ -10,3 +10,5 @@ export interface Clinic {
   updatedAt: string;
   doctors: Doctor[];
 }
+
+export type ClinicShort = Pick<Clinic, 'id' | 'name'>;

@@ -1,38 +1,30 @@
 'use client';
 
 import React from 'react';
+import { Doctor } from '@/interfaces/doctor';
 
 interface DoctorCardProps {
-  firstName: string;
-  lastName: string;
-  phone: string | null;
-  email: string | null;
+  doctor: Doctor;
   onClick?: () => void;
 }
 
-const DoctorCard: React.FC<DoctorCardProps> = ({
-  firstName,
-  lastName,
-  phone,
-  email,
-  onClick,
-}) => {
+const DoctorCard: React.FC<DoctorCardProps> = ({ doctor, onClick }) => {
   return (
     <div
       onClick={onClick}
       className="cursor-pointer border rounded-xl p-4 shadow-sm transition-all duration-200 hover:shadow-lg hover:border-blue-500 hover:bg-blue-50"
     >
       <h2 className="text-xl font-bold mb-2">
-        {lastName} {firstName}
+        {doctor.lastName} {doctor.firstName}
       </h2>
-      {phone && (
+      {doctor.phone && (
         <p className="text-sm text-gray-700">
-          <strong>Phone:</strong> {phone}
+          <strong>Phone:</strong> {doctor.phone}
         </p>
       )}
-      {email && (
+      {doctor.email && (
         <p className="text-sm text-gray-700">
-          <strong>Email:</strong> {email}
+          <strong>Email:</strong> {doctor.email}
         </p>
       )}
     </div>

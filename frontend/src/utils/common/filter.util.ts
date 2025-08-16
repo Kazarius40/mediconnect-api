@@ -23,3 +23,7 @@ export function sortAndFilter<T>(
   const sorted = sortFn(items);
   return filterItems(sorted, query, fields);
 }
+
+export type StringKeysOf<T> = {
+  [K in keyof T]: T[K] extends string | null ? K : never;
+}[keyof T];

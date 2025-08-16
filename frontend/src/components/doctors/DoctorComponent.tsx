@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Doctor } from '@/interfaces/doctor';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
 import { useEntityDeleteHook } from '@/hooks/core/useEntityDelete.hook';
@@ -11,15 +11,10 @@ import { useSortedSearch } from '@/hooks/useSortedSearch';
 import { useRouter } from 'next/navigation';
 import { sortByFields } from '@/utils/common/sort.util';
 
-export default function DoctorViewClient({
-  doctor: initialDoctor,
-}: {
-  doctor: Doctor;
-}) {
+export default function DoctorComponent({ doctor }: { doctor: Doctor }) {
   const router = useRouter();
   const { user } = useAuth();
   const isAdmin = user?.role === 'ADMIN';
-  const [doctor] = useState<Doctor>(initialDoctor);
 
   const services = doctor.services ?? [];
   const clinics = doctor.clinics ?? [];
@@ -35,15 +30,21 @@ export default function DoctorViewClient({
     '/doctors',
   );
 
+  const SERVICE_SORT_FIELDS = ['name', 'description'] as const;
+  const SERVICE_SEARCH_FIELDS = ['name', 'description'] as const;
+
   const {
     search: serviceSearch,
     setSearch: setServiceSearch,
     filteredItems: filteredServices,
   } = useSortedSearch(
     services,
-    (items) => sortByFields(items, ['name', 'description']),
-    ['name', 'description'],
+    (items) => sortByFields(items, [...SERVICE_SORT_FIELDS]),
+    [...SERVICE_SEARCH_FIELDS],
   );
+
+  const CLINIC_SORT_FIELDS = ['name', 'address', 'phone', 'email'] as const;
+  const CLINIC_SEARCH_FIELDS = ['name', 'address', 'phone', 'email'] as const;
 
   const {
     search: clinicSearch,
@@ -51,8 +52,8 @@ export default function DoctorViewClient({
     filteredItems: filteredClinics,
   } = useSortedSearch(
     clinics,
-    (items) => sortByFields(items, ['name', 'address', 'phone', 'email']),
-    ['name', 'address', 'phone', 'email'],
+    (items) => sortByFields(items, [...CLINIC_SORT_FIELDS]),
+    [...CLINIC_SEARCH_FIELDS],
   );
 
   return (

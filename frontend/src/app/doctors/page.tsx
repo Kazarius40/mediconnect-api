@@ -1,6 +1,6 @@
 'use server';
 
-import DoctorsPageClient from '@/components/doctors/DoctorsPageClient';
+import DoctorsComponent from '@/components/doctors/DoctorsComponent';
 import { FRONTEND_URL } from '@/config/frontend';
 
 export default async function DoctorsPage() {
@@ -9,13 +9,13 @@ export default async function DoctorsPage() {
       cache: 'no-store',
     });
 
-    if (!res.ok) return <DoctorsPageClient doctors={[]} />;
+    if (!res.ok) return <DoctorsComponent doctors={[]} />;
 
     const { doctors } = await res.json();
 
-    return <DoctorsPageClient doctors={doctors} />;
+    return <DoctorsComponent doctors={doctors} />;
   } catch (error) {
     console.error('Error fetching doctors:', error);
-    return <DoctorsPageClient doctors={[]} />;
+    return <DoctorsComponent doctors={[]} />;
   }
 }

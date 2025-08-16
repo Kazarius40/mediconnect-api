@@ -3,10 +3,9 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
-import { CreateDoctorDto } from '@/interfaces/doctor';
-import { Clinic } from '@/interfaces/clinic';
-import { Service } from '@/interfaces/service';
-import { FormField } from '@/components/common/FormField';
+import { CreateDoctorDto, Doctor } from '@/interfaces/doctor';
+import { ClinicShort } from '@/interfaces/clinic';
+import { ServiceShort } from '@/interfaces/service';
 import {
   MultiSelect,
   MultiSelectOption,
@@ -14,17 +13,16 @@ import {
 import { processBackendErrors } from '@/utils/errors/backend-error.util';
 import toast from 'react-hot-toast';
 import { cleanOptionalFields } from '@/utils/forms/normalize-form-data.util';
+import { FieldsGroup } from '@/components/common/FieldsGroup';
 
 interface DoctorFormProps {
-  initialValues?: Partial<CreateDoctorDto>;
-  doctorId?: number;
-  allClinics: Pick<Clinic, 'id' | 'name'>[];
-  allServices: Pick<Service, 'id' | 'name'>[];
+  doctor?: Doctor;
+  allClinics: ClinicShort[];
+  allServices: ServiceShort[];
 }
 
 export default function DoctorForm({
-  initialValues,
-  doctorId,
+  doctor,
   allClinics,
   allServices,
 }: DoctorFormProps) {
@@ -39,12 +37,12 @@ export default function DoctorForm({
     setError,
   } = useForm<CreateDoctorDto>({
     defaultValues: {
-      firstName: initialValues?.firstName || '',
-      lastName: initialValues?.lastName || '',
-      phone: initialValues?.phone || '',
-      email: initialValues?.email || '',
-      clinicIds: initialValues?.clinicIds || [],
-      serviceIds: initialValues?.serviceIds || [],
+      firstName: doctor?.firstName || '',
+      lastName: doctor?.lastName || '',
+      phone: doctor?.phone || '',
+      email: doctor?.email || '',
+      clinicIds: doctor?.clinics.map((c) => c.id) || [],
+      serviceIds: doctor?.services.map((s) => s.id) || [],
     },
     mode: 'onChange',
   });
@@ -64,8 +62,8 @@ export default function DoctorForm({
     try {
       const normalizedData = cleanOptionalFields(data, ['email']);
 
-      const res = doctorId
-        ? await fetch(`/api/admin/doctors/${doctorId}`, {
+      const res = doctor?.id
+        ? await fetch(`/api/admin/doctors/${doctor.id}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(normalizedData),
@@ -84,7 +82,7 @@ export default function DoctorForm({
       }
 
       toast.success(
-        doctorId
+        doctor?.id
           ? 'Doctor updated successfully!'
           : 'Doctor created successfully!',
       );
@@ -97,73 +95,20 @@ export default function DoctorForm({
 
   const clinicOptions: MultiSelectOption[] = allClinics.map((c) => ({
     id: c.id,
-    label: c.name,
+    label: c.name.trim(),
   }));
 
   const serviceOptions: MultiSelectOption[] = allServices.map((s) => ({
     id: s.id,
-    label: s.name,
+    label: s.name.trim(),
   }));
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-lg">
-      {/* === First name === */}
-      <FormField
-        label="First Name"
-        htmlFor="firstName"
-        required
-        register={register('firstName', {
-          required: 'First name is required',
-          minLength: {
-            value: 2,
-            message: 'Must be at least 2 characters',
-          },
-        })}
-        error={errors.firstName}
-      />
-
-      {/* === Last name === */}
-      <FormField
-        label="Last Name"
-        htmlFor="lastName"
-        required
-        register={register('lastName', {
-          required: 'Last name is required',
-          minLength: {
-            value: 2,
-            message: 'Must be at least 2 characters',
-          },
-        })}
-        error={errors.lastName}
-      />
-
-      {/* === Phone === */}
-      <FormField
-        label="Phone"
-        htmlFor="phone"
-        register={register('phone', {
-          validate: (value) => {
-            if (!value) return true;
-            if (!/^\+380\d{9}$/.test(value))
-              return 'Phone number must be in +380XXXXXXXXX format';
-            return true;
-          },
-        })}
-        error={errors.phone}
-      />
-
-      {/* === Email === */}
-      <FormField
-        label="Email"
-        htmlFor="email"
-        type="email"
-        register={register('email', {
-          pattern: {
-            value: /^\S+@\S+\.\S+$/,
-            message: 'Invalid email address',
-          },
-        })}
-        error={errors.email}
+      <FieldsGroup<CreateDoctorDto>
+        fields={['firstName', 'lastName', 'phone', 'email']}
+        registerAction={register}
+        errors={errors}
       />
 
       {/* === Clinics === */}
@@ -192,7 +137,7 @@ export default function DoctorForm({
       >
         {isSubmitting
           ? 'Saving...'
-          : doctorId
+          : doctor?.id
             ? 'Save Changes'
             : 'Create Doctor'}
       </button>

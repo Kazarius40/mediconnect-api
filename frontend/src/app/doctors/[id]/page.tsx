@@ -1,10 +1,10 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import DoctorViewClient from '@/components/doctors/DoctorViewClient';
+import DoctorComponent from '@/components/doctors/DoctorComponent';
 import { FRONTEND_URL } from '@/config/frontend';
 
-export default async function DoctorViewPage({
+export default async function DoctorPage({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -24,7 +24,7 @@ export default async function DoctorViewPage({
 
     const { doctor } = await res.json();
 
-    return <DoctorViewClient doctor={doctor} />;
+    return <DoctorComponent doctor={doctor} />;
   } catch (error) {
     console.error('Error fetching doctor:', error);
     redirect('/doctors');

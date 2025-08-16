@@ -5,13 +5,13 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { Doctor } from '@/interfaces/doctor';
 import { CreateServiceDto } from '@/interfaces/service';
-import { FormField } from '@/components/common/FormField';
 import {
   MultiSelect,
   MultiSelectOption,
 } from '@/components/common/MultiSelect';
 import { processBackendErrors } from '@/utils/errors/backend-error.util';
 import toast from 'react-hot-toast';
+import { FieldsGroup } from '@/components/common/FieldsGroup';
 
 interface ServiceFormProps {
   initialValues?: Partial<CreateServiceDto>;
@@ -88,27 +88,10 @@ export default function ServiceForm({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-lg">
-      {/* === Name === */}
-      <FormField
-        label="Name"
-        htmlFor="name"
-        required
-        register={register('name', {
-          required: 'Name is required',
-          minLength: {
-            value: 2,
-            message: 'Name must be at least 2 characters',
-          },
-        })}
-        error={errors.name}
-      />
-
-      {/* === Description === */}
-      <FormField
-        label="Description"
-        htmlFor="description"
-        register={register('description')}
-        error={errors.description}
+      <FieldsGroup<CreateServiceDto>
+        fields={['name', 'description']}
+        registerAction={register}
+        errors={errors}
       />
 
       {/* === Doctors === */}

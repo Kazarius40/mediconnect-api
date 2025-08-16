@@ -7,10 +7,7 @@ import { Clinic } from '@/interfaces/clinic';
 import { matchesSearch } from '@/utils/common/search.util';
 import SortControls from '@/components/common/SortControls';
 import { useAuth } from '@/providers/AuthProvider';
-
-type StringKeysOf<T> = {
-  [K in keyof T]: T[K] extends string | null ? K : never;
-}[keyof T];
+import { StringKeysOf } from '@/utils/common/filter.util';
 
 type SortableFields = StringKeysOf<Clinic>;
 
@@ -38,15 +35,13 @@ export default function ClinicsComponent({ clinics }: { clinics: Clinic[] }) {
       ),
     );
 
-    const compareClinics = (a: Clinic, b: Clinic) => {
+    return filtered.sort((a, b) => {
       const fieldA = String(a[sortBy] ?? '');
       const fieldB = String(b[sortBy] ?? '');
       return sortOrder === 'ASC'
         ? fieldA.localeCompare(fieldB)
         : fieldB.localeCompare(fieldA);
-    };
-
-    return filtered.sort(compareClinics);
+    });
   }, [clinics, searchTerm, sortBy, sortOrder]);
 
   return (

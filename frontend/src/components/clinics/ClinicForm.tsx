@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { DoctorShort } from '@/interfaces/doctor';
 import { Clinic, CreateClinicDto } from '@/interfaces/clinic';
-import { FormField } from '@/components/common/FormField';
 import {
   MultiSelect,
   MultiSelectOption,
@@ -13,6 +12,7 @@ import {
 import { processBackendErrors } from '@/utils/errors/backend-error.util';
 import toast from 'react-hot-toast';
 import { cleanOptionalFields } from '@/utils/forms/normalize-form-data.util';
+import { FieldsGroup } from '@/components/common/FieldsGroup';
 
 interface ClinicFormProps {
   clinic?: Clinic;
@@ -49,21 +49,18 @@ export default function ClinicForm({ clinic, allDoctors }: ClinicFormProps) {
   const onSubmit = async (data: CreateClinicDto) => {
     try {
       const normalizedData = cleanOptionalFields(data, ['email']);
-      let res;
 
-      if (clinic?.id) {
-        res = await fetch(`/api/admin/clinics/${clinic.id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(normalizedData),
-        });
-      } else {
-        res = await fetch(`/api/admin/clinics`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(normalizedData),
-        });
-      }
+      const res = clinic?.id
+        ? await fetch(`/api/admin/clinics/${clinic.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(normalizedData),
+          })
+        : await fetch(`/api/admin/clinics`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(normalizedData),
+          });
 
       if (!res.ok) {
         const err = await res.json();
@@ -84,68 +81,17 @@ export default function ClinicForm({ clinic, allDoctors }: ClinicFormProps) {
     }
   };
 
-  const doctorOptions: MultiSelectOption[] = allDoctors.map((doc) => ({
-    id: doc.id,
-    label: `${doc.lastName ?? ''} ${doc.firstName ?? ''}`.trim(),
+  const doctorOptions: MultiSelectOption[] = allDoctors.map((d) => ({
+    id: d.id,
+    label: `${d.lastName ?? ''} ${d.firstName ?? ''}`.trim(),
   }));
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-lg">
-      {/* === Name === */}
-      <FormField
-        label="Name"
-        htmlFor="name"
-        required
-        register={register('name', {
-          required: 'Name is required',
-          minLength: {
-            value: 2,
-            message: 'Name must be at least 2 characters',
-          },
-        })}
-        error={errors.name}
-      />
-
-      {/* === Address === */}
-      <FormField
-        label="Address"
-        htmlFor="address"
-        required
-        register={register('address', {
-          required: 'Address is required',
-        })}
-        error={errors.address}
-      />
-
-      {/* === Phone === */}
-      <FormField
-        label="Phone"
-        htmlFor="phone"
-        required
-        register={register('phone', {
-          required: 'Phone is required',
-          validate: (value) => {
-            if (!value) return 'Phone is required';
-            if (!/^\+380\d{9}$/.test(value))
-              return 'Phone number must be in +380XXXXXXXXX format';
-            return true;
-          },
-        })}
-        error={errors.phone}
-      />
-
-      {/* === Email === */}
-      <FormField
-        label="Email"
-        htmlFor="email"
-        type="email"
-        register={register('email', {
-          pattern: {
-            value: /^\S+@\S+\.\S+$/,
-            message: 'Invalid email address',
-          },
-        })}
-        error={errors.email}
+      <FieldsGroup<CreateClinicDto>
+        fields={['name', 'address', 'phone', 'email']}
+        registerAction={register}
+        errors={errors}
       />
 
       {/* === Doctors === */}

@@ -8,3 +8,5 @@ export interface Service {
   updatedAt: string;
   doctors: Doctor[];
 }
+
+export type ServiceShort = Pick<Service, 'id' | 'name'>;
