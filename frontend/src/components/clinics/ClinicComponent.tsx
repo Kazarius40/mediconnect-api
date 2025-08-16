@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Clinic } from '@/interfaces/clinic';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
 import { DoctorList } from '@/components/doctors/DoctorList';
@@ -12,15 +12,10 @@ import { useRouter } from 'next/navigation';
 import { useSortedSearch } from '@/hooks/useSortedSearch';
 import { sortByFields } from '@/utils/common/sort.util';
 
-export default function ClinicComponent({
-  clinic: initialClinic,
-}: {
-  clinic: Clinic;
-}) {
+export default function ClinicComponent({ clinic }: { clinic: Clinic }) {
   const router = useRouter();
   const { user } = useAuth();
   const isAdmin = user?.role === 'ADMIN';
-  const [clinic] = useState<Clinic>(initialClinic);
 
   const doctors = clinic.doctors ?? [];
 
