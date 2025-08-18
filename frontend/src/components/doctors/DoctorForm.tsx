@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { CreateDoctorDto, Doctor } from '@/interfaces/doctor';
 import { ClinicShort } from '@/interfaces/clinic';
 import { ServiceShort } from '@/interfaces/service';
@@ -28,14 +28,7 @@ export default function DoctorForm({
 }: DoctorFormProps) {
   const router = useRouter();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    setValue,
-    watch,
-    setError,
-  } = useForm<CreateDoctorDto>({
+  const methods = useForm<CreateDoctorDto>({
     defaultValues: {
       firstName: doctor?.firstName || '',
       lastName: doctor?.lastName || '',
@@ -46,6 +39,14 @@ export default function DoctorForm({
     },
     mode: 'onChange',
   });
+
+  const {
+    handleSubmit,
+    setValue,
+    watch,
+    setError,
+    formState: { isSubmitting },
+  } = methods;
 
   const clinicIds = watch('clinicIds') || [];
   const serviceIds = watch('serviceIds') || [];
@@ -104,43 +105,44 @@ export default function DoctorForm({
   }));
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-lg">
-      <FieldsGroup<CreateDoctorDto>
-        fields={['firstName', 'lastName', 'phone', 'email']}
-        registerAction={register}
-        errors={errors}
-      />
+    <FormProvider {...methods}>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-lg">
+        <FieldsGroup
+          fields={['firstName', 'lastName', 'phone', 'email']}
+          requiredFields={['firstName', 'lastName']}
+        />
 
-      {/* === Clinics === */}
-      <MultiSelect
-        label="Clinics"
-        options={clinicOptions}
-        selectedIds={clinicIds}
-        onChangeAction={handleClinicsChange}
-        sortFields={['label']}
-      />
+        {/* === Clinics === */}
+        <MultiSelect
+          label="Clinics"
+          options={clinicOptions}
+          selectedIds={clinicIds}
+          onChangeAction={handleClinicsChange}
+          sortFields={['label']}
+        />
 
-      {/* === Services === */}
-      <MultiSelect
-        label="Services"
-        options={serviceOptions}
-        selectedIds={serviceIds}
-        onChangeAction={handleServicesChange}
-        sortFields={['label']}
-      />
+        {/* === Services === */}
+        <MultiSelect
+          label="Services"
+          options={serviceOptions}
+          selectedIds={serviceIds}
+          onChangeAction={handleServicesChange}
+          sortFields={['label']}
+        />
 
-      {/* === Submit === */}
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-      >
-        {isSubmitting
-          ? 'Saving...'
-          : doctor?.id
-            ? 'Save Changes'
-            : 'Create Doctor'}
-      </button>
-    </form>
+        {/* === Submit === */}
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+        >
+          {isSubmitting
+            ? 'Saving...'
+            : doctor?.id
+              ? 'Save Changes'
+              : 'Create Doctor'}
+        </button>
+      </form>
+    </FormProvider>
   );
 }

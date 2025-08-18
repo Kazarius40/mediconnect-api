@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { Doctor } from '@/interfaces/doctor';
 import { CreateServiceDto } from '@/interfaces/service';
 import {
@@ -26,14 +26,7 @@ export default function ServiceForm({
 }: ServiceFormProps) {
   const router = useRouter();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    setValue,
-    watch,
-    setError,
-  } = useForm<CreateServiceDto>({
+  const methods = useForm<CreateServiceDto>({
     defaultValues: {
       name: initialValues?.name || '',
       description: initialValues?.description || '',
@@ -41,6 +34,14 @@ export default function ServiceForm({
     },
     mode: 'onChange',
   });
+
+  const {
+    handleSubmit,
+    setValue,
+    watch,
+    setError,
+    formState: { isSubmitting },
+  } = methods;
 
   const doctorIds = watch('doctorIds') || [];
 
@@ -87,34 +88,35 @@ export default function ServiceForm({
   }));
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-lg">
-      <FieldsGroup<CreateServiceDto>
-        fields={['name', 'description']}
-        registerAction={register}
-        errors={errors}
-      />
+    <FormProvider {...methods}>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-lg">
+        <FieldsGroup
+          fields={['name', 'description']}
+          requiredFields={['name']}
+        />
 
-      {/* === Doctors === */}
-      <MultiSelect
-        label="Doctors"
-        options={doctorOptions}
-        selectedIds={doctorIds}
-        onChangeAction={handleDoctorsChange}
-        sortFields={['label']}
-      />
+        {/* === Doctors === */}
+        <MultiSelect
+          label="Doctors"
+          options={doctorOptions}
+          selectedIds={doctorIds}
+          onChangeAction={handleDoctorsChange}
+          sortFields={['label']}
+        />
 
-      {/* === Submit === */}
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-      >
-        {isSubmitting
-          ? 'Saving...'
-          : serviceId
-            ? 'Save Changes'
-            : 'Create Service'}
-      </button>
-    </form>
+        {/* === Submit === */}
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+        >
+          {isSubmitting
+            ? 'Saving...'
+            : serviceId
+              ? 'Save Changes'
+              : 'Create Service'}
+        </button>
+      </form>
+    </FormProvider>
   );
 }
