@@ -3,8 +3,8 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { FormProvider, useForm } from 'react-hook-form';
-import { Doctor } from '@/interfaces/doctor';
-import { CreateServiceDto } from '@/interfaces/service';
+import { DoctorShort } from '@/interfaces/doctor';
+import { CreateServiceDto, Service } from '@/interfaces/service';
 import {
   MultiSelect,
   MultiSelectOption,
@@ -14,23 +14,18 @@ import toast from 'react-hot-toast';
 import { FieldsGroup } from '@/components/common/FieldsGroup';
 
 interface ServiceFormProps {
-  initialValues?: Partial<CreateServiceDto>;
-  allDoctors: Pick<Doctor, 'id' | 'firstName' | 'lastName'>[];
-  serviceId?: number;
+  service?: Service;
+  allDoctors: DoctorShort[];
 }
 
-export default function ServiceForm({
-  initialValues,
-  allDoctors,
-  serviceId,
-}: ServiceFormProps) {
+export default function ServiceForm({ service, allDoctors }: ServiceFormProps) {
   const router = useRouter();
 
   const methods = useForm<CreateServiceDto>({
     defaultValues: {
-      name: initialValues?.name || '',
-      description: initialValues?.description || '',
-      doctorIds: initialValues?.doctorIds || [],
+      name: service?.name || '',
+      description: service?.description || '',
+      doctorIds: service?.doctors.map((d) => d.id) || [],
     },
     mode: 'onChange',
   });
@@ -51,8 +46,8 @@ export default function ServiceForm({
 
   const onSubmit = async (data: CreateServiceDto) => {
     try {
-      const res = serviceId
-        ? await fetch(`/api/admin/services/${serviceId}`, {
+      const res = service?.id
+        ? await fetch(`/api/admin/services/${service?.id}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
@@ -71,7 +66,7 @@ export default function ServiceForm({
       }
 
       toast.success(
-        serviceId
+        service?.id
           ? 'Service updated successfully!'
           : 'Service created successfully!',
       );
@@ -112,7 +107,7 @@ export default function ServiceForm({
         >
           {isSubmitting
             ? 'Saving...'
-            : serviceId
+            : service?.id
               ? 'Save Changes'
               : 'Create Service'}
         </button>

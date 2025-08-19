@@ -1,5 +1,6 @@
 'use server';
 
+import './style.css';
 import { redirect } from 'next/navigation';
 import { User } from '@/interfaces/user/user';
 import { cookies } from 'next/headers';
@@ -38,7 +39,7 @@ export default async function UserDetailsPage({
   }
 
   if (!userDetails) {
-    return <p className="text-red-600 text-center mt-4">User not found</p>;
+    return <p className="error-message">User not found</p>;
   }
 
   return <UserDetailsComponent user={userDetails} />;

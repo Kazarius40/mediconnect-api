@@ -1,39 +1,45 @@
 'use server';
 
+import './style.css';
 import { redirect } from 'next/navigation';
-import ClinicForm from '@/components/clinics/ClinicForm';
 import { EntityHeader } from '@/components/common/EntityHeader';
-import { DoctorShort } from '@/interfaces/doctor';
+import ClinicForm from '@/components/clinics/ClinicForm';
 import { ssrFetchUser } from '@/lib/auth/ssrAuth';
 import { FRONTEND_URL } from '@/config/frontend';
+import { DoctorShort } from '@/interfaces/doctor';
 
 export default async function ClinicCreate() {
-  const authResult = await ssrFetchUser();
-  const user = authResult.user;
+  const { user } = await ssrFetchUser();
 
   if (!user || user.role !== 'ADMIN') {
     redirect('/');
   }
 
-  const res = await fetch(`${FRONTEND_URL}/api/doctors`, { cache: 'no-store' });
+  try {
+    const doctorsRes = await fetch(`${FRONTEND_URL}/api/doctors`, {
+      cache: 'no-store',
+    });
 
-  if (!res.ok) {
-    console.error('Failed to fetch doctors', await res.text());
-    redirect('/clinics');
+    if (!doctorsRes.ok) {
+      console.error('Failed to fetch doctors', await doctorsRes.text());
+      return <p className="error-message">Failed to load doctors</p>;
+    }
+
+    const { doctors }: { doctors: DoctorShort[] } = await doctorsRes.json();
+
+    return (
+      <div className="page-container">
+        <EntityHeader
+          title="Create Clinic"
+          editPath=""
+          backText="Back to Clinics"
+          showControls={false}
+        />
+
+        <ClinicForm allDoctors={doctors} />
+      </div>
+    );
+  } catch (error) {
+    return <p className="error-message">Failed to load clinic</p>;
   }
-
-  const { doctors }: { doctors: DoctorShort[] } = await res.json();
-
-  return (
-    <div className="max-w-2xl mx-auto p-4 space-y-6">
-      <EntityHeader
-        title="Create Clinic"
-        editPath=""
-        backText="Back to Clinics"
-        showControls={false}
-      />
-
-      <ClinicForm allDoctors={doctors} />
-    </div>
-  );
 }

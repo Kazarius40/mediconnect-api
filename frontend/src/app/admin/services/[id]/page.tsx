@@ -1,15 +1,13 @@
 'use server';
 
-import React from 'react';
+import './style.css';
+import { redirect } from 'next/navigation';
 import { EntityHeader } from '@/components/common/EntityHeader';
 import ServiceForm from '@/components/services/ServiceForm';
-import { redirect } from 'next/navigation';
 import { ssrFetchUser } from '@/lib/auth/ssrAuth';
 import { FRONTEND_URL } from '@/config/frontend';
-import { DoctorShort } from '@/interfaces/doctor';
 import { Service } from '@/interfaces/service';
-
-type ServiceFull = Omit<Service, 'doctors'> & { doctors: DoctorShort[] };
+import { DoctorShort } from '@/interfaces/doctor';
 
 export default async function ServiceEdit({
   params,
@@ -17,7 +15,6 @@ export default async function ServiceEdit({
   params: Promise<{ id: string }>;
 }) {
   const serviceId = Number((await params).id);
-
   if (!serviceId) redirect('/services');
 
   const { user } = await ssrFetchUser();
@@ -29,17 +26,21 @@ export default async function ServiceEdit({
       fetch(`${FRONTEND_URL}/api/doctors`, { cache: 'no-store' }),
     ]);
 
-    if (!serviceRes.ok || !doctorsRes.ok) {
-      return (
-        <p className="text-red-600 text-center mt-4">Failed to load data</p>
-      );
+    for (const [res, name] of [
+      [serviceRes, 'service'],
+      [doctorsRes, 'doctors'],
+    ] as const) {
+      if (!res.ok) {
+        console.error(`Failed to fetch ${name}`, await res.text());
+        return <p className="error-message">Failed to load {name}</p>;
+      }
     }
 
-    const { service }: { service: ServiceFull } = await serviceRes.json();
+    const { service }: { service: Service } = await serviceRes.json();
     const { doctors }: { doctors: DoctorShort[] } = await doctorsRes.json();
 
     return (
-      <div className="max-w-3xl mx-auto p-4">
+      <div className="page-container">
         <EntityHeader
           title="Edit Service"
           editPath=""
@@ -47,20 +48,10 @@ export default async function ServiceEdit({
           showControls={false}
         />
 
-        <ServiceForm
-          serviceId={service.id}
-          allDoctors={doctors}
-          initialValues={{
-            name: service.name,
-            description: service.description || '',
-            doctorIds: service.doctors?.map((d: any) => d.id) || [],
-          }}
-        />
+        <ServiceForm service={service} allDoctors={doctors} />
       </div>
     );
   } catch (error) {
-    return (
-      <p className="text-red-600 text-center mt-4">Failed to load service</p>
-    );
+    return <p className="error-message">Failed to load service</p>;
   }
 }
