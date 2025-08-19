@@ -1,7 +1,7 @@
 'use server';
 
-import ServicesPageClient from '@/components/services/ServicesPageClient';
 import { FRONTEND_URL } from '@/config/frontend';
+import ServicesComponent from '@/components/services/ServicesComponent';
 
 export default async function ServicesPage() {
   try {
@@ -9,13 +9,13 @@ export default async function ServicesPage() {
       cache: 'no-store',
     });
 
-    if (!res.ok) return <ServicesPageClient services={[]} />;
+    if (!res.ok) return <ServicesComponent services={[]} />;
 
     const { services } = await res.json();
 
-    return <ServicesPageClient services={services} />;
+    return <ServicesComponent services={services} />;
   } catch (error) {
     console.error('Error fetching services:', error);
-    return <ServicesPageClient services={[]} />;
+    return <ServicesComponent services={[]} />;
   }
 }

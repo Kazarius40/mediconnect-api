@@ -1,11 +1,11 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { FormField } from '@/components/common/FormField';
+import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { User } from '@/interfaces/user/user';
 import { useState } from 'react';
 import { AxiosError } from 'axios';
+import { FieldsGroup } from '@/components/common/FieldsGroup';
 
 interface ProfileFormData {
   firstName?: string;
@@ -13,24 +13,13 @@ interface ProfileFormData {
   phone: string;
 }
 
-const phoneValidation = {
-  required: 'Phone is required',
-  validate: (value: string) =>
-    /^\+380\d{9}$/.test(value) ||
-    'Phone number must be in +380XXXXXXXXX format',
-};
-
 export default function EditProfileComponent({ user }: { user: User | null }) {
   const router = useRouter();
 
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<ProfileFormData>({
+  const methods = useForm<ProfileFormData>({
     defaultValues: {
       firstName: user?.firstName || '',
       lastName: user?.lastName || '',
@@ -38,6 +27,11 @@ export default function EditProfileComponent({ user }: { user: User | null }) {
     },
     mode: 'onChange',
   });
+
+  const {
+    handleSubmit,
+    formState: { isSubmitting },
+  } = methods;
 
   const onSubmit: SubmitHandler<ProfileFormData> = async (data) => {
     setError('');
@@ -69,47 +63,31 @@ export default function EditProfileComponent({ user }: { user: User | null }) {
       {error && <div className="text-red-600 mb-4">{error}</div>}
       {success && <div className="text-green-600 mb-4">{success}</div>}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <input
-          type="text"
-          {...register('lastName')}
-          placeholder="Last Name"
-          className="w-full border p-2 rounded"
-        />
+      <FormProvider {...methods}>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <FieldsGroup
+            fields={['lastName', 'firstName', 'phone']}
+            requiredFields={['phone']}
+          />
 
-        <input
-          type="text"
-          {...register('firstName')}
-          placeholder="First Name"
-          className="w-full border p-2 rounded"
-        />
-
-        <FormField
-          label="Phone"
-          htmlFor="phone"
-          required
-          register={register('phone', phoneValidation)}
-          error={errors.phone}
-          placeholder="+380XXXXXXXXX"
-        />
-
-        <div className="flex gap-4">
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded disabled:opacity-50"
-          >
-            {isSubmitting ? 'Saving...' : 'Save Changes'}
-          </button>
-          <button
-            type="button"
-            onClick={() => router.push('/profile')}
-            className="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded"
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
+          <div className="flex gap-4">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded disabled:opacity-50"
+            >
+              {isSubmitting ? 'Saving...' : 'Save Changes'}
+            </button>
+            <button
+              type="button"
+              onClick={() => router.push('/profile')}
+              className="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </FormProvider>
     </div>
   );
 }

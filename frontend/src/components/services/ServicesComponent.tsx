@@ -10,7 +10,7 @@ import { useAuth } from '@/providers/AuthProvider';
 
 type SortableFields = keyof Pick<Service, 'name'>;
 
-export default function ServicesPageClient({
+export default function ServicesComponent({
   services,
 }: {
   services: Service[];

@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
 import { useSortedSearch } from '@/hooks/useSortedSearch';
 import { sortByFields } from '@/utils/common/sort.util';
 
-export default function ServiceViewClient({
+export default function ServiceComponent({
   service: initialService,
 }: {
   service: Service;

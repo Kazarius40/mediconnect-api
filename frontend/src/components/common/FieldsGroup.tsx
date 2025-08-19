@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { useFormContext, FieldError, RegisterOptions } from 'react-hook-form';
-import { FormField } from '@/components/common/FormField';
 
 export type FieldName =
   | 'firstName'
@@ -63,16 +62,25 @@ export function FieldsGroup({ fields, requiredFields = [] }: FieldsGroupProps) {
           ...baseValidationRules[field],
           ...(isRequired ? { required: labels[field] + ' is required' } : {}),
         };
+        const error = errors[field] as FieldError | undefined;
 
         return (
-          <FormField
-            key={field}
-            label={labels[field]}
-            htmlFor={field}
-            required={isRequired}
-            register={register(field, rules)}
-            error={errors[field] as FieldError | undefined}
-          />
+          <div key={field} className="mb-4">
+            <label htmlFor={field} className="block font-semibold mb-1">
+              {labels[field]} {isRequired && '*'}
+            </label>
+            <input
+              id={field}
+              type="text"
+              {...register(field, rules)}
+              className={`w-full border p-2 rounded ${
+                error ? 'border-red-500' : 'border-gray-300'
+              }`}
+            />
+            {error && (
+              <p className="text-red-600 text-sm mt-1">{error.message}</p>
+            )}
+          </div>
         );
       })}
     </>
