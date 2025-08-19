@@ -98,11 +98,9 @@ export default function ServiceComponent({
       {/* === Confirm deletion === */}
       {isConfirmOpen && (
         <ConfirmModal
-          title="Confirm deletion"
-          message={`Are you sure you want to delete service "${service.name}"? This action cannot be undone.`}
-          confirmText="Delete"
-          cancelText="Cancel"
-          onConfirm={() => handleDelete(service.id)}
+          entity={{ id: service.id, name: service.name }}
+          entityType="service"
+          onConfirm={handleDelete}
           onCancel={() => setIsConfirmOpen(false)}
         />
       )}

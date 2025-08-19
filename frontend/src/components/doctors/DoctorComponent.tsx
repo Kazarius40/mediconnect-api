@@ -162,11 +162,12 @@ export default function DoctorComponent({ doctor }: { doctor: Doctor }) {
       {/* === Confirm deletion === */}
       {isConfirmOpen && (
         <ConfirmModal
-          title="Confirm deletion"
-          message={`Are you sure you want to delete doctor "${doctor.lastName} ${doctor.firstName}"? This action cannot be undone.`}
-          confirmText="Delete"
-          cancelText="Cancel"
-          onConfirm={() => handleDelete(doctor.id)}
+          entity={{
+            id: doctor.id,
+            name: `${doctor.lastName} ${doctor.firstName}`,
+          }}
+          entityType="doctor"
+          onConfirm={handleDelete}
           onCancel={() => setIsConfirmOpen(false)}
         />
       )}

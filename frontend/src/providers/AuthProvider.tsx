@@ -1,6 +1,12 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { User } from '@/interfaces/user/user';
 import { isPublicPath } from '@/utils/routes/publicPaths';
@@ -16,7 +22,7 @@ export function AuthProvider({
   children,
   user: initialUser,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   user: User | null;
 }) {
   const router = useRouter();
