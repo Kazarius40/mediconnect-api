@@ -3,13 +3,13 @@
 import React, { useState } from 'react';
 import { Service } from '@/interfaces/service';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
-import { useEntityDeleteHook } from '@/hooks/core/useEntityDelete.hook';
+import { useEntityDeleteHook } from '@/hooks/entity/useEntityDelete.hook';
 import { EntityHeader } from '@/components/common/EntityHeader';
 import { EntityDates } from '@/components/common/EntityDates';
 import { DoctorList } from '@/components/doctors/DoctorList';
 import { useAuth } from '@/providers/AuthProvider';
 import { useRouter } from 'next/navigation';
-import { useSortedSearch } from '@/hooks/useSortedSearch';
+import { useSortedSearch } from '@/hooks/common/useSortedSearch';
 import { sortByFields } from '@/utils/common/sort.util';
 
 export default function ServiceComponent({

@@ -1,5 +1,5 @@
 import React from 'react';
-import { formatDate } from '@/utils/formatDate';
+import { formatDate } from '@/utils/common/format-date.util';
 
 export const EntityDates: React.FC<{
   createdAt?: string;

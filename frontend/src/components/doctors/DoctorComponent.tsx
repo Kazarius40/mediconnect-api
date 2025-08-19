@@ -3,11 +3,11 @@
 import React from 'react';
 import { Doctor } from '@/interfaces/doctor';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
-import { useEntityDeleteHook } from '@/hooks/core/useEntityDelete.hook';
+import { useEntityDeleteHook } from '@/hooks/entity/useEntityDelete.hook';
 import { EntityHeader } from '@/components/common/EntityHeader';
 import { EntityDates } from '@/components/common/EntityDates';
 import { useAuth } from '@/providers/AuthProvider';
-import { useSortedSearch } from '@/hooks/useSortedSearch';
+import { useSortedSearch } from '@/hooks/common/useSortedSearch';
 import { useRouter } from 'next/navigation';
 import { sortByFields } from '@/utils/common/sort.util';
 
