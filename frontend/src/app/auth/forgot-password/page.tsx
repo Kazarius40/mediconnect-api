@@ -3,9 +3,9 @@
 import './style.css';
 import ForgotPasswordForm from '@/components/auth/forgot-password/ForgotPasswordForm';
 
-export default function ForgotPasswordPage() {
+export default function ForgotPassword() {
   return (
-    <div className="forgot-password-page">
+    <div className="wrapper">
       <ForgotPasswordForm />
     </div>
   );

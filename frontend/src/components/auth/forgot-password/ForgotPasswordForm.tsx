@@ -1,5 +1,6 @@
 'use client';
 
+import './style.css';
 import React, { FormEvent, useState } from 'react';
 import { AxiosError } from 'axios';
 import { forgotPassword } from '@/api/client/auth';
@@ -28,28 +29,24 @@ export default function ForgotPasswordForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-sm mx-auto space-y-4">
-      <h1 className="text-2xl font-bold">Forgot Password</h1>
+    <form onSubmit={handleSubmit} className="forgot-form">
+      <h2 className="forgot-title">Forgot Password</h2>
 
-      {message && <div className="text-green-600">{message}</div>}
-      {error && <div className="text-red-600">{error}</div>}
+      {message && <p className="success-message">{message}</p>}
+      {error && <p className="error-message">{error}</p>}
 
-      <label>
+      <div className="form-group">
+        <label>Email</label>
         <input
           type="email"
           placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full border p-2 rounded"
           required
         />
-      </label>
+      </div>
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 disabled:opacity-50"
-      >
+      <button type="submit" disabled={loading} className="forgot-button">
         {loading ? 'Sending...' : 'Send Reset Link'}
       </button>
     </form>

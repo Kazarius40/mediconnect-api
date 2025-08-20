@@ -1,9 +1,7 @@
-.forgot-password-page {
+.wrapper {
+    min-height: calc(100vh - 6rem);
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 6rem);
     background-color: whitesmoke;
-    box-sizing: border-box;
-    overflow: hidden;
 }
