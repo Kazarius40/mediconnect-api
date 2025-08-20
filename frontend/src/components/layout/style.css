@@ -1,0 +1,24 @@
+.navbar {
+    position: sticky;
+    top: 0;
+    background-color: white;
+    color: black;
+    border-bottom: 1px solid gray;
+    display: flex;
+    gap: 1rem;
+    padding: 0.5rem 1rem;
+    align-items: center;
+}
+
+.navbar a {
+    border: 1px solid gray;
+    border-radius: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.navbar a:hover {
+    background-color: lightgray;
+}

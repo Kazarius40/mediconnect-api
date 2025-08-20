@@ -1,20 +1,12 @@
 'use server';
 
 import './style.css';
-import { redirect } from 'next/navigation';
 import { EntityHeader } from '@/components/common/EntityHeader';
 import ServiceForm from '@/components/services/ServiceForm';
-import { ssrFetchUser } from '@/lib/auth/ssrAuth';
 import { FRONTEND_URL } from '@/config/frontend';
 import { DoctorShort } from '@/interfaces/doctor';
 
 export default async function ServiceCreate() {
-  const { user } = await ssrFetchUser();
-
-  if (!user || user.role !== 'ADMIN') {
-    redirect('/');
-  }
-
   try {
     const doctorsRes = await fetch(`${FRONTEND_URL}/api/doctors`, {
       cache: 'no-store',

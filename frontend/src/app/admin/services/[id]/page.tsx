@@ -4,7 +4,6 @@ import './style.css';
 import { redirect } from 'next/navigation';
 import { EntityHeader } from '@/components/common/EntityHeader';
 import ServiceForm from '@/components/services/ServiceForm';
-import { ssrFetchUser } from '@/lib/auth/ssrAuth';
 import { FRONTEND_URL } from '@/config/frontend';
 import { Service } from '@/interfaces/service';
 import { DoctorShort } from '@/interfaces/doctor';
@@ -16,9 +15,6 @@ export default async function ServiceEdit({
 }) {
   const serviceId = Number((await params).id);
   if (!serviceId) redirect('/services');
-
-  const { user } = await ssrFetchUser();
-  if (!user || user.role !== 'ADMIN') redirect('/');
 
   try {
     const [serviceRes, doctorsRes] = await Promise.all([

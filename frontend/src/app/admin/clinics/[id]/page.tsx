@@ -4,7 +4,6 @@ import './style.css';
 import { redirect } from 'next/navigation';
 import { EntityHeader } from '@/components/common/EntityHeader';
 import ClinicForm from '@/components/clinics/ClinicForm';
-import { ssrFetchUser } from '@/lib/auth/ssrAuth';
 import { FRONTEND_URL } from '@/config/frontend';
 import { Clinic } from '@/interfaces/clinic';
 import { DoctorShort } from '@/interfaces/doctor';
@@ -16,9 +15,6 @@ export default async function ClinicEdit({
 }) {
   const clinicId = Number((await params).id);
   if (!clinicId) redirect('/clinics');
-
-  const { user } = await ssrFetchUser();
-  if (!user || user.role !== 'ADMIN') redirect('/');
 
   try {
     const [clinicRes, doctorsRes] = await Promise.all([

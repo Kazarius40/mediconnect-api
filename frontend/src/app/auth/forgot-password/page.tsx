@@ -1,4 +1,7 @@
-import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
+'use client';
+
+import './style.css';
+import ForgotPasswordForm from '@/components/auth/forgot-password/ForgotPasswordForm';
 
 export default function ForgotPasswordPage() {
   return (

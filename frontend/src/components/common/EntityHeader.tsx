@@ -7,7 +7,6 @@ interface EntityHeaderProps {
   title: string;
   editPath: string;
   backText: string;
-  onBack?: () => void;
   onDeleteClick?: () => void;
   showControls?: boolean;
 }
@@ -16,7 +15,6 @@ export const EntityHeader: React.FC<EntityHeaderProps> = ({
   title,
   editPath,
   backText,
-  onBack,
   onDeleteClick,
   showControls = false,
 }) => {
@@ -24,7 +22,7 @@ export const EntityHeader: React.FC<EntityHeaderProps> = ({
   return (
     <>
       <button
-        onClick={onBack || (() => router.back())}
+        onClick={() => router.back()}
         className="
           mb-6
           inline-flex items-center gap-2

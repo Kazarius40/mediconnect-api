@@ -1,21 +1,13 @@
 'use server';
 
 import './style.css';
-import { redirect } from 'next/navigation';
 import { EntityHeader } from '@/components/common/EntityHeader';
 import DoctorForm from '@/components/doctors/DoctorForm';
-import { ssrFetchUser } from '@/lib/auth/ssrAuth';
 import { FRONTEND_URL } from '@/config/frontend';
 import { ClinicShort } from '@/interfaces/clinic';
 import { ServiceShort } from '@/interfaces/service';
 
 export default async function DoctorCreate() {
-  const { user } = await ssrFetchUser();
-
-  if (!user || user.role !== 'ADMIN') {
-    redirect('/');
-  }
-
   try {
     const [clinicsRes, servicesRes] = await Promise.all([
       fetch(`${FRONTEND_URL}/api/clinics`, { cache: 'no-store' }),

@@ -1,15 +1,24 @@
-import { redirect } from 'next/navigation';
+'use client';
+
+import './style.css';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import EmailSentClient from '@/components/auth/EmailSentClient';
 
-export default async function EmailSentPage(props: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
-  const searchParams = await props.searchParams;
-  const email =
-    typeof searchParams.email === 'string' ? searchParams.email : undefined;
+export default function EmailSentPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const email = searchParams.get('email') ?? undefined;
+
+  useEffect(() => {
+    if (!email) {
+      router.replace('/auth/register');
+    }
+  }, [email, router]);
 
   if (!email) {
-    redirect('/auth/register');
+    return <div className="redirect-text">Redirecting...</div>;
   }
 
   return <EmailSentClient email={email} />;
