@@ -1,0 +1,53 @@
+.email-sent {
+    max-width: 28rem;
+    margin: 5rem auto 0 auto;
+    text-align: center;
+}
+
+.email-sent .title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.email-sent .message {
+    margin: 1rem 0;
+    font-size: 0.95rem;
+}
+
+.email-sent .message.success {
+    color: green;
+}
+
+.email-sent .message.error {
+    color: red;
+}
+
+.email-sent .message.loading {
+    color: gray;
+}
+
+.email-sent .resend-btn {
+    margin-top: 1rem;
+    background-color: #2563eb; /* синій */
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+}
+
+.email-sent .resend-btn:hover:enabled {
+    background-color: #1d4ed8;
+}
+
+.email-sent .resend-btn:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+}
+
+.email-sent .hint {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: #6b7280;
+}

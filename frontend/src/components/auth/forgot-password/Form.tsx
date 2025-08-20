@@ -5,7 +5,7 @@ import React, { FormEvent, useState } from 'react';
 import { AxiosError } from 'axios';
 import { forgotPassword } from '@/api/client/auth';
 
-export default function ForgotPasswordForm() {
+export default function Form() {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);

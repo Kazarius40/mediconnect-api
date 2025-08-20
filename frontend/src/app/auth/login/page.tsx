@@ -1,13 +1,12 @@
 'use client';
 
 import './style.css';
-import React from 'react';
-import LoginForm from '@/components/auth/LoginForm/LoginForm';
+import Form from '@/components/auth/login/Form';
 
 export default function Login() {
   return (
     <div className="wrapper">
-      <LoginForm />
+      <Form />
     </div>
   );
 }

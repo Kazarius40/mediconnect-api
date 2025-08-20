@@ -3,9 +3,9 @@
 import './style.css';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import EmailSentClient from '@/components/auth/EmailSentClient';
+import EmailSentView from '@/components/auth/email-sent/EmailSentView';
 
-export default function EmailSentPage() {
+export default function EmailSent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -21,5 +21,5 @@ export default function EmailSentPage() {
     return <div className="redirect-text">Redirecting...</div>;
   }
 
-  return <EmailSentClient email={email} />;
+  return <EmailSentView email={email} />;
 }

@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/providers/AuthProvider';
 
-export default function LoginForm() {
+export default function Form() {
   const { setUser } = useAuth();
   const router = useRouter();
 

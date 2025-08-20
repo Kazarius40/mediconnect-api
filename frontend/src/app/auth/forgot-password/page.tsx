@@ -1,12 +1,12 @@
 'use client';
 
 import './style.css';
-import ForgotPasswordForm from '@/components/auth/forgot-password/ForgotPasswordForm';
+import Form from '@/components/auth/forgot-password/Form';
 
 export default function ForgotPassword() {
   return (
     <div className="wrapper">
-      <ForgotPasswordForm />
+      <Form />
     </div>
   );
 }
