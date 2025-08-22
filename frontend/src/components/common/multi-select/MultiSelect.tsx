@@ -3,6 +3,8 @@
 import { useMemo, useState } from 'react';
 import { sortByFields } from '@/utils/common/sort.util';
 
+import './style.css';
+
 export interface MultiSelectOption {
   id: number;
   label: string;
@@ -54,31 +56,28 @@ export function MultiSelect({
     setSortDir((prev) => (prev === 'asc' ? 'desc' : 'asc'));
 
   return (
-    <div className="mb-4">
+    <div className="multi-select">
       {label && (
-        <div className="flex justify-between items-center mb-1">
-          <label className="block font-semibold">{label}</label>
+        <div className="multi-select-header">
+          <label className="multi-select-label">{label}</label>
           <button
             type="button"
             onClick={toggleSortDir}
-            className="text-sm text-blue-600 hover:underline"
+            className="multi-select-sort-button"
           >
             Sort {sortDir === 'asc' ? '↓' : '↑'}
           </button>
         </div>
       )}
 
-      <div className="flex flex-wrap gap-2 mb-2">
+      <div className="multi-select-selected">
         {selectedOptions.map((opt) => (
-          <div
-            key={opt.id}
-            className="flex items-center bg-blue-200 text-blue-800 px-2 py-1 rounded"
-          >
+          <div key={opt.id} className="multi-select-chip">
             <span>{opt.label}</span>
             <button
               type="button"
               onClick={() => removeOption(opt.id)}
-              className="ml-1 text-blue-600 hover:text-blue-900 font-bold"
+              className="multi-select-chip-remove"
             >
               ×
             </button>
@@ -87,7 +86,7 @@ export function MultiSelect({
       </div>
 
       <select
-        className="w-full border p-2 rounded"
+        className="multi-select-dropdown"
         onChange={(e) => {
           const id = Number(e.target.value);
           if (id) addOption(id);

@@ -1,0 +1,64 @@
+.multi-select {
+    margin-bottom: 16px;
+}
+
+.multi-select-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.multi-select-label {
+    font-weight: 600;
+    display: block;
+}
+
+.multi-select-sort-button {
+    font-size: 14px;
+    color: blue;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.multi-select-sort-button:hover {
+    color: darkblue;
+}
+
+.multi-select-selected {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.multi-select-chip {
+    display: flex;
+    align-items: center;
+    background-color: lightblue;
+    color: darkblue;
+    padding: 4px 8px;
+    border-radius: 8px;
+}
+
+.multi-select-chip-remove {
+    margin-left: 4px;
+    font-weight: bold;
+    color: blue;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.multi-select-chip-remove:hover {
+    color: darkblue;
+}
+
+.multi-select-dropdown {
+    width: 100%;
+    border: 1px solid gray;
+    padding: 8px;
+    border-radius: 8px;
+}

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { InfoRow } from '@/components/common/InfoRow';
+import { InfoRow } from '@/components/common/info-row';
 import { EntityDates } from '@/components/common/entity-dates';
 import { User } from '@/interfaces/user';
 

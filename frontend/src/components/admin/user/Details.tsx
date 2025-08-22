@@ -2,9 +2,9 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { InfoRow } from '../../common/InfoRow';
 import { EntityDates } from '@/components/common/entity-dates';
 import { User } from '@/interfaces/user';
+import { InfoRow } from '@/components/common/info-row';
 
 import './style.css';
 

@@ -5,7 +5,7 @@ import Card from '@/components/clinic/Card';
 import { useRouter } from 'next/navigation';
 import { Clinic } from '@/interfaces/clinic';
 import { matchesSearch } from '@/utils/common/search.util';
-import { SortControls } from '@/components/common/SortControls';
+import { SortControls } from '@/components/common/sort-controls';
 import { useAuth } from '@/providers/AuthProvider';
 import { StringKeysOf } from '@/utils/common/filter.util';
 

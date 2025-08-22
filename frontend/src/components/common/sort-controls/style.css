@@ -1,0 +1,13 @@
+.sort-controls {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.sort-controls-select {
+    border: 1px solid gray;
+    padding: 8px;
+    border-radius: 8px;
+    background-color: white;
+    color: black;
+}

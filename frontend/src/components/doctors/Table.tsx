@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Doctor } from '@/interfaces/doctor';
 import { matchesSearch } from '@/utils/common/search.util';
-import { SortControls } from '@/components/common/SortControls';
+import { SortControls } from '@/components/common/sort-controls';
 import Card from '@/components/doctor/Card';
 import { useAuth } from '@/providers/AuthProvider';
 import { StringKeysOf } from '@/utils/common/filter.util';

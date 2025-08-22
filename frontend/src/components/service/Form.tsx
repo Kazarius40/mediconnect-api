@@ -7,7 +7,7 @@ import { CreateServiceDto, Service } from '@/interfaces/service';
 import {
   MultiSelect,
   MultiSelectOption,
-} from '@/components/common/MultiSelect';
+} from '@/components/common/multi-select';
 import { processBackendErrors } from '@/utils/errors/backend-error.util';
 import toast from 'react-hot-toast';
 import { FieldsGroup } from '@/components/common/fields-group';
