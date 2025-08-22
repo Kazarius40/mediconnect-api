@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { AxiosError } from 'axios';
-import { FieldsGroup } from '@/components/common/FieldsGroup';
+import { FieldsGroup } from '@/components/common/fields-group';
 import { User } from '@/interfaces/user';
 
 import './style.css';

@@ -12,7 +12,7 @@ import {
 import { processBackendErrors } from '@/utils/errors/backend-error.util';
 import toast from 'react-hot-toast';
 import { cleanOptionalFields } from '@/utils/forms/normalize-form-data.util';
-import { FieldsGroup } from '@/components/common/FieldsGroup';
+import { FieldsGroup } from '@/components/common/fields-group';
 
 import './style.css';
 

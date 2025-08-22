@@ -2,6 +2,8 @@
 
 import { useFormContext, FieldError, RegisterOptions } from 'react-hook-form';
 
+import './style.css';
+
 type FieldName =
   | 'firstName'
   | 'lastName'
@@ -64,21 +66,19 @@ export function FieldsGroup({ fields, requiredFields = [] }: FieldsGroupProps) {
         const error = errors[field] as FieldError | undefined;
 
         return (
-          <div key={field} className="mb-4">
-            <label htmlFor={field} className="block font-semibold mb-1">
+          <div key={field} className="fields-group-field">
+            <label htmlFor={field} className="fields-group-label">
               {labels[field]} {isRequired && '*'}
             </label>
             <input
               id={field}
               type="text"
               {...register(field, rules)}
-              className={`w-full border p-2 rounded ${
-                error ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={
+                error ? 'fields-group-input-error' : 'fields-group-input'
+              }
             />
-            {error && (
-              <p className="text-red-600 text-sm mt-1">{error.message}</p>
-            )}
+            {error && <p className="fields-group-error">{error.message}</p>}
           </div>
         );
       })}

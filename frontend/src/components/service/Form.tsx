@@ -10,7 +10,7 @@ import {
 } from '@/components/common/MultiSelect';
 import { processBackendErrors } from '@/utils/errors/backend-error.util';
 import toast from 'react-hot-toast';
-import { FieldsGroup } from '@/components/common/FieldsGroup';
+import { FieldsGroup } from '@/components/common/fields-group';
 
 import './style.css';
 

@@ -1,0 +1,29 @@
+.fields-group-field {
+    margin-bottom: 16px;
+}
+
+.fields-group-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.fields-group-input {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid gray;
+}
+
+.fields-group-input-error {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid red;
+}
+
+.fields-group-error {
+    color: red;
+    font-size: 14px;
+    margin-top: 4px;
+}
