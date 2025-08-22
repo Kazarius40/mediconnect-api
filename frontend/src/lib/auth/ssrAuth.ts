@@ -1,7 +1,7 @@
 import 'server-only';
 import { cookies } from 'next/headers';
-import { User } from '@/interfaces/user/user';
 import { FRONTEND_URL } from '@/config/frontend';
+import { User } from '@/interfaces/user';
 
 export async function ssrFetchUser(): Promise<{ user: User | null }> {
   const cookieStore = await cookies();

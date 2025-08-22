@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import { User } from '@/interfaces/user/user';
 import { InfoRow } from '@/components/common/InfoRow';
 import { EntityDates } from '@/components/common/EntityDates';
+import { User } from '@/interfaces/user';
 
 export default function ProfileComponent({ user }: { user: User | null }) {
   if (!user) return <div>Not logged in</div>;

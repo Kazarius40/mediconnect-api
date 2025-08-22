@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { resendVerification } from '@/api/client/auth';
 import { AxiosError } from 'axios';
 
-export default function EmailSentView({ email }: { email: string }) {
+export default function View({ email }: { email: string }) {
   const [status, setStatus] = useState<
     'idle' | 'loading' | 'success' | 'error'
   >('idle');

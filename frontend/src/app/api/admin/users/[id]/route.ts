@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { BACKEND_URL } from '@/config/backend';
-import { User } from '@/interfaces/user/user';
+import { User } from '@/interfaces/user';
 
 export async function GET(
   req: NextRequest,

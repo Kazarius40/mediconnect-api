@@ -3,7 +3,7 @@
 import './style.css';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import EmailSentView from '@/components/auth/email-sent/EmailSentView';
+import View from '@/components/auth/email-sent/View';
 
 export default function EmailSent() {
   const searchParams = useSearchParams();
@@ -21,5 +21,5 @@ export default function EmailSent() {
     return <div className="redirect-text">Redirecting...</div>;
   }
 
-  return <EmailSentView email={email} />;
+  return <View email={email} />;
 }

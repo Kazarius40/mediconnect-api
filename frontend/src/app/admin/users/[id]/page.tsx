@@ -2,10 +2,10 @@
 
 import './style.css';
 import { redirect } from 'next/navigation';
-import { User } from '@/interfaces/user/user';
 import { cookies } from 'next/headers';
 import { FRONTEND_URL } from '@/config/frontend';
-import UserDetailsComponent from '@/components/admin/UserDetailsComponent';
+import Details from '@/components/admin/user/Details';
+import { User } from '@/interfaces/user';
 
 export default async function UserDetailsPage({
   params,
@@ -42,5 +42,5 @@ export default async function UserDetailsPage({
     return <p className="error-message">User not found</p>;
   }
 
-  return <UserDetailsComponent user={userDetails} />;
+  return <Details user={userDetails} />;
 }

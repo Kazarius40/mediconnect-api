@@ -29,7 +29,7 @@
 
 .email-sent .resend-btn {
     margin-top: 1rem;
-    background-color: #2563eb; /* синій */
+    background-color: royalblue;
     color: white;
     padding: 0.5rem 1rem;
     border-radius: 6px;
@@ -38,16 +38,16 @@
 }
 
 .email-sent .resend-btn:hover:enabled {
-    background-color: #1d4ed8;
+    background-color: darkblue;
 }
 
 .email-sent .resend-btn:disabled {
-    background-color: #9ca3af;
+    background-color: lightgray;
     cursor: not-allowed;
 }
 
 .email-sent .hint {
     margin-top: 1rem;
     font-size: 0.85rem;
-    color: #6b7280;
+    color: dimgray;
 }

@@ -8,8 +8,8 @@ import React, {
   useState,
 } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { User } from '@/interfaces/user/user';
 import { isPublicPath } from '@/utils/routes/publicPaths';
+import { User } from '@/interfaces/user';
 
 interface AuthContextType {
   user: User | null;

@@ -1,19 +1,16 @@
 'use client';
 
+import './style.css';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { User } from '@/interfaces/user/user';
-import { InfoRow } from '../common/InfoRow';
+import { InfoRow } from '../../common/InfoRow';
 import { EntityDates } from '@/components/common/EntityDates';
+import { User } from '@/interfaces/user';
 
 const roles = ['ADMIN', 'PATIENT', 'DOCTOR'] as const;
 type Role = (typeof roles)[number];
 
-export default function UserDetailsComponent({
-  user: initialUser,
-}: {
-  user: User;
-}) {
+export default function Details({ user: initialUser }: { user: User }) {
   const router = useRouter();
 
   const [user, setUser] = useState(initialUser);
@@ -27,7 +24,7 @@ export default function UserDetailsComponent({
 
   const handleRoleUpdate = async () => {
     try {
-      const res = await fetch(`/api/users/${user.id}/role`, {
+      const res = await fetch(`/api/admin/users/${user.id}/role`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ role: newRole }),
@@ -70,26 +67,28 @@ export default function UserDetailsComponent({
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-4">
-      <h1 className="text-2xl font-bold">User Details</h1>
+    <div className="details-wrapper">
+      <h1 className="details-title">User Details</h1>
 
-      <div className="border p-4 rounded shadow-sm space-y-2 bg-white">
+      <div className="details-card">
         <InfoRow label="ID" value={user.id} />
         <InfoRow label="Email" value={user.email} />
-        <InfoRow label="Name" value={`${user.firstName} ${user.lastName}`} />
+        <InfoRow
+          label="Name"
+          value={`${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || '-'}
+        />
         <InfoRow label="Phone" value={user.phone} />
         <InfoRow label="Role" value={user.role} />
 
         <EntityDates createdAt={user.createdAt} updatedAt={user.updatedAt} />
       </div>
 
-      {/* === Role update === */}
-      <div className="mt-6">
-        <label className="block mb-1 font-semibold">Change Role:</label>
+      <div className="role-section">
+        <label className="role-label">Change Role:</label>
         <select
           value={newRole}
           onChange={(e) => setNewRole(e.target.value as Role)}
-          className="border p-2 rounded w-48"
+          className="role-select"
         >
           {roles.map((r) => (
             <option key={r} value={r}>
@@ -100,34 +99,27 @@ export default function UserDetailsComponent({
         <button
           disabled={newRole === user.role}
           onClick={handleRoleUpdate}
-          className={`ml-4 px-4 py-2 rounded text-white ${
-            newRole === user.role
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-green-600 hover:bg-green-700'
-          }`}
+          className="btn btn-update"
         >
           Update Role
         </button>
 
-        {message && (
-          <p className="mt-2 text-green-600 font-medium">{message}</p>
-        )}
-        {error && <p className="mt-2 text-red-600 font-medium">{error}</p>}
+        {message && <p className="message-success">{message}</p>}
+        {error && <p className="message-error">{error}</p>}
       </div>
 
-      {/* === Danger Zone === */}
-      <div className="mt-10 border-t pt-6">
-        <h2 className="text-lg font-bold text-red-600 mb-2">Danger Zone</h2>
+      <div className="danger-zone">
+        <h2 className="danger-title">Danger Zone</h2>
 
         {!confirmingDelete ? (
           <button
             onClick={() => setConfirmingDelete(true)}
-            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+            className="btn btn-danger"
           >
             Delete User
           </button>
         ) : (
-          <div className="space-y-4">
+          <div className="delete-confirm">
             <p>
               To confirm deletion, type: <strong>{user.email}</strong>
             </p>
@@ -135,14 +127,11 @@ export default function UserDetailsComponent({
               type="text"
               value={deleteInput}
               onChange={(e) => setDeleteInput(e.target.value)}
-              className="border p-2 rounded w-full max-w-sm"
+              className="delete-input"
               placeholder="Enter user email"
             />
-            <div className="space-x-2">
-              <button
-                onClick={handleDelete}
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
-              >
+            <div className="delete-actions">
+              <button onClick={handleDelete} className="btn btn-danger">
                 Confirm Delete
               </button>
               <button
@@ -151,12 +140,12 @@ export default function UserDetailsComponent({
                   setDeleteInput('');
                   setDeleteError(null);
                 }}
-                className="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded"
+                className="btn btn-cancel"
               >
                 Cancel
               </button>
             </div>
-            {deleteError && <p className="text-red-600">{deleteError}</p>}
+            {deleteError && <p className="delete-error">{deleteError}</p>}
           </div>
         )}
       </div>

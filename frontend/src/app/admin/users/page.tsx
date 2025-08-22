@@ -2,14 +2,14 @@
 
 import { cookies } from 'next/headers';
 import { FRONTEND_URL } from '@/config/frontend';
-import UsersComponent from '@/components/admin/UsersComponent';
+import Table from '@/components/admin/users/Table';
 
 export default async function UsersPage() {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
 
   if (!accessToken) {
-    return <UsersComponent users={[]} />;
+    return <Table users={[]} />;
   }
 
   const usersRes = await fetch(`${FRONTEND_URL}/api/admin/users`, {
@@ -20,9 +20,9 @@ export default async function UsersPage() {
   });
 
   if (!usersRes.ok) {
-    return <UsersComponent users={[]} />;
+    return <Table users={[]} />;
   }
 
   const { users } = await usersRes.json();
-  return <UsersComponent users={users} />;
+  return <Table users={users} />;
 }

@@ -2,10 +2,10 @@
 
 import { useRouter } from 'next/navigation';
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
-import { User } from '@/interfaces/user/user';
 import { useState } from 'react';
 import { AxiosError } from 'axios';
 import { FieldsGroup } from '@/components/common/FieldsGroup';
+import { User } from '@/interfaces/user';
 
 interface ProfileFormData {
   firstName?: string;
