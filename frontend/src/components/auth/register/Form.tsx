@@ -5,6 +5,8 @@ import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { registerUser } from '@/api/client/auth';
 
+import './style.css';
+
 const Form: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -13,7 +15,6 @@ const Form: React.FC = () => {
   const [success, setSuccess] = useState('');
 
   const router = useRouter();
-
   const passwordsMatch = password === confirmPassword;
 
   const handleRegister = async (e: FormEvent<HTMLFormElement>) => {
@@ -28,7 +29,6 @@ const Form: React.FC = () => {
 
     try {
       await registerUser({ email, password });
-
       router.push(`/auth/email-sent?email=${encodeURIComponent(email)}`);
     } catch (err) {
       const axiosError = err as AxiosError<{ message: string }>;
@@ -37,11 +37,11 @@ const Form: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleRegister} className="max-w-sm mx-auto space-y-4">
-      <h1 className="text-2xl font-bold">Register</h1>
+    <form onSubmit={handleRegister} className="register-form">
+      <h1 className="form-title">Register</h1>
 
-      {error && <div className="text-red-600">{error}</div>}
-      {success && <div className="text-green-600">{success}</div>}
+      {error && <div className="message error">{error}</div>}
+      {success && <div className="message success">{success}</div>}
 
       <label>
         <input
@@ -49,7 +49,7 @@ const Form: React.FC = () => {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full border p-2 rounded"
+          className="input-field"
           required
         />
       </label>
@@ -60,7 +60,7 @@ const Form: React.FC = () => {
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full border p-2 rounded"
+          className="input-field"
           required
         />
       </label>
@@ -71,25 +71,19 @@ const Form: React.FC = () => {
           placeholder="Confirm Password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
-          className={`w-full border p-2 rounded ${
-            confirmPassword && !passwordsMatch ? 'border-red-500' : ''
-          }`}
+          className={`input-field ${confirmPassword && !passwordsMatch ? 'input-error' : ''}`}
           required
         />
       </label>
 
       {!passwordsMatch && confirmPassword && (
-        <div className="text-red-600">Passwords do not match</div>
+        <div className="message error">Passwords do not match</div>
       )}
 
       <button
         type="submit"
         disabled={!passwordsMatch || !password || !confirmPassword}
-        className={`w-full p-2 rounded text-white ${
-          !passwordsMatch || !password || !confirmPassword
-            ? 'bg-gray-400 cursor-not-allowed'
-            : 'bg-green-600 hover:bg-green-700'
-        }`}
+        className={`submit-btn ${!passwordsMatch || !password || !confirmPassword ? 'disabled' : 'enabled'}`}
       >
         Register
       </button>

@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { AxiosError } from 'axios';
 import { resetPassword } from '@/api/client/auth';
 
+import './style.css';
+
 export default function Form() {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -42,7 +44,6 @@ export default function Form() {
     try {
       const res = await resetPassword({ token, password });
       setSuccess(res.data.message);
-
       setTimeout(() => router.push('/auth/login'), 3000);
     } catch (err) {
       const axiosError = err as AxiosError<{ message: string }>;
@@ -51,11 +52,11 @@ export default function Form() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-sm mx-auto space-y-4">
-      <h1 className="text-2xl font-bold">Reset Password</h1>
+    <form onSubmit={handleSubmit} className="reset-password-form">
+      <h1 className="form-title">Reset Password</h1>
 
-      {success && <div className="text-green-600">{success}</div>}
-      {error && <div className="text-red-600">{error}</div>}
+      {success && <div className="message success">{success}</div>}
+      {error && <div className="message error">{error}</div>}
 
       <label>
         <input
@@ -63,7 +64,7 @@ export default function Form() {
           placeholder="New password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full border p-2 rounded"
+          className="input-field"
           required
         />
       </label>
@@ -74,15 +75,12 @@ export default function Form() {
           placeholder="Confirm password"
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
-          className="w-full border p-2 rounded"
+          className="input-field"
           required
         />
       </label>
 
-      <button
-        type="submit"
-        className="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700"
-      >
+      <button type="submit" className="submit-btn">
         Change Password
       </button>
     </form>
