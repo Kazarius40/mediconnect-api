@@ -1,39 +1,38 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Service } from '@/interfaces/service';
+import './style.css';
+import { Clinic } from '@/interfaces/clinic';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
+import { List } from '@/components/doctor/List';
 import { useEntityDeleteHook } from '@/hooks/entity/useEntityDelete.hook';
 import { EntityHeader } from '@/components/common/EntityHeader';
 import { EntityDates } from '@/components/common/EntityDates';
-import { List } from '@/components/doctor/List';
 import { useAuth } from '@/providers/AuthProvider';
 import { useRouter } from 'next/navigation';
 import { useSortedSearch } from '@/hooks/common/useSortedSearch';
 import { sortByFields } from '@/utils/common/sort.util';
 
-export default function ServiceComponent({
-  service: initialService,
-}: {
-  service: Service;
-}) {
+export default function Details({ clinic }: { clinic: Clinic }) {
   const router = useRouter();
   const { user } = useAuth();
   const isAdmin = user?.role === 'ADMIN';
-  const [service] = useState<Service>(initialService);
-
-  const doctors = service.doctors ?? [];
+  const doctors = clinic.doctors ?? [];
 
   const { isConfirmOpen, setIsConfirmOpen, handleDelete } = useEntityDeleteHook(
     async (id) => {
-      await fetch(`/api/admin/services/${id}`, {
-        method: 'DELETE',
-      });
-
-      router.push('/services');
+      await fetch(`/api/admin/clinics/${id}`, { method: 'DELETE' });
+      router.push('/clinics');
     },
-    '/services',
+    '/clinics',
   );
+
+  const DOCTOR_SORT_FIELDS = ['lastName', 'firstName'] as const;
+  const DOCTOR_SEARCH_FIELDS = [
+    'firstName',
+    'lastName',
+    'email',
+    'phone',
+  ] as const;
 
   const {
     search,
@@ -41,61 +40,62 @@ export default function ServiceComponent({
     filteredItems: filteredDoctors,
   } = useSortedSearch(
     doctors,
-    (items) => sortByFields(items, ['lastName', 'firstName']),
-    ['firstName', 'lastName', 'email', 'phone'],
+    (items) => sortByFields(items, [...DOCTOR_SORT_FIELDS]),
+    [...DOCTOR_SEARCH_FIELDS],
   );
 
   return (
-    <div className="container mx-auto p-4 max-w-3xl">
-      {/* === Header === */}
+    <div className="clinic-container">
       <EntityHeader
-        title={service.name}
-        editPath={`/admin/services/${service.id}`}
-        backText="Back to Services"
+        title={clinic.name}
+        editPath={`/admin/clinics/${clinic.id}`}
+        backText="Back to Clinics"
         onDeleteClick={() => setIsConfirmOpen(true)}
         showControls={isAdmin}
       />
 
-      {/* === Basic info === */}
-      <div className="space-y-2 mb-6">
+      <div className="clinic-info">
         <p>
-          <strong>Description:</strong>{' '}
-          {service.description || 'No description available'}
+          <strong>Address:</strong> {clinic.address}
         </p>
+        <p>
+          <strong>Phone:</strong> {clinic.phone}
+        </p>
+        {clinic.email && (
+          <p>
+            <strong>Email:</strong> {clinic.email}
+          </p>
+        )}
         <EntityDates
-          createdAt={service.createdAt}
-          updatedAt={service.updatedAt}
+          createdAt={clinic.createdAt}
+          updatedAt={clinic.updatedAt}
         />
       </div>
 
-      {/* === Doctors Section === */}
-      <div className="mt-6 border rounded-lg p-4 shadow-sm">
-        <h2 className="text-lg font-semibold mb-3">Doctors</h2>
-
+      <div className="doctors-section">
+        <h2>Doctors</h2>
         {doctors.length > 0 && (
           <input
             type="text"
             placeholder="Search doctors by name, email, phone..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="mb-4 w-full p-2 border border-gray-300 rounded shadow-sm"
+            className="doctors-search"
           />
         )}
-
         {filteredDoctors.length > 0 ? (
-          <List doctors={filteredDoctors} search={search} mode="withClinics" />
+          <List doctors={filteredDoctors} search={search} />
         ) : (
-          <p className="text-gray-500">
+          <p className="text-muted">
             {doctors.length === 0 ? 'No doctors linked' : 'No matching doctors'}
           </p>
         )}
       </div>
 
-      {/* === Confirm deletion === */}
       {isConfirmOpen && (
         <ConfirmModal
-          entity={{ id: service.id, name: service.name }}
-          entityType="service"
+          entity={{ id: clinic.id, name: clinic.name }}
+          entityType="clinic"
           onConfirm={handleDelete}
           onCancel={() => setIsConfirmOpen(false)}
         />

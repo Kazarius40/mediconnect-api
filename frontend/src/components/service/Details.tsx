@@ -1,38 +1,38 @@
 'use client';
 
-import './style.css';
-import { Clinic } from '@/interfaces/clinic';
+import React, { useState } from 'react';
+import { Service } from '@/interfaces/service';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
-import { List } from '@/components/doctor/List';
 import { useEntityDeleteHook } from '@/hooks/entity/useEntityDelete.hook';
 import { EntityHeader } from '@/components/common/EntityHeader';
 import { EntityDates } from '@/components/common/EntityDates';
+import { List } from '@/components/doctor/List';
 import { useAuth } from '@/providers/AuthProvider';
 import { useRouter } from 'next/navigation';
 import { useSortedSearch } from '@/hooks/common/useSortedSearch';
 import { sortByFields } from '@/utils/common/sort.util';
 
-export default function Detail({ clinic }: { clinic: Clinic }) {
+import './style.css';
+
+export default function Details({
+  service: initialService,
+}: {
+  service: Service;
+}) {
   const router = useRouter();
   const { user } = useAuth();
   const isAdmin = user?.role === 'ADMIN';
-  const doctors = clinic.doctors ?? [];
+  const [service] = useState<Service>(initialService);
+
+  const doctors = service.doctors ?? [];
 
   const { isConfirmOpen, setIsConfirmOpen, handleDelete } = useEntityDeleteHook(
     async (id) => {
-      await fetch(`/api/admin/clinics/${id}`, { method: 'DELETE' });
-      router.push('/clinics');
+      await fetch(`/api/admin/services/${id}`, { method: 'DELETE' });
+      router.push('/services');
     },
-    '/clinics',
+    '/services',
   );
-
-  const DOCTOR_SORT_FIELDS = ['lastName', 'firstName'] as const;
-  const DOCTOR_SEARCH_FIELDS = [
-    'firstName',
-    'lastName',
-    'email',
-    'phone',
-  ] as const;
 
   const {
     search,
@@ -40,53 +40,48 @@ export default function Detail({ clinic }: { clinic: Clinic }) {
     filteredItems: filteredDoctors,
   } = useSortedSearch(
     doctors,
-    (items) => sortByFields(items, [...DOCTOR_SORT_FIELDS]),
-    [...DOCTOR_SEARCH_FIELDS],
+    (items) => sortByFields(items, ['lastName', 'firstName']),
+    ['firstName', 'lastName', 'email', 'phone'],
   );
 
   return (
-    <div className="clinic-container">
+    <div className="service-details-container">
       <EntityHeader
-        title={clinic.name}
-        editPath={`/admin/clinics/${clinic.id}`}
-        backText="Back to Clinics"
+        title={service.name}
+        editPath={`/admin/services/${service.id}`}
+        backText="Back to Services"
         onDeleteClick={() => setIsConfirmOpen(true)}
         showControls={isAdmin}
       />
 
-      <div className="clinic-info">
+      <div className="service-details-info">
         <p>
-          <strong>Address:</strong> {clinic.address}
+          <strong>Description:</strong>{' '}
+          {service.description || 'No description available'}
         </p>
-        <p>
-          <strong>Phone:</strong> {clinic.phone}
-        </p>
-        {clinic.email && (
-          <p>
-            <strong>Email:</strong> {clinic.email}
-          </p>
-        )}
         <EntityDates
-          createdAt={clinic.createdAt}
-          updatedAt={clinic.updatedAt}
+          createdAt={service.createdAt}
+          updatedAt={service.updatedAt}
         />
       </div>
 
-      <div className="doctors-section">
-        <h2>Doctors</h2>
+      <div className="service-details-doctors">
+        <h2 className="service-details-doctors-title">Doctors</h2>
+
         {doctors.length > 0 && (
           <input
             type="text"
             placeholder="Search doctors by name, email, phone..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="doctors-search"
+            className="service-details-doctors-search"
           />
         )}
+
         {filteredDoctors.length > 0 ? (
-          <List doctors={filteredDoctors} search={search} />
+          <List doctors={filteredDoctors} search={search} mode="withClinics" />
         ) : (
-          <p className="text-muted">
+          <p className="service-details-doctors-none">
             {doctors.length === 0 ? 'No doctors linked' : 'No matching doctors'}
           </p>
         )}
@@ -94,8 +89,8 @@ export default function Detail({ clinic }: { clinic: Clinic }) {
 
       {isConfirmOpen && (
         <ConfirmModal
-          entity={{ id: clinic.id, name: clinic.name }}
-          entityType="clinic"
+          entity={{ id: service.id, name: service.name }}
+          entityType="service"
           onConfirm={handleDelete}
           onCancel={() => setIsConfirmOpen(false)}
         />

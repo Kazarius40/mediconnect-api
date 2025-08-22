@@ -1,0 +1,95 @@
+.service-card {
+    cursor: pointer;
+    border: 1px solid gray;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 1px 3px gray;
+    transition: all 0.2s;
+    background-color: white;
+}
+
+.service-card:hover {
+    box-shadow: 0 4px 6px gray;
+    border-color: blue;
+    background-color: lightblue;
+}
+
+.service-card-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: black;
+}
+
+.service-card-description {
+    font-size: 14px;
+    color: gray;
+}
+
+.service-details-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.service-details-info {
+    margin-bottom: 24px;
+    gap: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+.service-details-doctors {
+    border: 1px solid gray;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 3px gray;
+}
+
+.service-details-doctors-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: black;
+}
+
+.service-details-doctors-search {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid gray;
+    border-radius: 6px;
+    margin-bottom: 12px;
+}
+
+.service-details-doctors-none {
+    font-size: 14px;
+    color: gray;
+}
+
+.service-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 600px;
+}
+
+.service-form-submit {
+    background-color: blue;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.service-form-submit:hover {
+    background-color: darkblue;
+}
+
+.service-form-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

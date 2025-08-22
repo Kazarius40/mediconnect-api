@@ -1,0 +1,42 @@
+.services-container {
+    max-width: 1024px;
+    margin: 0 auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.services-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 16px;
+}
+
+.create-button {
+    background-color: green;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.create-button:hover {
+    background-color: darkgreen;
+}
+
+.search-input {
+    width: 100%;
+    max-width: 400px;
+    padding: 8px;
+    border: 1px solid gray;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    box-sizing: border-box;
+}
+
+.no-results {
+    color: gray;
+}

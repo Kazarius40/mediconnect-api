@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { useRouter } from 'next/navigation';
 import { FormProvider, useForm } from 'react-hook-form';
 import { DoctorShort } from '@/interfaces/doctor';
@@ -13,12 +12,14 @@ import { processBackendErrors } from '@/utils/errors/backend-error.util';
 import toast from 'react-hot-toast';
 import { FieldsGroup } from '@/components/common/FieldsGroup';
 
+import './style.css';
+
 interface ServiceFormProps {
   service?: Service;
   allDoctors: DoctorShort[];
 }
 
-export default function ServiceForm({ service, allDoctors }: ServiceFormProps) {
+export default function Form({ service, allDoctors }: ServiceFormProps) {
   const router = useRouter();
 
   const methods = useForm<CreateServiceDto>({
@@ -84,13 +85,12 @@ export default function ServiceForm({ service, allDoctors }: ServiceFormProps) {
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-lg">
+      <form onSubmit={handleSubmit(onSubmit)} className="service-form">
         <FieldsGroup
           fields={['name', 'description']}
           requiredFields={['name']}
         />
 
-        {/* === Doctors === */}
         <MultiSelect
           label="Doctors"
           options={doctorOptions}
@@ -99,11 +99,10 @@ export default function ServiceForm({ service, allDoctors }: ServiceFormProps) {
           sortFields={['label']}
         />
 
-        {/* === Submit === */}
         <button
           type="submit"
           disabled={isSubmitting}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+          className="service-form-submit"
         >
           {isSubmitting
             ? 'Saving...'

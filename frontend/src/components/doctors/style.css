@@ -1,0 +1,43 @@
+.table-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.table-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    color: black;
+}
+
+.table-create-btn {
+    background-color: green;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 16px;
+}
+
+.table-create-btn:hover {
+    background-color: darkgreen;
+}
+
+.table-search-input {
+    width: 100%;
+    max-width: 400px;
+    padding: 8px;
+    border: 1px solid gray;
+    border-radius: 6px;
+    margin-bottom: 16px;
+}
+
+.table-no-results {
+    color: gray;
+    font-size: 14px;
+}

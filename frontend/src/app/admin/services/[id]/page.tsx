@@ -3,7 +3,7 @@
 import './style.css';
 import { redirect } from 'next/navigation';
 import { EntityHeader } from '@/components/common/EntityHeader';
-import ServiceForm from '@/components/services/ServiceForm';
+import Form from '@/components/service/Form';
 import { FRONTEND_URL } from '@/config/frontend';
 import { Service } from '@/interfaces/service';
 import { DoctorShort } from '@/interfaces/doctor';
@@ -44,7 +44,7 @@ export default async function ServiceEdit({
           showControls={false}
         />
 
-        <ServiceForm service={service} allDoctors={doctors} />
+        <Form service={service} allDoctors={doctors} />
       </div>
     );
   } catch (error) {

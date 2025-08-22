@@ -13,7 +13,7 @@ import { sortByFields } from '@/utils/common/sort.util';
 
 import './style.css';
 
-export default function Detail({ doctor }: { doctor: Doctor }) {
+export default function Details({ doctor }: { doctor: Doctor }) {
   const router = useRouter();
   const { user } = useAuth();
   const isAdmin = user?.role === 'ADMIN';

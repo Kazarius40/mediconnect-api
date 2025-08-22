@@ -2,7 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { FRONTEND_URL } from '@/config/frontend';
-import ServiceComponent from '@/components/services/ServiceComponent';
+import Details from '@/components/service/Details';
 
 export default async function ServiceViewPage({
   params,
@@ -24,7 +24,7 @@ export default async function ServiceViewPage({
 
     const { service } = await res.json();
 
-    return <ServiceComponent service={service} />;
+    return <Details service={service} />;
   } catch (error) {
     console.error('Error fetching service:', error);
     redirect('/services');

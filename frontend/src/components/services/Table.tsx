@@ -5,16 +5,15 @@ import { useRouter } from 'next/navigation';
 import { Service } from '@/interfaces/service';
 import { matchesSearch } from '@/utils/common/search.util';
 import SortControls from '@/components/common/SortControls';
-import ServiceCard from '@/components/services/ServiceCard';
+import Card from '@/components/service/Card';
 import { useAuth } from '@/providers/AuthProvider';
+import { StringKeysOf } from '@/utils/common/filter.util';
 
-type SortableFields = keyof Pick<Service, 'name'>;
+import './style.css';
 
-export default function ServicesComponent({
-  services,
-}: {
-  services: Service[];
-}) {
+type SortableFields = StringKeysOf<Service>;
+
+export default function Table({ services }: { services: Service[] }) {
   const router = useRouter();
   const { user } = useAuth();
 
@@ -41,13 +40,13 @@ export default function ServicesComponent({
   }, [services, searchTerm, sortBy, sortOrder]);
 
   return (
-    <div className="container mx-auto p-4 space-y-4">
-      <h1 className="text-2xl font-bold mb-4">Services</h1>
+    <div className="services-container">
+      <h1 className="services-title">Services</h1>
 
       {user?.role === 'ADMIN' && (
         <button
           onClick={() => router.push('/admin/services/create')}
-          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+          className="create-button"
         >
           + Create Service
         </button>
@@ -58,7 +57,7 @@ export default function ServicesComponent({
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         placeholder="Search services by name or description"
-        className="w-full max-w-md p-2 border rounded mb-4"
+        className="search-input"
       />
 
       <SortControls<SortableFields>
@@ -70,14 +69,13 @@ export default function ServicesComponent({
       />
 
       {filteredAndSorted.length === 0 && (
-        <p className="text-gray-500">No services found.</p>
+        <p className="no-results">No services found.</p>
       )}
 
       {filteredAndSorted.map((service) => (
-        <ServiceCard
+        <Card
           key={service.id}
-          name={service.name}
-          description={service.description}
+          service={service}
           onClick={() => router.push(`/services/${service.id}`)}
         />
       ))}

@@ -2,7 +2,7 @@
 
 import './style.css';
 import { EntityHeader } from '@/components/common/EntityHeader';
-import ServiceForm from '@/components/services/ServiceForm';
+import Form from '@/components/service/Form';
 import { FRONTEND_URL } from '@/config/frontend';
 import { DoctorShort } from '@/interfaces/doctor';
 
@@ -28,7 +28,7 @@ export default async function ServiceCreate() {
           showControls={false}
         />
 
-        <ServiceForm allDoctors={doctors} />
+        <Form allDoctors={doctors} />
       </div>
     );
   } catch (error) {

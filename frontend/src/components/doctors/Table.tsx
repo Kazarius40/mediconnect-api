@@ -9,6 +9,8 @@ import Card from '@/components/doctor/Card';
 import { useAuth } from '@/providers/AuthProvider';
 import { StringKeysOf } from '@/utils/common/filter.util';
 
+import './style.css';
+
 type SortableFields = StringKeysOf<Doctor>;
 
 export default function Table({ doctors }: { doctors: Doctor[] }) {
@@ -50,13 +52,13 @@ export default function Table({ doctors }: { doctors: Doctor[] }) {
   }, [doctors, searchTerm, sortBy, sortOrder]);
 
   return (
-    <div className="container mx-auto p-4 space-y-4">
-      <h1 className="text-2xl font-bold mb-4">Doctors</h1>
+    <div className="table-container">
+      <h1 className="table-title">Doctors</h1>
 
       {user?.role === 'ADMIN' && (
         <button
           onClick={() => router.push('/admin/doctors/create')}
-          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+          className="table-create-btn"
         >
           + Create Doctor
         </button>
@@ -67,7 +69,7 @@ export default function Table({ doctors }: { doctors: Doctor[] }) {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         placeholder="Search doctors by name, phone or email"
-        className="w-full max-w-md p-2 border rounded mb-4"
+        className="table-search-input"
       />
 
       <SortControls<SortableFields>
@@ -79,7 +81,7 @@ export default function Table({ doctors }: { doctors: Doctor[] }) {
       />
 
       {filteredAndSorted.length === 0 && (
-        <p className="text-gray-500">No doctors found.</p>
+        <p className="table-no-results">No doctors found.</p>
       )}
 
       {filteredAndSorted.map((doctor) => (

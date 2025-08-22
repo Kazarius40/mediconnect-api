@@ -16,7 +16,7 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Detail structure for table `clinic`
+-- Details structure for table `clinic`
 --
 
 DROP TABLE IF EXISTS `clinic`;
@@ -47,7 +47,7 @@ INSERT INTO `clinic` VALUES (1,'Kyiv Vertebrology Clinic','Khreshchatyk St, 24, 
 UNLOCK TABLES;
 
 --
--- Detail structure for table `clinic_doctors_doctor`
+-- Details structure for table `clinic_doctors_doctor`
 --
 
 DROP TABLE IF EXISTS `clinic_doctors_doctor`;
@@ -75,7 +75,7 @@ INSERT INTO `clinic_doctors_doctor` VALUES (1,5),(1,9),(2,1),(2,8),(2,10),(2,12)
 UNLOCK TABLES;
 
 --
--- Detail structure for table `doctor`
+-- Details structure for table `doctor`
 --
 
 DROP TABLE IF EXISTS `doctor`;
@@ -106,7 +106,7 @@ INSERT INTO `doctor` VALUES (1,'Oleksandr','Shevchenko','oleksandr.shevchenko@ex
 UNLOCK TABLES;
 
 --
--- Detail structure for table `doctor_services_service`
+-- Details structure for table `doctor_services_service`
 --
 
 DROP TABLE IF EXISTS `doctor_services_service`;
@@ -134,7 +134,7 @@ INSERT INTO `doctor_services_service` VALUES (1,10),(5,3),(5,6),(5,8),(6,1),(6,4
 UNLOCK TABLES;
 
 --
--- Detail structure for table `migrations`
+-- Details structure for table `migrations`
 --
 
 DROP TABLE IF EXISTS `migrations`;
@@ -159,7 +159,7 @@ INSERT INTO `migrations` VALUES (1,1749158089098,'InitialMigration1749158089098'
 UNLOCK TABLES;
 
 --
--- Detail structure for table `service`
+-- Details structure for table `service`
 --
 
 DROP TABLE IF EXISTS `service`;
@@ -187,7 +187,7 @@ INSERT INTO `service` VALUES (1,'Vertebrology Consultation','Initial consultatio
 UNLOCK TABLES;
 
 --
--- Detail structure for table `token`
+-- Details structure for table `token`
 --
 
 DROP TABLE IF EXISTS `token`;
@@ -218,7 +218,7 @@ INSERT INTO `token` VALUES (186,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOj
 UNLOCK TABLES;
 
 --
--- Detail structure for table `user`
+-- Details structure for table `user`
 --
 
 DROP TABLE IF EXISTS `user`;
