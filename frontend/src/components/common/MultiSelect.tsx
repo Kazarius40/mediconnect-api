@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { sortByFields } from '@/utils/common/sort.util';
 
 export interface MultiSelectOption {
@@ -16,13 +16,13 @@ interface MultiSelectProps {
   sortFields?: (keyof MultiSelectOption)[];
 }
 
-export const MultiSelect: React.FC<MultiSelectProps> = ({
+export function MultiSelect({
   label,
   options,
   selectedIds,
   onChangeAction,
   sortFields = ['label'],
-}) => {
+}: MultiSelectProps) {
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
 
   const selectedOptions = useMemo(
@@ -106,4 +106,4 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
       </select>
     </div>
   );
-};
+}

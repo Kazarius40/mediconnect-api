@@ -1,0 +1,60 @@
+.entity-back-btn {
+    display: inline-flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    color: blue;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    cursor: pointer;
+}
+
+.entity-back-btn:hover {
+    border-color: lightblue;
+    background-color: lightblue;
+    color: darkblue;
+}
+
+.entity-header-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.entity-header-title {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.entity-header-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.entity-edit-btn {
+    padding: 6px 12px;
+    border-radius: 8px;
+    background-color: blue;
+    color: white;
+    cursor: pointer;
+}
+
+.entity-edit-btn:hover {
+    background-color: darkblue;
+    transform: scale(1.05);
+}
+
+.entity-delete-btn {
+    padding: 6px 12px;
+    border-radius: 8px;
+    background-color: red;
+    color: white;
+    cursor: pointer;
+}
+
+.entity-delete-btn:hover {
+    background-color: darkred;
+    transform: scale(1.05);
+}

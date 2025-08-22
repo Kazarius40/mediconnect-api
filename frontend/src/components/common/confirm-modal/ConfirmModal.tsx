@@ -1,8 +1,8 @@
-import React from 'react';
+import './style.css';
 
 export type EntityType = 'doctor' | 'clinic' | 'service';
 
-export interface ConfirmModalProps {
+interface ConfirmModalProps {
   entity: { id: number; name: string };
   entityType: EntityType;
   onConfirm: (id: number) => void;
@@ -15,32 +15,29 @@ const entityLabels: Record<EntityType, string> = {
   service: 'service',
 };
 
-export const ConfirmModal: React.FC<ConfirmModalProps> = ({
+export function ConfirmModal({
   entity,
   entityType,
   onConfirm,
   onCancel,
-}) => {
+}: ConfirmModalProps) {
   const label = entityLabels[entityType];
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-400/50 z-50">
-      <div className="bg-white rounded-lg shadow-lg max-w-sm w-full p-6">
-        <h2 className="text-xl font-semibold mb-4">Confirm deletion</h2>
-        <p className="text-gray-700 mb-6">
+    <div className="confirm-modal-overlay">
+      <div className="confirm-modal-box">
+        <h2 className="confirm-modal-title">Confirm deletion</h2>
+        <p className="confirm-modal-text">
           Are you sure you want to delete {label} "{entity.name}"? This action
           cannot be undone.
         </p>
-        <div className="flex justify-end gap-3">
-          <button
-            onClick={onCancel}
-            className="px-4 py-2 rounded border border-gray-300 hover:bg-gray-100"
-          >
+        <div className="confirm-modal-actions">
+          <button onClick={onCancel} className="confirm-modal-btn-cancel">
             Cancel
           </button>
           <button
             onClick={() => onConfirm(entity.id)}
-            className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+            className="confirm-modal-btn-delete"
           >
             Delete
           </button>
@@ -48,4 +45,4 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
       </div>
     </div>
   );
-};
+}

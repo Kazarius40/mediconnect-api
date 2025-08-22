@@ -1,12 +1,13 @@
 'use server';
 
-import './style.css';
 import { redirect } from 'next/navigation';
-import { EntityHeader } from '@/components/common/EntityHeader';
+import { EntityHeader } from '@/components/common/entity-header';
 import Form from '@/components/service/Form';
 import { FRONTEND_URL } from '@/config/frontend';
 import { Service } from '@/interfaces/service';
 import { DoctorShort } from '@/interfaces/doctor';
+
+import './style.css';
 
 export default async function ServiceEdit({
   params,

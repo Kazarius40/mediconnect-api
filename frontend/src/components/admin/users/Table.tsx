@@ -1,9 +1,9 @@
 'use client';
 
-import './style.css';
-import React from 'react';
 import { useRouter } from 'next/navigation';
 import { User } from '@/interfaces/user';
+
+import './style.css';
 
 export default function Table({ users }: { users: User[] }) {
   const router = useRouter();

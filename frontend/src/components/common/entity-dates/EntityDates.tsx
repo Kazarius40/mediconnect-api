@@ -1,10 +1,11 @@
-import React from 'react';
 import { formatDate } from '@/utils/common/format-date.util';
 
-export const EntityDates: React.FC<{
+type EntityDatesProps = {
   createdAt?: string;
   updatedAt?: string;
-}> = ({ createdAt, updatedAt }) => {
+};
+
+export function EntityDates({ createdAt, updatedAt }: EntityDatesProps) {
   return (
     <>
       {createdAt && (
@@ -19,4 +20,4 @@ export const EntityDates: React.FC<{
       )}
     </>
   );
-};
+}

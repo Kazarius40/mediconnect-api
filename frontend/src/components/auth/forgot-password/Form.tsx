@@ -1,9 +1,10 @@
 'use client';
 
-import './style.css';
-import React, { FormEvent, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { AxiosError } from 'axios';
 import { forgotPassword } from '@/api/client/auth';
+
+import './style.css';
 
 export default function Form() {
   const [email, setEmail] = useState('');

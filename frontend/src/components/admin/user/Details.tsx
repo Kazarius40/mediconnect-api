@@ -1,11 +1,12 @@
 'use client';
 
-import './style.css';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { InfoRow } from '../../common/InfoRow';
-import { EntityDates } from '@/components/common/EntityDates';
+import { EntityDates } from '@/components/common/entity-dates';
 import { User } from '@/interfaces/user';
+
+import './style.css';
 
 const roles = ['ADMIN', 'PATIENT', 'DOCTOR'] as const;
 type Role = (typeof roles)[number];

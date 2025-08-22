@@ -1,13 +1,13 @@
 'use client';
 
-import React, { FormEvent, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { registerUser } from '@/api/client/auth';
 
 import './style.css';
 
-const Form: React.FC = () => {
+const Form = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');

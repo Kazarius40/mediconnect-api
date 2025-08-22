@@ -1,9 +1,10 @@
 'use client';
 
-import './style.css';
-import React, { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/providers/AuthProvider';
+
+import './style.css';
 
 export default function Form() {
   const { setUser } = useAuth();
@@ -14,7 +15,7 @@ export default function Form() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);

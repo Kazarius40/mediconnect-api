@@ -1,16 +1,17 @@
 'use client';
 
-import './style.css';
 import { Clinic } from '@/interfaces/clinic';
-import { ConfirmModal } from '@/components/common/ConfirmModal';
 import { List } from '@/components/doctor/List';
 import { useEntityDeleteHook } from '@/hooks/entity/useEntityDelete.hook';
-import { EntityHeader } from '@/components/common/EntityHeader';
-import { EntityDates } from '@/components/common/EntityDates';
+import { EntityHeader } from '@/components/common/entity-header';
+import { EntityDates } from '@/components/common/entity-dates';
 import { useAuth } from '@/providers/AuthProvider';
 import { useRouter } from 'next/navigation';
 import { useSortedSearch } from '@/hooks/common/useSortedSearch';
 import { sortByFields } from '@/utils/common/sort.util';
+import { ConfirmModal } from '@/components/common/confirm-modal';
+
+import './style.css';
 
 export default function Details({ clinic }: { clinic: Clinic }) {
   const router = useRouter();

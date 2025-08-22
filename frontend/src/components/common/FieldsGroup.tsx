@@ -1,9 +1,8 @@
 'use client';
 
-import React from 'react';
 import { useFormContext, FieldError, RegisterOptions } from 'react-hook-form';
 
-export type FieldName =
+type FieldName =
   | 'firstName'
   | 'lastName'
   | 'phone'

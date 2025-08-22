@@ -1,6 +1,6 @@
 import '@/app/globals.css';
 import type { Metadata } from 'next';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { Toaster } from 'react-hot-toast';
 import Navbar from '@/components/layout/Navbar';
 import { AuthProvider } from '@/providers/AuthProvider';

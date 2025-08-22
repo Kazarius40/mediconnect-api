@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import Card from '@/components/clinic/Card';
 import { useRouter } from 'next/navigation';
 import { Clinic } from '@/interfaces/clinic';
 import { matchesSearch } from '@/utils/common/search.util';
-import SortControls from '@/components/common/SortControls';
+import { SortControls } from '@/components/common/SortControls';
 import { useAuth } from '@/providers/AuthProvider';
 import { StringKeysOf } from '@/utils/common/filter.util';
 
@@ -71,8 +71,8 @@ export default function Table({ clinics }: { clinics: Clinic[] }) {
         sortFields={sortFields}
         sortBy={sortBy}
         sortOrder={sortOrder}
-        onSortByChange={setSortBy}
-        onSortOrderChange={setSortOrder}
+        onSortByChangeAction={setSortBy}
+        onSortOrderChangeAction={setSortOrder}
       />
 
       {filteredAndSorted.length === 0 && (

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { InfoRow } from '@/components/common/InfoRow';
-import { EntityDates } from '@/components/common/EntityDates';
+import { EntityDates } from '@/components/common/entity-dates';
 import { User } from '@/interfaces/user';
 
 import './style.css';

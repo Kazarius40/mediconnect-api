@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Service } from '@/interfaces/service';
 import { matchesSearch } from '@/utils/common/search.util';
-import SortControls from '@/components/common/SortControls';
+import { SortControls } from '@/components/common/SortControls';
 import Card from '@/components/service/Card';
 import { useAuth } from '@/providers/AuthProvider';
 import { StringKeysOf } from '@/utils/common/filter.util';
@@ -64,8 +64,8 @@ export default function Table({ services }: { services: Service[] }) {
         sortFields={sortFields}
         sortBy={sortBy}
         sortOrder={sortOrder}
-        onSortByChange={setSortBy}
-        onSortOrderChange={setSortOrder}
+        onSortByChangeAction={setSortBy}
+        onSortOrderChangeAction={setSortOrder}
       />
 
       {filteredAndSorted.length === 0 && (
