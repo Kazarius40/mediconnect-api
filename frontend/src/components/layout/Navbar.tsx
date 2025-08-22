@@ -1,10 +1,10 @@
 'use client';
 
-import './style.css';
 import Link from 'next/link';
 import { useAuth } from '@/providers/AuthProvider';
-import LogoutButton from '@/components/auth/Logout';
-import React from 'react';
+import LogoutButton from '@/components/auth/logout';
+
+import './style.css';
 
 export default function Navbar() {
   const { user } = useAuth();

@@ -4,7 +4,9 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/providers/AuthProvider';
 
-const LogoutButton: React.FC = () => {
+import './style.css';
+
+export default function LogoutButton() {
   const router = useRouter();
   const { setUser } = useAuth();
 
@@ -23,25 +25,19 @@ const LogoutButton: React.FC = () => {
       setUser(null);
       router.push('/auth/login');
     } catch (err) {
-      console.error('Logout failed:', err);
-      setError('Logout failed');
+      console.error('LogoutButton failed:', err);
+      setError('LogoutButton failed');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div>
-      <button
-        onClick={handleLogout}
-        disabled={loading}
-        className="bg-red-600 text-white px-4 py-1 rounded cursor-pointer hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {loading ? 'Logging out...' : 'Logout'}
+    <div className="logout-container">
+      <button onClick={handleLogout} disabled={loading} className="logout-btn">
+        {loading ? 'Logging out...' : 'LogoutButton'}
       </button>
-      {error && <p className="text-red-600 mt-2">{error}</p>}
+      {error && <p className="error-message">{error}</p>}
     </div>
   );
-};
-
-export default LogoutButton;
+}

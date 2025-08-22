@@ -76,7 +76,7 @@ export class UserProfileResponse {
 export class LogoutMessageResponse extends MessageResponse {
   @ApiProperty({
     example: 'Logged out successfully',
-    description: 'Logout confirmation message',
+    description: 'LogoutButton confirmation message',
   })
   declare message: string;
 }

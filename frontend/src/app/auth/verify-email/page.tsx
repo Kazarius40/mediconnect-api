@@ -29,7 +29,7 @@ export default async function VerifyEmailPage(props: {
       body: JSON.stringify({ token }),
     });
 
-    const data = await res.json();
+    const data = (await res.json()) as { message: string };
 
     if (!res.ok) {
       status = 'error';
@@ -37,9 +37,9 @@ export default async function VerifyEmailPage(props: {
     } else {
       message = data?.message ?? 'Email verified successfully!';
     }
-  } catch (err: any) {
+  } catch (err) {
     status = 'error';
-    message = err?.message ?? 'Verification failed';
+    message = (err as Error).message ?? 'Verification failed';
   }
 
   return <EmailVerificationStatus status={status} message={message} />;

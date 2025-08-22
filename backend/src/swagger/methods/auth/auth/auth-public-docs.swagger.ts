@@ -58,7 +58,7 @@ export function LogoutDocs() {
     ApiOperation({ summary: 'Account logout' }),
     ApiResponse({
       status: HttpStatus.OK,
-      description: 'Logout successful',
+      description: 'LogoutButton successful',
       type: LogoutMessageResponse,
     }),
     ApiResponse({
