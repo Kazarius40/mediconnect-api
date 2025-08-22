@@ -2,26 +2,26 @@
 
 import { cookies } from 'next/headers';
 import { FRONTEND_URL } from '@/config/frontend';
-import EditProfileComponent from '@/components/profile/EditProfileComponent';
+import Edit from '@/components/profile/Edit';
 
-export default async function EditProfilePage() {
+export default async function EditProfile() {
   try {
     const cookieStore = await cookies();
     const accessToken = cookieStore.get('accessToken')?.value;
 
-    if (!accessToken) return <EditProfileComponent user={null} />;
+    if (!accessToken) return <Edit user={null} />;
 
     const res = await fetch(`${FRONTEND_URL}/api/auth/profile`, {
       headers: { Cookie: `accessToken=${accessToken}` },
       cache: 'no-store',
     });
 
-    if (!res.ok) return <EditProfileComponent user={null} />;
+    if (!res.ok) return <Edit user={null} />;
 
     const { user } = await res.json();
 
-    return <EditProfileComponent user={user} />;
+    return <Edit user={user} />;
   } catch (error) {
-    return <EditProfileComponent user={null} />;
+    return <Edit user={null} />;
   }
 }

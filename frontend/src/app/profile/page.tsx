@@ -1,14 +1,14 @@
 'use server';
 
-import ProfilePageComponent from '@/components/profile/ProfileComponent';
 import { ssrFetchUser } from '@/lib/auth/ssrAuth';
+import Details from '@/components/profile/Details';
 
-export default async function ProfilePage() {
+export default async function Profile() {
   try {
     const { user } = await ssrFetchUser();
-    return <ProfilePageComponent user={user} />;
+    return <Details user={user} />;
   } catch (err) {
     console.error('Error in profile page:', err);
-    return <ProfilePageComponent user={null} />;
+    return <Details user={null} />;
   }
 }

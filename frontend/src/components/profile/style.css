@@ -1,0 +1,112 @@
+.profile-container {
+    max-width: 768px;
+    margin: 0 auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.profile-title {
+    font-size: 28px;
+    font-weight: 600;
+    text-align: center;
+    color: black;
+}
+
+.profile-card {
+    background-color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 24px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border: 1px solid gray;
+}
+
+.profile-actions {
+    text-align: center;
+}
+
+.edit-button {
+    cursor: pointer;
+    background-color: blue;
+    color: white;
+    font-weight: 500;
+    padding: 12px 24px;
+    border-radius: 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    transition: background-color 0.3s;
+}
+
+.edit-button:hover {
+    background-color: darkblue;
+}
+
+.edit-container {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.edit-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 24px;
+}
+
+.edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 16px;
+}
+
+.submit-button {
+    background-color: blue;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.submit-button:hover {
+    background-color: darkblue;
+}
+
+.submit-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.cancel-button {
+    background-color: lightgray;
+    color: black;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.cancel-button:hover {
+    background-color: gray;
+}
+
+.error-message {
+    color: red;
+}
+
+.success-message {
+    color: green;
+}
+
+.centered-message {
+    text-align: center;
+    color: black;
+}

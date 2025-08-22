@@ -7,13 +7,15 @@ import { AxiosError } from 'axios';
 import { FieldsGroup } from '@/components/common/FieldsGroup';
 import { User } from '@/interfaces/user';
 
+import './style.css';
+
 interface ProfileFormData {
   firstName?: string;
   lastName?: string;
   phone: string;
 }
 
-export default function EditProfileComponent({ user }: { user: User | null }) {
+export default function Edit({ user }: { user: User | null }) {
   const router = useRouter();
 
   const [success, setSuccess] = useState('');
@@ -53,35 +55,35 @@ export default function EditProfileComponent({ user }: { user: User | null }) {
   };
 
   if (!user) {
-    return <div className="text-center text-red-600">Unauthorized</div>;
+    return <div className="error-message">Unauthorized</div>;
   }
 
   return (
-    <div className="max-w-md mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Edit Profile</h1>
+    <div className="edit-container">
+      <h1 className="edit-title">Edit Profile</h1>
 
-      {error && <div className="text-red-600 mb-4">{error}</div>}
-      {success && <div className="text-green-600 mb-4">{success}</div>}
+      {error && <div className="error-message">{error}</div>}
+      {success && <div className="success-message">{success}</div>}
 
       <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="edit-form">
           <FieldsGroup
             fields={['lastName', 'firstName', 'phone']}
             requiredFields={['phone']}
           />
 
-          <div className="flex gap-4">
+          <div className="form-actions">
             <button
               type="submit"
               disabled={isSubmitting}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded disabled:opacity-50"
+              className="submit-button"
             >
               {isSubmitting ? 'Saving...' : 'Save Changes'}
             </button>
             <button
               type="button"
               onClick={() => router.push('/profile')}
-              className="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded"
+              className="cancel-button"
             >
               Cancel
             </button>

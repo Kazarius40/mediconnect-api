@@ -3,16 +3,16 @@ import { InfoRow } from '@/components/common/InfoRow';
 import { EntityDates } from '@/components/common/EntityDates';
 import { User } from '@/interfaces/user';
 
-export default function ProfileComponent({ user }: { user: User | null }) {
-  if (!user) return <div>Not logged in</div>;
+import './style.css';
+
+export default function Details({ user }: { user: User | null }) {
+  if (!user) return <div className="centered-message">Not logged in</div>;
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <h1 className="text-3xl font-semibold mb-6 text-center text-gray-800">
-        👤 User Profile
-      </h1>
+    <div className="profile-container">
+      <h1 className="profile-title">👤 User Profile</h1>
 
-      <div className="bg-white shadow-xl rounded-2xl p-6 space-y-4 border border-gray-200">
+      <div className="profile-card">
         <InfoRow label="ID" value={user.id} />
         <InfoRow label="Email" value={user.email} />
         <InfoRow label="Role" value={user.role} />
@@ -23,11 +23,9 @@ export default function ProfileComponent({ user }: { user: User | null }) {
         <EntityDates createdAt={user.createdAt} updatedAt={user.updatedAt} />
       </div>
 
-      <div className="mt-6 text-center">
+      <div className="profile-actions">
         <Link href="/profile/edit">
-          <button className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 rounded-xl shadow-md transition duration-300">
-            ✏️ Edit Profile
-          </button>
+          <button className="edit-button">✏️ Edit Profile</button>
         </Link>
       </div>
     </div>
