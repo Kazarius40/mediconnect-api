@@ -1,0 +1,115 @@
+.doctor-card {
+    cursor: pointer;
+    border: 1px solid black;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 1px 1px 4px lightgray;
+    transition: all 0.2s;
+}
+
+.doctor-card:hover {
+    box-shadow: 2px 2px 8px gray;
+    border-color: blue;
+    background-color: lightblue;
+}
+
+.doctor-card-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.doctor-card-info {
+    font-size: 14px;
+    color: gray;
+}
+
+.doctor-detail-container {
+    max-width: 768px;
+    margin: 0 auto;
+    padding: 16px;
+}
+
+.doctor-basic-info {
+    margin-bottom: 24px;
+}
+
+.doctor-section {
+    margin-top: 24px;
+    border: 1px solid black;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 1px 1px 4px lightgray;
+}
+
+.doctor-search-input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 16px;
+    border: 1px solid black;
+    border-radius: 8px;
+}
+
+.doctor-list {
+    list-style-type: disc;
+    margin-left: 20px;
+    padding-left: 0;
+}
+
+.doctor-list-item {
+    border: 1px solid black;
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 1px 1px 3px lightgray;
+    margin-bottom: 8px;
+}
+
+.doctor-subsection {
+    margin-top: 8px;
+}
+
+.doctor-sublist {
+    list-style-type: disc;
+    margin-left: 20px;
+    margin-top: 4px;
+}
+
+.doctor-item-title {
+    font-weight: 500;
+}
+
+.doctor-item-sub {
+    font-size: 14px;
+    color: gray;
+    margin: 2px 0;
+}
+
+.doctor-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 600px;
+}
+
+.doctor-btn-submit {
+    background-color: blue;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+}
+
+.doctor-btn-submit:hover {
+    background-color: darkblue;
+}
+
+.doctor-btn-submit:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.doctor-empty {
+    color: gray;
+    margin-top: 8px;
+}

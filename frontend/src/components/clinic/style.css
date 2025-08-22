@@ -1,0 +1,108 @@
+.clinic-card {
+    cursor: pointer;
+    border: 1px solid lightgray;
+    border-radius: 1rem;
+    padding: 1rem;
+    box-shadow: 0 1px 2px gray;
+    transition: all 0.2s ease-in-out;
+    background: white;
+}
+.clinic-card:hover {
+    box-shadow: 0 4px 8px gray;
+    border-color: blue;
+    background: lightblue;
+}
+
+.clinic-card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.clinic-card-info {
+    font-size: 0.875rem;
+    color: gray;
+    margin-bottom: 0.25rem;
+}
+
+.clinic-container {
+    max-width: 48rem;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.clinic-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.clinic-info {
+    margin-bottom: 1.5rem;
+    gap: 0.5rem;
+}
+
+.doctors-section {
+    border: 1px solid lightgray;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 1px 2px gray;
+}
+
+.doctors-section h2 {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.doctors-search {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid lightgray;
+    border-radius: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: blue;
+    color: white;
+}
+.btn-primary:hover {
+    background: darkblue;
+}
+
+.btn-disabled {
+    background: gray;
+    cursor: not-allowed;
+    color: white;
+}
+
+.btn-cancel {
+    background: lightgray;
+    color: black;
+}
+.btn-cancel:hover {
+    background: gray;
+}
+
+.btn-danger {
+    background: crimson;
+    color: white;
+}
+.btn-danger:hover {
+    background: darkred;
+}
+
+.text-gray {
+    color: gray;
+}
+.text-muted {
+    color: darkgray;
+}

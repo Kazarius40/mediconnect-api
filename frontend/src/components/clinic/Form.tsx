@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import './style.css';
 import { useRouter } from 'next/navigation';
 import { FormProvider, useForm } from 'react-hook-form';
 import { DoctorShort } from '@/interfaces/doctor';
@@ -19,9 +19,8 @@ interface ClinicFormProps {
   allDoctors: DoctorShort[];
 }
 
-export default function ClinicForm({ clinic, allDoctors }: ClinicFormProps) {
+export default function Form({ clinic, allDoctors }: ClinicFormProps) {
   const router = useRouter();
-
   const methods = useForm<CreateClinicDto>({
     defaultValues: {
       name: clinic?.name || '',
@@ -40,17 +39,13 @@ export default function ClinicForm({ clinic, allDoctors }: ClinicFormProps) {
     setError,
     formState: { isSubmitting },
   } = methods;
-
   const doctorIds = watch('doctorIds') || [];
-
-  const handleDoctorsChange = (newIds: number[]) => {
+  const handleDoctorsChange = (newIds: number[]) =>
     setValue('doctorIds', newIds, { shouldValidate: true });
-  };
 
   const onSubmit = async (data: CreateClinicDto) => {
     try {
       const normalizedData = cleanOptionalFields(data, ['email']);
-
       const res = clinic?.id
         ? await fetch(`/api/admin/clinics/${clinic.id}`, {
             method: 'PATCH',
@@ -89,13 +84,11 @@ export default function ClinicForm({ clinic, allDoctors }: ClinicFormProps) {
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-lg">
+      <form onSubmit={handleSubmit(onSubmit)} className="clinic-form">
         <FieldsGroup
           fields={['name', 'address', 'phone', 'email']}
           requiredFields={['name', 'address', 'phone']}
         />
-
-        {/* === Doctors === */}
         <MultiSelect
           label="Doctors"
           options={doctorOptions}
@@ -103,12 +96,10 @@ export default function ClinicForm({ clinic, allDoctors }: ClinicFormProps) {
           onChangeAction={handleDoctorsChange}
           sortFields={['label']}
         />
-
-        {/* === Submit === */}
         <button
           type="submit"
           disabled={isSubmitting}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+          className={`btn btn-primary ${isSubmitting ? 'btn-disabled' : ''}`}
         >
           {isSubmitting
             ? 'Saving...'

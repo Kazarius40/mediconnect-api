@@ -11,7 +11,9 @@ import { useSortedSearch } from '@/hooks/common/useSortedSearch';
 import { useRouter } from 'next/navigation';
 import { sortByFields } from '@/utils/common/sort.util';
 
-export default function DoctorComponent({ doctor }: { doctor: Doctor }) {
+import './style.css';
+
+export default function Detail({ doctor }: { doctor: Doctor }) {
   const router = useRouter();
   const { user } = useAuth();
   const isAdmin = user?.role === 'ADMIN';
@@ -24,7 +26,6 @@ export default function DoctorComponent({ doctor }: { doctor: Doctor }) {
       await fetch(`/api/admin/doctors/${id}`, {
         method: 'DELETE',
       });
-
       router.push('/doctors');
     },
     '/doctors',
@@ -57,8 +58,7 @@ export default function DoctorComponent({ doctor }: { doctor: Doctor }) {
   );
 
   return (
-    <div className="container mx-auto p-4 max-w-3xl">
-      {/* === Header === */}
+    <div className="doctor-detail-container">
       <EntityHeader
         title={`${doctor.lastName} ${doctor.firstName}`}
         editPath={`/admin/doctors/${doctor.id}`}
@@ -67,8 +67,7 @@ export default function DoctorComponent({ doctor }: { doctor: Doctor }) {
         showControls={isAdmin}
       />
 
-      {/* === Basic info === */}
-      <div className="space-y-2 mb-6">
+      <div className="doctor-basic-info">
         {doctor.phone && (
           <p>
             <strong>Phone:</strong> {doctor.phone}
@@ -85,33 +84,30 @@ export default function DoctorComponent({ doctor }: { doctor: Doctor }) {
         />
       </div>
 
-      {/* === Services Section === */}
-      <div className="mt-6 border rounded-lg p-4 shadow-sm">
-        <h2 className="text-lg font-semibold mb-3">Services</h2>
-
+      <div className="doctor-section">
+        <h2>Services</h2>
         {services.length > 0 && (
           <input
             type="text"
             placeholder="Search services by name or description..."
             value={serviceSearch}
             onChange={(e) => setServiceSearch(e.target.value)}
-            className="mb-4 w-full p-2 border border-gray-300 rounded shadow-sm"
+            className="doctor-search-input"
           />
         )}
-
         {filteredServices.length > 0 ? (
-          <ul className="list-disc ml-5 space-y-2">
+          <ul className="doctor-list">
             {filteredServices.map((s) => (
               <li key={s.id}>
-                <span className="font-medium">{s.name}</span>
+                <span className="doctor-item-title">{s.name}</span>
                 {s.description && (
-                  <p className="text-sm text-gray-600">{s.description}</p>
+                  <p className="doctor-item-sub">{s.description}</p>
                 )}
               </li>
             ))}
           </ul>
         ) : (
-          <p className="text-gray-500">
+          <p className="doctor-empty">
             {services.length === 0
               ? 'No services linked'
               : 'No matching services'}
@@ -119,26 +115,23 @@ export default function DoctorComponent({ doctor }: { doctor: Doctor }) {
         )}
       </div>
 
-      {/* === Clinics Section === */}
-      <div className="mt-6 border rounded-lg p-4 shadow-sm">
-        <h2 className="text-lg font-semibold mb-3">Clinics</h2>
-
+      <div className="doctor-section">
+        <h2>Clinics</h2>
         {clinics.length > 0 && (
           <input
             type="text"
             placeholder="Search clinics by name, address, phone or email..."
             value={clinicSearch}
             onChange={(e) => setClinicSearch(e.target.value)}
-            className="mb-4 w-full p-2 border border-gray-300 rounded shadow-sm"
+            className="doctor-search-input"
           />
         )}
-
         {filteredClinics.length > 0 ? (
-          <ul className="list-disc ml-5 space-y-3">
+          <ul className="doctor-list">
             {filteredClinics.map((c) => (
               <li key={c.id}>
-                <span className="font-medium">{c.name}</span>
-                <div className="text-sm text-gray-700">
+                <span className="doctor-item-title">{c.name}</span>
+                <div className="doctor-item-sub">
                   <p>{c.address}</p>
                   <p>
                     <strong>Phone:</strong> {c.phone}
@@ -153,13 +146,12 @@ export default function DoctorComponent({ doctor }: { doctor: Doctor }) {
             ))}
           </ul>
         ) : (
-          <p className="text-gray-500">
+          <p className="doctor-empty">
             {clinics.length === 0 ? 'No clinics linked' : 'No matching clinics'}
           </p>
         )}
       </div>
 
-      {/* === Confirm deletion === */}
       {isConfirmOpen && (
         <ConfirmModal
           entity={{

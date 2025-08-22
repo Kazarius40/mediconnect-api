@@ -2,7 +2,7 @@
 
 import './style.css';
 import { EntityHeader } from '@/components/common/EntityHeader';
-import DoctorForm from '@/components/doctors/DoctorForm';
+import Form from '@/components/doctor/Form';
 import { FRONTEND_URL } from '@/config/frontend';
 import { ClinicShort } from '@/interfaces/clinic';
 import { ServiceShort } from '@/interfaces/service';
@@ -36,7 +36,7 @@ export default async function DoctorCreate() {
           showControls={false}
         />
 
-        <DoctorForm allClinics={clinics} allServices={services} />
+        <Form allClinics={clinics} allServices={services} />
       </div>
     );
   } catch (error) {

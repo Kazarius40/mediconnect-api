@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { useRouter } from 'next/navigation';
 import { FormProvider, useForm } from 'react-hook-form';
 import { CreateDoctorDto, Doctor } from '@/interfaces/doctor';
@@ -15,13 +14,15 @@ import toast from 'react-hot-toast';
 import { cleanOptionalFields } from '@/utils/forms/normalize-form-data.util';
 import { FieldsGroup } from '@/components/common/FieldsGroup';
 
+import './style.css';
+
 interface DoctorFormProps {
   doctor?: Doctor;
   allClinics: ClinicShort[];
   allServices: ServiceShort[];
 }
 
-export default function DoctorForm({
+export default function Form({
   doctor,
   allClinics,
   allServices,
@@ -51,13 +52,10 @@ export default function DoctorForm({
   const clinicIds = watch('clinicIds') || [];
   const serviceIds = watch('serviceIds') || [];
 
-  const handleClinicsChange = (newIds: number[]) => {
+  const handleClinicsChange = (newIds: number[]) =>
     setValue('clinicIds', newIds, { shouldValidate: true });
-  };
-
-  const handleServicesChange = (newIds: number[]) => {
+  const handleServicesChange = (newIds: number[]) =>
     setValue('serviceIds', newIds, { shouldValidate: true });
-  };
 
   const onSubmit = async (data: CreateDoctorDto) => {
     try {
@@ -98,7 +96,6 @@ export default function DoctorForm({
     id: c.id,
     label: c.name.trim(),
   }));
-
   const serviceOptions: MultiSelectOption[] = allServices.map((s) => ({
     id: s.id,
     label: s.name.trim(),
@@ -106,13 +103,11 @@ export default function DoctorForm({
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-lg">
+      <form onSubmit={handleSubmit(onSubmit)} className="doctor-form">
         <FieldsGroup
           fields={['firstName', 'lastName', 'phone', 'email']}
           requiredFields={['firstName', 'lastName']}
         />
-
-        {/* === Clinics === */}
         <MultiSelect
           label="Clinics"
           options={clinicOptions}
@@ -120,8 +115,6 @@ export default function DoctorForm({
           onChangeAction={handleClinicsChange}
           sortFields={['label']}
         />
-
-        {/* === Services === */}
         <MultiSelect
           label="Services"
           options={serviceOptions}
@@ -129,12 +122,10 @@ export default function DoctorForm({
           onChangeAction={handleServicesChange}
           sortFields={['label']}
         />
-
-        {/* === Submit === */}
         <button
           type="submit"
           disabled={isSubmitting}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+          className="doctor-btn-submit"
         >
           {isSubmitting
             ? 'Saving...'

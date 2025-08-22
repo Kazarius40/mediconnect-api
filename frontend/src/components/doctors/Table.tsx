@@ -5,13 +5,13 @@ import { useRouter } from 'next/navigation';
 import { Doctor } from '@/interfaces/doctor';
 import { matchesSearch } from '@/utils/common/search.util';
 import SortControls from '@/components/common/SortControls';
-import DoctorCard from '@/components/doctors/DoctorCard';
+import Card from '@/components/doctor/Card';
 import { useAuth } from '@/providers/AuthProvider';
 import { StringKeysOf } from '@/utils/common/filter.util';
 
 type SortableFields = StringKeysOf<Doctor>;
 
-export default function DoctorsComponent({ doctors }: { doctors: Doctor[] }) {
+export default function Table({ doctors }: { doctors: Doctor[] }) {
   const router = useRouter();
   const { user } = useAuth();
 
@@ -83,7 +83,7 @@ export default function DoctorsComponent({ doctors }: { doctors: Doctor[] }) {
       )}
 
       {filteredAndSorted.map((doctor) => (
-        <DoctorCard
+        <Card
           key={doctor.id}
           doctor={doctor}
           onClick={() => router.push(`/doctors/${doctor.id}`)}

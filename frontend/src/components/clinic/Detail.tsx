@@ -1,9 +1,9 @@
 'use client';
 
-import React from 'react';
+import './style.css';
 import { Clinic } from '@/interfaces/clinic';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
-import { DoctorList } from '@/components/doctors/DoctorList';
+import { List } from '@/components/doctor/List';
 import { useEntityDeleteHook } from '@/hooks/entity/useEntityDelete.hook';
 import { EntityHeader } from '@/components/common/EntityHeader';
 import { EntityDates } from '@/components/common/EntityDates';
@@ -12,19 +12,15 @@ import { useRouter } from 'next/navigation';
 import { useSortedSearch } from '@/hooks/common/useSortedSearch';
 import { sortByFields } from '@/utils/common/sort.util';
 
-export default function ClinicComponent({ clinic }: { clinic: Clinic }) {
+export default function Detail({ clinic }: { clinic: Clinic }) {
   const router = useRouter();
   const { user } = useAuth();
   const isAdmin = user?.role === 'ADMIN';
-
   const doctors = clinic.doctors ?? [];
 
   const { isConfirmOpen, setIsConfirmOpen, handleDelete } = useEntityDeleteHook(
     async (id) => {
-      await fetch(`/api/admin/clinics/${id}`, {
-        method: 'DELETE',
-      });
-
+      await fetch(`/api/admin/clinics/${id}`, { method: 'DELETE' });
       router.push('/clinics');
     },
     '/clinics',
@@ -49,8 +45,7 @@ export default function ClinicComponent({ clinic }: { clinic: Clinic }) {
   );
 
   return (
-    <div className="container mx-auto p-4 max-w-3xl">
-      {/* === Header === */}
+    <div className="clinic-container">
       <EntityHeader
         title={clinic.name}
         editPath={`/admin/clinics/${clinic.id}`}
@@ -59,8 +54,7 @@ export default function ClinicComponent({ clinic }: { clinic: Clinic }) {
         showControls={isAdmin}
       />
 
-      {/* === Basic info === */}
-      <div className="space-y-2 mb-6">
+      <div className="clinic-info">
         <p>
           <strong>Address:</strong> {clinic.address}
         </p>
@@ -78,30 +72,26 @@ export default function ClinicComponent({ clinic }: { clinic: Clinic }) {
         />
       </div>
 
-      {/* === Doctors Section === */}
-      <div className="mt-6 border rounded-lg p-4 shadow-sm">
-        <h2 className="text-lg font-semibold mb-3">Doctors</h2>
-
+      <div className="doctors-section">
+        <h2>Doctors</h2>
         {doctors.length > 0 && (
           <input
             type="text"
             placeholder="Search doctors by name, email, phone..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="mb-4 w-full p-2 border border-gray-300 rounded shadow-sm"
+            className="doctors-search"
           />
         )}
-
         {filteredDoctors.length > 0 ? (
-          <DoctorList doctors={filteredDoctors} search={search} />
+          <List doctors={filteredDoctors} search={search} />
         ) : (
-          <p className="text-gray-500">
+          <p className="text-muted">
             {doctors.length === 0 ? 'No doctors linked' : 'No matching doctors'}
           </p>
         )}
       </div>
 
-      {/* === Confirm deletion === */}
       {isConfirmOpen && (
         <ConfirmModal
           entity={{ id: clinic.id, name: clinic.name }}

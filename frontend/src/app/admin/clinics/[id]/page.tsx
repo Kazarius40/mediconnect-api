@@ -3,7 +3,7 @@
 import './style.css';
 import { redirect } from 'next/navigation';
 import { EntityHeader } from '@/components/common/EntityHeader';
-import ClinicForm from '@/components/clinics/ClinicForm';
+import Form from '@/components/clinic/Form';
 import { FRONTEND_URL } from '@/config/frontend';
 import { Clinic } from '@/interfaces/clinic';
 import { DoctorShort } from '@/interfaces/doctor';
@@ -44,7 +44,7 @@ export default async function ClinicEdit({
           showControls={false}
         />
 
-        <ClinicForm clinic={clinic} allDoctors={doctors} />
+        <Form clinic={clinic} allDoctors={doctors} />
       </div>
     );
   } catch (error) {

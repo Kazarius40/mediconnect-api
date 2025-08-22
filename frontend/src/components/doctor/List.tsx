@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
 import { Doctor } from '@/interfaces/doctor';
 import { sortByFields } from '@/utils/common/sort.util';
 import { matchesSearch } from '@/utils/common/search.util';
+
+import './style.css';
 
 interface DoctorListProps {
   doctors: Doctor[];
@@ -11,7 +12,7 @@ interface DoctorListProps {
   mode?: 'default' | 'withClinics';
 }
 
-export function DoctorList({
+export function List({
   doctors,
   search = '',
   mode = 'default',
@@ -31,11 +32,11 @@ export function DoctorList({
   );
 
   if (!filteredDoctors.length) {
-    return <p className="text-gray-500">No doctors match your search.</p>;
+    return <p className="doctor-empty">No doctors match your search.</p>;
   }
 
   return (
-    <ul className="space-y-2">
+    <ul className="doctor-list">
       {filteredDoctors.map((doc) => {
         const sortedServices = doc.services
           ? sortByFields(doc.services, ['name', 'description'])
@@ -45,17 +46,15 @@ export function DoctorList({
           : [];
 
         return (
-          <li key={doc.id} className="border p-3 rounded shadow-sm">
+          <li key={doc.id} className="doctor-list-item">
             <p>
               <strong>Name:</strong> {doc.lastName} {doc.firstName}
             </p>
-
             {doc.email && (
               <p>
                 <strong>Email:</strong> {doc.email}
               </p>
             )}
-
             {doc.phone && (
               <p>
                 <strong>Phone:</strong> {doc.phone}
@@ -65,23 +64,21 @@ export function DoctorList({
             {mode === 'default' && (
               <>
                 {sortedServices.length ? (
-                  <div className="mt-2">
+                  <div className="doctor-subsection">
                     <strong>Services:</strong>
-                    <ul className="list-disc ml-5 mt-1">
+                    <ul className="doctor-sublist">
                       {sortedServices.map((s) => (
                         <li key={s.id}>
-                          <span className="font-medium">{s.name}</span>
+                          <span className="doctor-item-title">{s.name}</span>
                           {s.description && (
-                            <p className="text-sm text-gray-600">
-                              {s.description}
-                            </p>
+                            <p className="doctor-item-sub">{s.description}</p>
                           )}
                         </li>
                       ))}
                     </ul>
                   </div>
                 ) : (
-                  <p className="text-gray-500 mt-1">No services listed</p>
+                  <p className="doctor-empty">No services listed</p>
                 )}
               </>
             )}
@@ -89,13 +86,13 @@ export function DoctorList({
             {mode === 'withClinics' && (
               <>
                 {sortedClinics.length ? (
-                  <div className="mt-2">
+                  <div className="doctor-subsection">
                     <strong>Clinics:</strong>
-                    <ul className="list-disc ml-5 mt-1">
+                    <ul className="doctor-sublist">
                       {sortedClinics.map((c) => (
                         <li key={c.id}>
-                          <span className="font-medium">{c.name}</span>
-                          <p className="text-sm text-gray-700">
+                          <span className="doctor-item-title">{c.name}</span>
+                          <p className="doctor-item-sub">
                             {c.address}
                             {c.phone && ` • ${c.phone}`}
                             {c.email && ` • ${c.email}`}
@@ -105,7 +102,7 @@ export function DoctorList({
                     </ul>
                   </div>
                 ) : (
-                  <p className="text-gray-500 mt-1">No clinics listed</p>
+                  <p className="doctor-empty">No clinics listed</p>
                 )}
               </>
             )}

@@ -6,7 +6,7 @@ import { ConfirmModal } from '@/components/common/ConfirmModal';
 import { useEntityDeleteHook } from '@/hooks/entity/useEntityDelete.hook';
 import { EntityHeader } from '@/components/common/EntityHeader';
 import { EntityDates } from '@/components/common/EntityDates';
-import { DoctorList } from '@/components/doctors/DoctorList';
+import { List } from '@/components/doctor/List';
 import { useAuth } from '@/providers/AuthProvider';
 import { useRouter } from 'next/navigation';
 import { useSortedSearch } from '@/hooks/common/useSortedSearch';
@@ -83,11 +83,7 @@ export default function ServiceComponent({
         )}
 
         {filteredDoctors.length > 0 ? (
-          <DoctorList
-            doctors={filteredDoctors}
-            search={search}
-            mode="withClinics"
-          />
+          <List doctors={filteredDoctors} search={search} mode="withClinics" />
         ) : (
           <p className="text-gray-500">
             {doctors.length === 0 ? 'No doctors linked' : 'No matching doctors'}

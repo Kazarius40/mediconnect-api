@@ -1,7 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import DoctorComponent from '@/components/doctors/DoctorComponent';
+import Detail from '@/components/doctor/Detail';
 import { FRONTEND_URL } from '@/config/frontend';
 
 export default async function DoctorPage({
@@ -24,7 +24,7 @@ export default async function DoctorPage({
 
     const { doctor } = await res.json();
 
-    return <DoctorComponent doctor={doctor} />;
+    return <Detail doctor={doctor} />;
   } catch (error) {
     console.error('Error fetching doctor:', error);
     redirect('/doctors');

@@ -1,6 +1,6 @@
 'use server';
 
-import ClinicsComponent from '@/components/clinics/ClinicsComponent';
+import Table from '@/components/clinics/Table';
 import { FRONTEND_URL } from '@/config/frontend';
 
 export default async function ClinicsPage() {
@@ -9,13 +9,13 @@ export default async function ClinicsPage() {
       cache: 'no-store',
     });
 
-    if (!res.ok) return <ClinicsComponent clinics={[]} />;
+    if (!res.ok) return <Table clinics={[]} />;
 
     const { clinics } = await res.json();
 
-    return <ClinicsComponent clinics={clinics} />;
+    return <Table clinics={clinics} />;
   } catch (error) {
     console.error('Error fetching clinics:', error);
-    return <ClinicsComponent clinics={[]} />;
+    return <Table clinics={[]} />;
   }
 }
