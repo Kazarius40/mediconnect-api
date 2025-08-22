@@ -1,9 +1,13 @@
-import ResetPasswordForm from '@/components/auth/ResetPasswordForm';
+'use client';
 
-export default function ResetPasswordPage() {
+import Form from '@/components/auth/reset-password/Form';
+
+import './style.css';
+
+export default function ResetPassword() {
   return (
     <div className="reset-password-page">
-      <ResetPasswordForm />
+      <Form />
     </div>
   );
 }

@@ -21,6 +21,3 @@ export const forgotPassword = (data: { email: string }) =>
 
 export const resetPassword = (data: ResetPasswordDto) =>
   api.post<{ message: string }>('/auth/reset-password', data);
-
-export const verifyEmail = (data: { token: string }) =>
-  api.post<{ message: string }>('/auth/verify-email', data);

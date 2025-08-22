@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { AxiosError } from 'axios';
 import { resetPassword } from '@/api/client/auth';
 
-export default function ResetPasswordForm() {
+export default function Form() {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [token, setToken] = useState<string | null>(null);

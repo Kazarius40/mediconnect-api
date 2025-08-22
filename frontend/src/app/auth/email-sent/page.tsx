@@ -1,9 +1,10 @@
 'use client';
 
-import './style.css';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import View from '@/components/auth/email-sent/View';
+
+import './style.css';
 
 export default function EmailSent() {
   const searchParams = useSearchParams();

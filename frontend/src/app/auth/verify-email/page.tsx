@@ -1,5 +1,7 @@
-import Link from 'next/link';
-import { verifyEmail } from '@/api/client/auth';
+'use server';
+
+import { FRONTEND_URL } from '@/config/frontend';
+import EmailVerificationStatus from '@/components/auth/verify-email/EmailVerificationStatus';
 
 export default async function VerifyEmailPage(props: {
   searchParams: Promise<{ token?: string }>;
@@ -9,52 +11,36 @@ export default async function VerifyEmailPage(props: {
 
   if (!token) {
     return (
-      <div className="max-w-md mx-auto text-center mt-20 space-y-4">
-        <div className="text-red-600 font-bold">Missing verification token</div>
-        <Link
-          href="/auth/login"
-          className="mt-4 inline-block bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
-        >
-          Back to Login
-        </Link>
-      </div>
+      <EmailVerificationStatus
+        status="error"
+        message="Missing verification token"
+      />
     );
   }
 
   let status: 'success' | 'error' = 'success';
-  let message;
+  let message: string;
 
   try {
-    const response = await verifyEmail({ token });
-    message = response.data?.message ?? 'Email verified successfully!';
+    const res = await fetch(`${FRONTEND_URL}/api/auth/verify-email`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      cache: 'no-store',
+      body: JSON.stringify({ token }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      status = 'error';
+      message = data?.message ?? 'Verification failed';
+    } else {
+      message = data?.message ?? 'Email verified successfully!';
+    }
   } catch (err: any) {
     status = 'error';
     message = err?.message ?? 'Verification failed';
   }
 
-  return (
-    <div className="max-w-md mx-auto text-center mt-20 space-y-4">
-      {status === 'success' ? (
-        <>
-          <div className="text-green-600 font-bold">{message}</div>
-          <Link
-            href="/auth/login"
-            className="mt-4 inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          >
-            Go to Login
-          </Link>
-        </>
-      ) : (
-        <>
-          <div className="text-red-600 font-bold">{message}</div>
-          <Link
-            href="/auth/login"
-            className="mt-4 inline-block bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
-          >
-            Back to Login
-          </Link>
-        </>
-      )}
-    </div>
-  );
+  return <EmailVerificationStatus status={status} message={message} />;
 }

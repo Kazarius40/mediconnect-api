@@ -5,7 +5,7 @@ import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { registerUser } from '@/api/client/auth';
 
-const RegisterForm: React.FC = () => {
+const Form: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -97,4 +97,4 @@ const RegisterForm: React.FC = () => {
   );
 };
 
-export default RegisterForm;
+export default Form;

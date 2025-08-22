@@ -1,14 +1,14 @@
 'use client';
 
-import RegisterForm from '@/components/auth/RegisterForm';
+import Form from '@/components/auth/register/Form';
 
-const RegisterPage = () => {
+import './style.css';
+
+export default function Register() {
   return (
     <div className="auth-page">
-      <h1 className="text-3xl font-bold mb-4 text-center">Registration</h1>
-      <RegisterForm />
+      <h1 className="auth-title">Registration</h1>
+      <Form />
     </div>
   );
-};
-
-export default RegisterPage;
+}
