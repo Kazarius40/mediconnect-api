@@ -50,8 +50,6 @@ export default function Form() {
       <form onSubmit={handleSubmit} className="login-form">
         <h1 className="title">Login</h1>
 
-        {error && <div className="message error">{error}</div>}
-
         <label>
           <input
             type="email"
@@ -73,6 +71,8 @@ export default function Form() {
             required
           />
         </label>
+
+        {error && <div className="message error">{error}</div>}
 
         <button
           type="submit"

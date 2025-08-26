@@ -41,8 +41,6 @@ const Form = () => {
       <form onSubmit={handleRegister} className="register-form">
         <h1 className="title">Register</h1>
 
-        {error && <div className="message error">{error}</div>}
-
         <label>
           <input
             type="email"
@@ -76,6 +74,7 @@ const Form = () => {
           />
         </label>
 
+        {error && <div className="message error">{error}</div>}
         {!passwordsMatch && confirmPassword && (
           <div className="message error">Passwords do not match</div>
         )}

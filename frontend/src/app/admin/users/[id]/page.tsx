@@ -1,11 +1,12 @@
 'use server';
 
-import './style.css';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { FRONTEND_URL } from '@/config/frontend';
 import Details from '@/components/admin/user/Details';
 import { User } from '@/interfaces/user';
+
+import './style.css';
 
 export default async function UserDetailsPage({
   params,
