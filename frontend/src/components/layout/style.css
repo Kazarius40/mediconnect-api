@@ -1,9 +1,10 @@
 .navbar {
-    position: sticky;
+    position: fixed;
     top: 0;
-    background-color: white;
-    color: black;
+    left: 0;
     border-bottom: 1px solid gray;
+    width: 100%;
+    background-color: white;
     display: flex;
     gap: 1rem;
     padding: 0.5rem 1rem;

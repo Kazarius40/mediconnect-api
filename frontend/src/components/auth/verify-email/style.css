@@ -1,46 +1,42 @@
 .email-verification-status {
-    max-width: 480px;
-    margin: 80px auto 0;
+    max-width: 25rem;
+    margin: 5rem auto 0;
     text-align: center;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 1rem;
 }
 
-.email-verification-status .message {
-    font-weight: bold;
-    font-size: 16px;
+.message {
+    font-size: 1rem;
+    font-weight: 600;
 }
 
-.email-verification-status .message.success {
+.message.success {
     color: green;
 }
 
-.email-verification-status .message.error {
+.message.error {
     color: red;
 }
 
-.email-verification-status .btn {
-    display: inline-block;
-    padding: 8px 16px;
-    border-radius: 8px;
-    text-decoration: none;
+.button {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
     color: white;
-    transition: background-color 0.2s;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s ease;
+    text-decoration: none;
 }
 
-.email-verification-status .btn.primary {
-    background-color: blue;
+.button.enabled {
+    background-color: royalblue;
 }
 
-.email-verification-status .btn.primary:hover {
-    background-color: darkblue;
-}
-
-.email-verification-status .btn.secondary {
-    background-color: gray;
-}
-
-.email-verification-status .btn.secondary:hover {
-    background-color: darkgray;
+.button.enabled:hover {
+    background-color: mediumblue;
 }

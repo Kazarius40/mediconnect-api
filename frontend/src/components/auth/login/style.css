@@ -1,6 +1,13 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: whitesmoke;
+}
+
 .login-form {
     width: 100%;
-    max-width: 400px;
+    max-width: 25rem;
     background-color: white;
     padding: 2rem;
     border-radius: 1rem;
@@ -8,59 +15,54 @@
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    margin: 0 auto;
 }
 
-.login-title {
+.title {
     font-size: 1.5rem;
     font-weight: bold;
     text-align: center;
     color: darkslategray;
 }
 
-.form-group label {
-    display: block;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: dimgray;
-    margin-bottom: 0.25rem;
-}
-
-.form-group input {
+.input {
     width: 100%;
-    padding: 0.5rem 1rem;
-    border: 1px solid lightgray;
+    padding: 1rem;
+    font-size: 1rem;
+    border: 1px solid gray;
     border-radius: 0.5rem;
-    outline: none;
+    box-sizing: border-box;
 }
 
-.form-group input:focus {
-    border-color: deepskyblue;
-    box-shadow: 0 0 0 2px rgba(0, 191, 255, 0.3);
+.message {
+    font-size: 1rem;
 }
 
-.error-message {
-    color: darkred;
-    font-size: 0.875rem;
-    text-align: center;
+.message.error {
+    color: red;
 }
 
-.login-button {
+.button {
     width: 100%;
-    padding: 0.5rem 0;
+    padding: 1rem;
+    font-size: 1rem;
     font-weight: 600;
     color: white;
     border-radius: 0.5rem;
-    background-color: royalblue;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s ease;
 }
 
-.login-button:hover:not(:disabled) {
+.button.enabled {
+    background-color: royalblue;
+}
+
+.button.enabled:hover {
     background-color: mediumblue;
 }
 
-.login-button:disabled {
-    background-color: lightblue;
+.button.disabled {
+    background-color: gray;
     cursor: not-allowed;
 }
 

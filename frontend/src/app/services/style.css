@@ -1,0 +1,50 @@
+html, body {
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    font-family: system-ui, sans-serif;
+}
+
+main {
+    flex-grow: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px;
+    width: 100%;
+}
+
+.home-container {
+    max-width: 28rem;
+    margin: 3rem auto 0 auto;
+    text-align: center;
+}
+
+.home-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+}
+
+.home-text {
+    color: gray;
+    margin-bottom: 1.5rem;
+}
+
+.home-button {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background-color: #2563eb;
+    color: white;
+    font-weight: 600;
+    padding: 12px 0;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    text-decoration: none;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.home-button:hover {
+    background-color: #1e40af;
+}

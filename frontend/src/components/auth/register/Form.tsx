@@ -12,7 +12,6 @@ const Form = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
 
   const router = useRouter();
   const passwordsMatch = password === confirmPassword;
@@ -20,7 +19,6 @@ const Form = () => {
   const handleRegister = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
-    setSuccess('');
 
     if (!passwordsMatch) {
       setError('Passwords do not match');
@@ -36,58 +34,61 @@ const Form = () => {
     }
   };
 
+  const isDisabled = !email || !password || !confirmPassword || !passwordsMatch;
+
   return (
-    <form onSubmit={handleRegister} className="register-form">
-      <h1 className="form-title">Register</h1>
+    <div className="wrapper">
+      <form onSubmit={handleRegister} className="register-form">
+        <h1 className="title">Register</h1>
 
-      {error && <div className="message error">{error}</div>}
-      {success && <div className="message success">{success}</div>}
+        {error && <div className="message error">{error}</div>}
 
-      <label>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="input-field"
-          required
-        />
-      </label>
+        <label>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="input"
+            required
+          />
+        </label>
 
-      <label>
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="input-field"
-          required
-        />
-      </label>
+        <label>
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="input"
+            required
+          />
+        </label>
 
-      <label>
-        <input
-          type="password"
-          placeholder="Confirm Password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          className={`input-field ${confirmPassword && !passwordsMatch ? 'input-error' : ''}`}
-          required
-        />
-      </label>
+        <label>
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className={`input ${confirmPassword && !passwordsMatch ? 'input--error' : ''}`}
+            required
+          />
+        </label>
 
-      {!passwordsMatch && confirmPassword && (
-        <div className="message error">Passwords do not match</div>
-      )}
+        {!passwordsMatch && confirmPassword && (
+          <div className="message error">Passwords do not match</div>
+        )}
 
-      <button
-        type="submit"
-        disabled={!passwordsMatch || !password || !confirmPassword}
-        className={`submit-btn ${!passwordsMatch || !password || !confirmPassword ? 'disabled' : 'enabled'}`}
-      >
-        Register
-      </button>
-    </form>
+        <button
+          type="submit"
+          disabled={isDisabled}
+          className={`button ${isDisabled ? 'disabled' : 'enabled'}`}
+        >
+          Register
+        </button>
+      </form>
+    </div>
   );
 };
 

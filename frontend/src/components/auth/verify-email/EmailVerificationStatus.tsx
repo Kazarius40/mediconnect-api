@@ -14,20 +14,15 @@ export default function EmailVerificationStatus({
 }: VerifyEmailProps) {
   return (
     <div className="email-verification-status">
+      <div className={`message ${status}`}>{message}</div>
       {status === 'success' ? (
-        <>
-          <div className="message success">{message}</div>
-          <Link href="/auth/login" className="btn primary">
-            Go to Login
-          </Link>
-        </>
+        <Link href="/auth/login" className="button enabled">
+          Go to Login
+        </Link>
       ) : (
-        <>
-          <div className="message error">{message}</div>
-          <Link href="/auth/login" className="btn secondary">
-            Back to Login
-          </Link>
-        </>
+        <Link href="/auth/email-sent" className="button enabled">
+          Resend Verification Email
+        </Link>
       )}
     </div>
   );

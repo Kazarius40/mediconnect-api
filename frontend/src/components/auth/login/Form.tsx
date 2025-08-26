@@ -43,35 +43,45 @@ export default function Form() {
     }
   };
 
+  const isDisabled = loading || !email || !password;
+
   return (
-    <form onSubmit={handleSubmit} className="login-form">
-      <h2 className="login-title">Login</h2>
+    <div className="wrapper">
+      <form onSubmit={handleSubmit} className="login-form">
+        <h1 className="title">Login</h1>
 
-      <div className="form-group">
-        <label>Email</label>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-      </div>
+        {error && <div className="message error">{error}</div>}
 
-      <div className="form-group">
-        <label>Password</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-      </div>
+        <label>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="input"
+            required
+          />
+        </label>
 
-      {error && <p className="error-message">{error}</p>}
+        <label>
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="input"
+            required
+          />
+        </label>
 
-      <button type="submit" disabled={loading} className="login-button">
-        {loading ? 'Logging in...' : 'Login'}
-      </button>
-    </form>
+        <button
+          type="submit"
+          disabled={isDisabled}
+          className={`button ${isDisabled ? 'disabled' : 'enabled'}`}
+        >
+          {loading ? 'Logging in...' : 'Login'}
+        </button>
+      </form>
+    </div>
   );
 }

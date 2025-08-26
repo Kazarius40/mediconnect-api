@@ -1,59 +1,71 @@
-.register-form {
-    max-width: 360px;
-    margin: 0 auto;
+.wrapper {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    justify-content: center;
+    background-color: whitesmoke;
 }
 
-.form-title {
-    font-size: 24px;
+.register-form {
+    width: 100%;
+    max-width: 30rem;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin: 0 auto;
+}
+
+.title {
+    font-size: 1.5rem;
     font-weight: bold;
     text-align: center;
-    margin-bottom: 16px;
+    color: darkslategray;
 }
 
-.input-field {
+.input {
     width: 100%;
-    padding: 8px;
+    padding: 1rem;
+    font-size: 1rem;
     border: 1px solid gray;
-    border-radius: 8px;
+    border-radius: 0.5rem;
     box-sizing: border-box;
 }
 
-.input-error {
+.input--error {
     border-color: red;
 }
 
 .message {
-    font-size: 14px;
+    font-size: 1rem;
 }
 
 .message.error {
     color: red;
 }
 
-.message.success {
-    color: green;
-}
-
-.submit-btn {
-    padding: 8px;
-    border-radius: 8px;
+.button {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
     color: white;
-    border: none;
+    border-radius: 0.5rem;
     cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
-.submit-btn.enabled {
-    background-color: green;
+.button.enabled {
+    background-color: royalblue;
 }
 
-.submit-btn.enabled:hover {
-    background-color: darkgreen;
+.button.enabled:hover {
+    background-color: mediumblue;
 }
 
-.submit-btn.disabled {
+.button.disabled {
     background-color: gray;
     cursor: not-allowed;
 }

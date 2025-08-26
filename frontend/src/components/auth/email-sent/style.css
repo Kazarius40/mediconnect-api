@@ -4,49 +4,61 @@
     text-align: center;
 }
 
-.email-sent .title {
+.title {
     font-size: 1.5rem;
     font-weight: bold;
     margin-bottom: 1rem;
 }
 
-.email-sent .message {
+.message {
     margin: 1rem 0;
     font-size: 0.95rem;
 }
 
-.email-sent .message.success {
+.message.success {
     color: green;
 }
 
-.email-sent .message.error {
+.message.error {
     color: red;
 }
 
-.email-sent .message.loading {
+.message.loading {
     color: gray;
 }
 
-.email-sent .resend-btn {
+.button {
     margin-top: 1rem;
-    background-color: royalblue;
+    padding: 1rem;
     color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    border: none;
+    border-radius: 0.5rem;
     cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
-.email-sent .resend-btn:hover:enabled {
+.button.enabled {
+    background-color: royalblue;
+}
+
+.button.enabled:hover {
     background-color: darkblue;
 }
 
-.email-sent .resend-btn:disabled {
+.button:disabled {
     background-color: lightgray;
     cursor: not-allowed;
 }
 
-.email-sent .hint {
+.input {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+}
+
+.hint {
     margin-top: 1rem;
     font-size: 0.85rem;
     color: dimgray;
