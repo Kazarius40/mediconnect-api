@@ -57,58 +57,56 @@ export default function View({
   const isDisabled = status === 'loading' || cooldown || !email;
 
   return (
-    <div className="wrapper">
-      <div className="email-card">
-        {manualEmailInput ? (
-          <form onSubmit={handleSubmitEmail} className="email-form">
-            <label>
-              <input
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="input"
-              />
-            </label>
+    <div className="email-card">
+      {manualEmailInput ? (
+        <form onSubmit={handleSubmitEmail} className="email-form">
+          <label>
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="input"
+            />
+          </label>
 
-            <button
-              type="submit"
-              disabled={!email || isDisabled}
-              className={`button ${isDisabled ? 'disabled' : 'enabled'}`}
-            >
-              {status === 'loading' ? 'Sending...' : 'Send Verification Email'}
-            </button>
-          </form>
-        ) : (
-          <>
-            <h1 className="title">Verify your email</h1>
-            <div className="email-info">
-              <span>
-                We sent a verification link to <strong>{email}</strong>.
-              </span>
-              <span>Please check your inbox (and spam folder).</span>
-            </div>
-            <button
-              onClick={handleResend}
-              disabled={isDisabled}
-              className={`button ${isDisabled ? 'disabled' : 'enabled'}`}
-            >
-              {status === 'loading'
-                ? 'Resending...'
-                : cooldown
-                  ? 'Please wait...'
-                  : 'Resend Verification Email'}
-            </button>
+          <button
+            type="submit"
+            disabled={!email || isDisabled}
+            className={`submit-btn ${isDisabled ? 'disabled' : 'enabled'}`}
+          >
+            {status === 'loading' ? 'Sending...' : 'Send Verification Email'}
+          </button>
+        </form>
+      ) : (
+        <>
+          <h1 className="title">Verify your email</h1>
+          <div className="email-info">
+            <span>
+              We sent a verification link to <strong>{email}</strong>.
+            </span>
+            <span>Please check your inbox (and spam folder).</span>
+          </div>
+          <button
+            onClick={handleResend}
+            disabled={isDisabled}
+            className={`submit-btn ${isDisabled ? 'disabled' : 'enabled'}`}
+          >
+            {status === 'loading'
+              ? 'Resending...'
+              : cooldown
+                ? 'Please wait...'
+                : 'Resend Verification Email'}
+          </button>
 
-            {message && <div className={`message ${status}`}>{message}</div>}
+          {message && <div className={`message ${status}`}>{message}</div>}
 
-            <p className="hint">
-              Didn’t get the email? Check your spam folder or click resend.
-            </p>
-          </>
-        )}
-      </div>
+          <p className="hint">
+            Didn’t get the email? Check your spam folder or click resend.
+          </p>
+        </>
+      )}
     </div>
   );
 }

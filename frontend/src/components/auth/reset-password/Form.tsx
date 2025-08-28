@@ -9,12 +9,12 @@ import './style.css';
 
 export default function Form() {
   const [password, setPassword] = useState('');
-  const [confirm, setConfirm] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [token, setToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
 
   const router = useRouter();
+  const passwordsMatch = password === confirmPassword;
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -29,34 +29,30 @@ export default function Form() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
-    setSuccess(null);
 
     if (!token) {
       setError('Missing reset token');
       return;
     }
 
-    if (password !== confirm) {
+    if (!passwordsMatch) {
       setError('Passwords do not match');
       return;
     }
 
     try {
-      const res = await resetPassword({ token, password });
-      setSuccess(res.data.message);
+      await resetPassword({ token, password });
       setTimeout(() => router.push('/auth/login'), 3000);
     } catch (err) {
       const axiosError = err as AxiosError<{ message: string }>;
       setError(axiosError.response?.data?.message || 'Reset failed');
     }
   };
+  const isDisabled = !password || !passwordsMatch || !token;
 
   return (
     <form onSubmit={handleSubmit} className="reset-password-form">
-      <h1 className="form-title">Reset Password</h1>
-
-      {success && <div className="message success">{success}</div>}
-      {error && <div className="message error">{error}</div>}
+      <h1 className="title">Reset Password</h1>
 
       <label>
         <input
@@ -64,7 +60,7 @@ export default function Form() {
           placeholder="New password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="input-field"
+          className="input"
           required
         />
       </label>
@@ -73,14 +69,23 @@ export default function Form() {
         <input
           type="password"
           placeholder="Confirm password"
-          value={confirm}
-          onChange={(e) => setConfirm(e.target.value)}
-          className="input-field"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          className={`input ${confirmPassword && !passwordsMatch ? 'input--error' : ''}`}
           required
         />
       </label>
 
-      <button type="submit" className="submit-btn">
+      {error && <div className="message error">{error}</div>}
+      {!passwordsMatch && confirmPassword && (
+        <div className="message error">Passwords do not match</div>
+      )}
+
+      <button
+        type="submit"
+        disabled={isDisabled}
+        className={`submit-btn  ${isDisabled ? 'disabled' : 'enabled'}`}
+      >
         Change Password
       </button>
     </form>

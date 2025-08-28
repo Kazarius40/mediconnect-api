@@ -34,60 +34,58 @@ const Form = () => {
     }
   };
 
-  const isDisabled = !email || !password || !confirmPassword || !passwordsMatch;
+  const isDisabled = !email || !password || !passwordsMatch;
 
   return (
-    <div className="wrapper">
-      <form onSubmit={handleRegister} className="register-form">
-        <h1 className="title">Register</h1>
+    <form onSubmit={handleRegister} className="register-form">
+      <h1 className="title">Register</h1>
 
-        <label>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="input"
-            required
-          />
-        </label>
+      <label>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="input"
+          required
+        />
+      </label>
 
-        <label>
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="input"
-            required
-          />
-        </label>
+      <label>
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="input"
+          required
+        />
+      </label>
 
-        <label>
-          <input
-            type="password"
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            className={`input ${confirmPassword && !passwordsMatch ? 'input--error' : ''}`}
-            required
-          />
-        </label>
+      <label>
+        <input
+          type="password"
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          className={`input ${confirmPassword && !passwordsMatch ? 'input--error' : ''}`}
+          required
+        />
+      </label>
 
-        {error && <div className="message error">{error}</div>}
-        {!passwordsMatch && confirmPassword && (
-          <div className="message error">Passwords do not match</div>
-        )}
+      {error && <div className="message error">{error}</div>}
+      {!passwordsMatch && confirmPassword && (
+        <div className="message error">Passwords do not match</div>
+      )}
 
-        <button
-          type="submit"
-          disabled={isDisabled}
-          className={`button ${isDisabled ? 'disabled' : 'enabled'}`}
-        >
-          Register
-        </button>
-      </form>
-    </div>
+      <button
+        type="submit"
+        disabled={isDisabled}
+        className={`button ${isDisabled ? 'disabled' : 'enabled'}`}
+      >
+        Register
+      </button>
+    </form>
   );
 };
 

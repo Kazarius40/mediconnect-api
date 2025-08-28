@@ -31,32 +31,30 @@ export default function Form() {
   const isDisabled = !email || loading;
 
   return (
-    <div className="wrapper">
-      <form onSubmit={handleSubmit} className="forgot-form">
-        <h1 className="title">Forgot Password</h1>
+    <form onSubmit={handleSubmit} className="forgot-form">
+      <h1 className="title">Forgot Password</h1>
 
-        {message && <div className="message success">{message}</div>}
-        {error && <div className="message error">{error}</div>}
+      {message && <div className="message success">{message}</div>}
+      {error && <div className="message error">{error}</div>}
 
-        <label>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="input"
-            required
-          />
-        </label>
+      <label>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="input"
+          required
+        />
+      </label>
 
-        <button
-          type="submit"
-          disabled={isDisabled}
-          className={`button ${isDisabled ? 'disabled' : 'enabled'}`}
-        >
-          {loading ? 'Sending...' : 'Send Reset Link'}
-        </button>
-      </form>
-    </div>
+      <button
+        type="submit"
+        disabled={isDisabled}
+        className={`submit-btn ${isDisabled ? 'disabled' : 'enabled'}`}
+      >
+        {loading ? 'Sending...' : 'Send Reset Link'}
+      </button>
+    </form>
   );
 }

@@ -1,13 +1,6 @@
-.wrapper {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    background-color: whitesmoke;
-}
-
 .register-form {
     width: 100%;
-    max-width: 30rem;
+    max-width: 31rem;
     background-color: white;
     padding: 2rem;
     border-radius: 1rem;
@@ -20,9 +13,7 @@
 
 .title {
     font-size: 1.5rem;
-    font-weight: bold;
     text-align: center;
-    color: darkslategray;
 }
 
 .input {

@@ -1,7 +1,7 @@
 'use server';
 
 import { FRONTEND_URL } from '@/config/frontend';
-import EmailVerificationStatus from '@/components/auth/verify-email/EmailVerificationStatus';
+import EmailVerificationResult from '@/components/auth/verify-email/EmailVerificationResult';
 
 export default async function VerifyEmailPage(props: {
   searchParams: Promise<{ token?: string }>;
@@ -38,5 +38,5 @@ export default async function VerifyEmailPage(props: {
     }
   }
 
-  return <EmailVerificationStatus status={status} message={message} />;
+  return <EmailVerificationResult status={status} message={message} />;
 }

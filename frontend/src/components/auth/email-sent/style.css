@@ -1,13 +1,6 @@
-.wrapper {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    background-color: whitesmoke;
-}
-
 .email-card {
     width: 100%;
-    max-width: 30rem;
+    max-width: 30.5rem;
     background-color: white;
     padding: 2rem;
     border-radius: 1rem;
@@ -52,7 +45,7 @@
     color: gray;
 }
 
-.button {
+.submit-btn {
     width: 100%;
     padding: 1rem;
     font-size: 1rem;
@@ -63,15 +56,15 @@
     transition: background-color 0.2s ease;
 }
 
-.button.enabled {
+.submit-btn.enabled {
     background-color: royalblue;
 }
 
-.button.enabled:hover {
+.submit-btn.enabled:hover {
     background-color: mediumblue;
 }
 
-.button.disabled {
+.submit-btn.disabled {
     background-color: gray;
     cursor: not-allowed;
 }

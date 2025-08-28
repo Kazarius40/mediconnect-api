@@ -8,7 +8,7 @@ interface VerifyEmailProps {
   message: string;
 }
 
-export default function EmailVerificationStatus({
+export default function EmailVerificationResult({
   status,
   message,
 }: VerifyEmailProps) {
