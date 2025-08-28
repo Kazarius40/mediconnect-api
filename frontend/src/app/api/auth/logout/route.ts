@@ -14,8 +14,7 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const response = NextResponse.json({ message: 'Logged out' });
+  const response = NextResponse.redirect(new URL('/auth/login', req.url));
   clearAuthCookies(response);
-
   return response;
 }

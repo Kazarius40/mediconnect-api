@@ -11,11 +11,9 @@ export default function LogoutButton() {
   const { setUser } = useAuth();
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const handleLogout = async () => {
     setLoading(true);
-    setError(null);
 
     try {
       await fetch('/api/auth/logout', {
@@ -23,21 +21,17 @@ export default function LogoutButton() {
         credentials: 'include',
       });
       setUser(null);
-      router.push('/auth/login');
+      router.refresh();
     } catch (err) {
       console.error('LogoutButton failed:', err);
-      setError('LogoutButton failed');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="logout-container">
-      <button onClick={handleLogout} disabled={loading} className="logout-btn">
-        {loading ? 'Logging out...' : 'LogoutButton'}
-      </button>
-      {error && <p className="error-message">{error}</p>}
-    </div>
+    <button onClick={handleLogout} disabled={loading} className="logout-btn">
+      Logout
+    </button>
   );
 }

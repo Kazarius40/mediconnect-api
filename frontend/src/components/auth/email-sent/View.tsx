@@ -54,54 +54,61 @@ export default function View({
     }
   };
 
-  const isDisabled = status === 'loading' || cooldown;
+  const isDisabled = status === 'loading' || cooldown || !email;
 
   return (
-    <div className="email-sent">
-      {manualEmailInput ? (
-        <form onSubmit={handleSubmitEmail}>
-          <input
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="input"
-          />
-          <button
-            type="submit"
-            disabled={!email || isDisabled}
-            className={`button ${isDisabled ? 'disabled' : 'enabled'}`}
-          >
-            {status === 'loading' ? 'Sending...' : 'Send Verification Email'}
-          </button>
-        </form>
-      ) : (
-        <>
-          <h1 className="title">Verify your email</h1>
-          <p>
-            We sent a verification link to <strong>{email}</strong>.<br />
-            Please check your inbox (and spam folder).
-          </p>
-          <button
-            onClick={handleResend}
-            disabled={isDisabled}
-            className={`button ${isDisabled ? 'disabled' : 'enabled'}`}
-          >
-            {status === 'loading'
-              ? 'Resending...'
-              : cooldown
-                ? 'Please wait...'
-                : 'Resend Verification Email'}
-          </button>
+    <div className="wrapper">
+      <div className="email-card">
+        {manualEmailInput ? (
+          <form onSubmit={handleSubmitEmail} className="email-form">
+            <label>
+              <input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="input"
+              />
+            </label>
 
-          {message && <div className={`message ${status}`}>{message}</div>}
+            <button
+              type="submit"
+              disabled={!email || isDisabled}
+              className={`button ${isDisabled ? 'disabled' : 'enabled'}`}
+            >
+              {status === 'loading' ? 'Sending...' : 'Send Verification Email'}
+            </button>
+          </form>
+        ) : (
+          <>
+            <h1 className="title">Verify your email</h1>
+            <div className="email-info">
+              <span>
+                We sent a verification link to <strong>{email}</strong>.
+              </span>
+              <span>Please check your inbox (and spam folder).</span>
+            </div>
+            <button
+              onClick={handleResend}
+              disabled={isDisabled}
+              className={`button ${isDisabled ? 'disabled' : 'enabled'}`}
+            >
+              {status === 'loading'
+                ? 'Resending...'
+                : cooldown
+                  ? 'Please wait...'
+                  : 'Resend Verification Email'}
+            </button>
 
-          <p className="hint">
-            Didn’t get the email? Check your spam folder or click resend.
-          </p>
-        </>
-      )}
+            {message && <div className={`message ${status}`}>{message}</div>}
+
+            <p className="hint">
+              Didn’t get the email? Check your spam folder or click resend.
+            </p>
+          </>
+        )}
+      </div>
     </div>
   );
 }

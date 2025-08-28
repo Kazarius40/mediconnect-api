@@ -1,13 +1,38 @@
-.email-sent {
-    max-width: 28rem;
-    margin: 5rem auto 0 auto;
-    text-align: center;
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: whitesmoke;
+}
+
+.email-card {
+    width: 100%;
+    max-width: 30rem;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin: 0 auto;
+}
+
+.email-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
 .title {
     font-size: 1.5rem;
     font-weight: bold;
     margin-bottom: 1rem;
+}
+
+.email-info span {
+    display: block;
+    margin-top: 0.5rem;
 }
 
 .message {
@@ -28,8 +53,10 @@
 }
 
 .button {
-    margin-top: 1rem;
+    width: 100%;
     padding: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
     color: white;
     border-radius: 0.5rem;
     cursor: pointer;
@@ -41,21 +68,21 @@
 }
 
 .button.enabled:hover {
-    background-color: darkblue;
+    background-color: mediumblue;
 }
 
-.button:disabled {
-    background-color: lightgray;
+.button.disabled {
+    background-color: gray;
     cursor: not-allowed;
 }
 
 .input {
     width: 100%;
-    padding: 0.75rem;
-    margin-bottom: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 0.5rem;
+    padding: 1rem;
     font-size: 1rem;
+    border: 1px solid gray;
+    border-radius: 0.5rem;
+    box-sizing: border-box;
 }
 
 .hint {
