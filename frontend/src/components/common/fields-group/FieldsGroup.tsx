@@ -66,19 +66,17 @@ export function FieldsGroup({ fields, requiredFields = [] }: FieldsGroupProps) {
         const error = errors[field] as FieldError | undefined;
 
         return (
-          <div key={field} className="fields-group-field">
-            <label htmlFor={field} className="fields-group-label">
+          <div key={field} className="fields-group">
+            <label htmlFor={field}>
               {labels[field]} {isRequired && '*'}
             </label>
             <input
               id={field}
               type="text"
               {...register(field, rules)}
-              className={
-                error ? 'fields-group-input-error' : 'fields-group-input'
-              }
+              className={error ? 'input-error' : ''}
             />
-            {error && <p className="fields-group-error">{error.message}</p>}
+            {error && <p className="error">{error.message}</p>}
           </div>
         );
       })}

@@ -3,14 +3,9 @@
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid lightgray;
-    padding: 8px 0;
+    padding: 0.5rem 0;
 }
 
 .info-label {
     color: gray;
-    font-weight: 500;
-}
-
-.info-value {
-    color: black;
 }

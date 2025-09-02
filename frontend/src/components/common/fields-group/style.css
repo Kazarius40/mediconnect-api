@@ -1,29 +1,30 @@
-.fields-group-field {
-    margin-bottom: 16px;
+.fields-group {
+    margin-bottom: 1rem;
 }
 
-.fields-group-label {
+.fields-group>label {
     display: block;
     font-weight: 600;
     margin-bottom: 4px;
 }
 
-.fields-group-input {
+.fields-group>input {
     width: 100%;
-    padding: 8px;
-    border-radius: 8px;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
     border: 1px solid gray;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
 }
 
-.fields-group-input-error {
-    width: 100%;
-    padding: 8px;
-    border-radius: 8px;
-    border: 1px solid red;
+.fields-group>input.input-error {
+    border-color: red;
+    background-color: lightpink;
+    box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.2);
 }
 
-.fields-group-error {
+.fields-group .error {
     color: red;
-    font-size: 14px;
-    margin-top: 4px;
+    font-size: 0.8rem;
+    margin: 4px 0 0 0;
 }
