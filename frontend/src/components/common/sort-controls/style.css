@@ -1,13 +1,26 @@
 .sort-controls {
     display: flex;
-    gap: 16px;
-    margin-bottom: 16px;
+    gap: 1rem;
+    margin-bottom: 1rem;
 }
 
-.sort-controls-select {
-    border: 1px solid gray;
-    padding: 8px;
-    border-radius: 8px;
-    background-color: white;
-    color: black;
+.sort-controls .sort-controls-select {
+    border: 2px solid royalblue;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    background-color: blue;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+}
+
+.sort-controls .sort-controls-select:focus {
+    outline: none;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+
+.sort-controls .sort-controls-select:hover {
+    background-color: cornflowerblue;
+    cursor: pointer;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
 }
