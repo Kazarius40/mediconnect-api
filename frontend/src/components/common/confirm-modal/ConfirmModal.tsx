@@ -24,21 +24,18 @@ export function ConfirmModal({
   const label = entityLabels[entityType];
 
   return (
-    <div className="confirm-modal-overlay">
-      <div className="confirm-modal-box">
-        <h2 className="confirm-modal-title">Confirm deletion</h2>
-        <p className="confirm-modal-text">
+    <div className="confirm-modal">
+      <div>
+        <h2>Confirm deletion</h2>
+        <p>
           Are you sure you want to delete {label} "{entity.name}"? This action
           cannot be undone.
         </p>
-        <div className="confirm-modal-actions">
-          <button onClick={onCancel} className="confirm-modal-btn-cancel">
+        <div className="confirm-modal__actions">
+          <button onClick={onCancel} className="btn-cancel">
             Cancel
           </button>
-          <button
-            onClick={() => onConfirm(entity.id)}
-            className="confirm-modal-btn-delete"
-          >
+          <button onClick={() => onConfirm(entity.id)} className="btn-delete">
             Delete
           </button>
         </div>

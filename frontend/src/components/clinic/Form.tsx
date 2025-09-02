@@ -1,6 +1,5 @@
 'use client';
 
-import './style.css';
 import { useRouter } from 'next/navigation';
 import { FormProvider, useForm } from 'react-hook-form';
 import { DoctorShort } from '@/interfaces/doctor';
@@ -13,6 +12,8 @@ import { processBackendErrors } from '@/utils/errors/backend-error.util';
 import toast from 'react-hot-toast';
 import { cleanOptionalFields } from '@/utils/forms/normalize-form-data.util';
 import { FieldsGroup } from '@/components/common/fields-group';
+
+import './style.css';
 
 interface ClinicFormProps {
   clinic?: Clinic;
@@ -37,7 +38,7 @@ export default function Form({ clinic, allDoctors }: ClinicFormProps) {
     setValue,
     watch,
     setError,
-    formState: { isSubmitting },
+    formState: { isSubmitting, isValid },
   } = methods;
   const doctorIds = watch('doctorIds') || [];
   const handleDoctorsChange = (newIds: number[]) =>
@@ -82,6 +83,8 @@ export default function Form({ clinic, allDoctors }: ClinicFormProps) {
     label: `${d.lastName ?? ''} ${d.firstName ?? ''}`.trim(),
   }));
 
+  const isDisabled = isSubmitting || !isValid;
+
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)} className="clinic-form">
@@ -99,7 +102,7 @@ export default function Form({ clinic, allDoctors }: ClinicFormProps) {
         <button
           type="submit"
           disabled={isSubmitting}
-          className={`btn btn-primary ${isSubmitting ? 'btn-disabled' : ''}`}
+          className={`button ${isDisabled ? 'disabled' : 'enabled'}`}
         >
           {isSubmitting
             ? 'Saving...'

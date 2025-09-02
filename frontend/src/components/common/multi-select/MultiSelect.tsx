@@ -56,53 +56,51 @@ export function MultiSelect({
     setSortDir((prev) => (prev === 'asc' ? 'desc' : 'asc'));
 
   return (
-    <div className="multi-select">
+    <div>
       {label && (
-        <div className="multi-select-header">
-          <label className="multi-select-label">{label}</label>
-          <button
-            type="button"
-            onClick={toggleSortDir}
-            className="multi-select-sort-button"
-          >
+        <div className="header">
+          <label>{label}</label>
+          <button type="button" onClick={toggleSortDir} className="sort-button">
             Sort {sortDir === 'asc' ? '↓' : '↑'}
           </button>
         </div>
       )}
 
-      <div className="multi-select-selected">
-        {selectedOptions.map((opt) => (
-          <div key={opt.id} className="multi-select-chip">
-            <span>{opt.label}</span>
-            <button
-              type="button"
-              onClick={() => removeOption(opt.id)}
-              className="multi-select-chip-remove"
-            >
-              ×
-            </button>
-          </div>
-        ))}
-      </div>
+      <div className="select-box">
+        <div className="selected">
+          {selectedOptions.map((opt) => (
+            <div key={opt.id}>
+              <span>{opt.label}</span>
+              <button
+                type="button"
+                onClick={() => removeOption(opt.id)}
+                className="remove-button"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
 
-      <select
-        className="multi-select-dropdown"
-        onChange={(e) => {
-          const id = Number(e.target.value);
-          if (id) addOption(id);
-          e.target.value = '';
-        }}
-        defaultValue=""
-      >
-        <option value="" disabled>
-          Select an option to add
-        </option>
-        {sortedOptions.map((opt) => (
-          <option key={opt.id} value={opt.id}>
-            {opt.label}
+        <select
+          className="dropdown"
+          onChange={(e) => {
+            const id = Number(e.target.value);
+            if (id) addOption(id);
+            e.target.value = '';
+          }}
+          defaultValue=""
+        >
+          <option value="" disabled>
+            Select an option to add
           </option>
-        ))}
-      </select>
+          {sortedOptions.map((opt) => (
+            <option key={opt.id} value={opt.id}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+      </div>
     </div>
   );
 }

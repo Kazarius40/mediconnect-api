@@ -46,7 +46,7 @@ export default function Details({ clinic }: { clinic: Clinic }) {
   );
 
   return (
-    <div className="clinic-container">
+    <div className="details-wrapper">
       <EntityHeader
         title={clinic.name}
         editPath={`/admin/clinics/${clinic.id}`}
@@ -55,7 +55,7 @@ export default function Details({ clinic }: { clinic: Clinic }) {
         showControls={isAdmin}
       />
 
-      <div className="clinic-info">
+      <div className="details-info">
         <p>
           <strong>Address:</strong> {clinic.address}
         </p>
@@ -73,7 +73,7 @@ export default function Details({ clinic }: { clinic: Clinic }) {
         />
       </div>
 
-      <div className="doctors-section">
+      <div className="details-doctors-section">
         <h2>Doctors</h2>
         {doctors.length > 0 && (
           <input
@@ -81,7 +81,7 @@ export default function Details({ clinic }: { clinic: Clinic }) {
             placeholder="Search doctors by name, email, phone..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="doctors-search"
+            className="input"
           />
         )}
         {filteredDoctors.length > 0 ? (

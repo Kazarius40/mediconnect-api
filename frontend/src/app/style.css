@@ -10,6 +10,7 @@ body.root-layout {
 
 .root-layout__main {
     width: 100%;
+    padding-top: 3rem;
 }
 
 .home {

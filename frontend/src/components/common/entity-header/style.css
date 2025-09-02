@@ -1,60 +1,63 @@
-.entity-back-btn {
+.wrapper {
+    padding: 1rem;
+}
+
+.back-btn {
     display: inline-flex;
-    gap: 8px;
-    margin-bottom: 24px;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
     color: blue;
-    font-weight: 500;
-    padding: 6px 12px;
-    border-radius: 8px;
+    background: burlywood;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
     border: 1px solid transparent;
     cursor: pointer;
 }
 
-.entity-back-btn:hover {
-    border-color: lightblue;
+.back-btn:hover {
     background-color: lightblue;
     color: darkblue;
 }
 
-.entity-header-main {
+.header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
 }
 
-.entity-header-title {
-    font-size: 24px;
-    font-weight: bold;
+.header h1 {
+    font-size: 2rem;
+    margin: 0 auto 2rem auto;
 }
 
-.entity-header-actions {
+.header__actions {
     display: flex;
-    gap: 8px;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
 }
 
-.entity-edit-btn {
-    padding: 6px 12px;
-    border-radius: 8px;
+.edit-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
     background-color: blue;
     color: white;
     cursor: pointer;
 }
 
-.entity-edit-btn:hover {
+.edit-btn:hover {
     background-color: darkblue;
     transform: scale(1.05);
 }
 
-.entity-delete-btn {
-    padding: 6px 12px;
-    border-radius: 8px;
+.delete-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
     background-color: red;
     color: white;
     cursor: pointer;
 }
 
-.entity-delete-btn:hover {
+.delete-btn:hover {
     background-color: darkred;
     transform: scale(1.05);
 }

@@ -21,29 +21,26 @@ export function EntityHeader({
 }: EntityHeaderProps) {
   const router = useRouter();
   return (
-    <>
-      <button onClick={() => router.back()} className="entity-back-btn">
+    <div className="wrapper">
+      <button onClick={() => router.back()} className="back-btn">
         <span>←</span> <span>{backText}</span>
       </button>
-      <div className="entity-header-main">
-        <h1 className="entity-header-title">{title}</h1>
+      <div className="header">
+        <h1>{title}</h1>
         {showControls && (
-          <div className="entity-header-actions">
-            <button
-              onClick={() => router.push(editPath)}
-              className="entity-edit-btn"
-            >
+          <div className="header__actions">
+            <button onClick={() => router.push(editPath)} className="edit-btn">
               Edit
             </button>
             <button
               onClick={onDeleteClick ?? (() => {})}
-              className="entity-delete-btn"
+              className="delete-btn"
             >
               Delete
             </button>
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 }

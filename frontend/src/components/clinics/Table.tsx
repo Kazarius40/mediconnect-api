@@ -59,13 +59,15 @@ export default function Table({ clinics }: { clinics: Clinic[] }) {
         </button>
       )}
 
-      <input
-        type="text"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        placeholder="Search clinics by name, address, phone or email"
-        className="search-input"
-      />
+      <label>
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Search clinics by name, address, phone or email"
+          className="search-input"
+        />
+      </label>
 
       <SortControls<SortableFields>
         sortFields={sortFields}

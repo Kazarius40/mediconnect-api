@@ -1,21 +1,14 @@
-.multi-select {
-    margin-bottom: 16px;
-}
-
-.multi-select-header {
+.header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 4px;
 }
 
-.multi-select-label {
+.header label {
     font-weight: 600;
-    display: block;
 }
 
-.multi-select-sort-button {
-    font-size: 14px;
+.header .sort-button {
     color: blue;
     background: none;
     border: none;
@@ -23,42 +16,57 @@
     text-decoration: underline;
 }
 
-.multi-select-sort-button:hover {
+.header .sort-button:hover {
     color: darkblue;
 }
 
-.multi-select-selected {
+.select-box {
+    margin-bottom: 1rem;
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 8px;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid;
+    border-radius: 0.5rem;
 }
 
-.multi-select-chip {
+.select-box:focus-within {
+    border-color: royalblue;
+    box-shadow: 0 0 0 3px rgba(65, 105, 225, 0.2);
+}
+
+.selected {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.selected div {
     display: flex;
     align-items: center;
     background-color: lightblue;
     color: darkblue;
-    padding: 4px 8px;
-    border-radius: 8px;
+    padding-left: 0.5rem;
+    border-radius: 0.5rem;
 }
 
-.multi-select-chip-remove {
-    margin-left: 4px;
-    font-weight: bold;
-    color: blue;
-    background: none;
+.selected .remove-button {
     border: none;
-    cursor: pointer;
+    background: none;
+    max-width: 0.7rem;
+    height: 0.7rem;
+    display: flex;
+    align-items: center;
+    color: red;
 }
 
-.multi-select-chip-remove:hover {
+.selected .remove-button:hover {
     color: darkblue;
 }
 
-.multi-select-dropdown {
+.dropdown {
     width: 100%;
-    border: 1px solid gray;
-    padding: 8px;
-    border-radius: 8px;
+    padding: 0.5rem;
+    cursor: pointer;
 }

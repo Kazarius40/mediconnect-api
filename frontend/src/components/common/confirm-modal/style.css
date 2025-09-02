@@ -1,4 +1,4 @@
-.confirm-modal-overlay {
+.confirm-modal {
     position: fixed;
     inset: 0;
     display: flex;
@@ -7,52 +7,42 @@
     background-color: gray;
 }
 
-.confirm-modal-box {
+.confirm-modal>div {
     background-color: white;
-    border-radius: 12px;
-    padding: 24px;
-    width: 100%;
-    max-width: 320px;
-    box-shadow: 0 4px 12px gray;
+    border-radius: 1rem;
+    padding: 1.5rem;
 }
 
-.confirm-modal-title {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 16px;
+.confirm-modal>div>p {
+    color: red;
 }
 
-.confirm-modal-text {
-    color: darkgray;
-    margin-bottom: 24px;
-}
-
-.confirm-modal-actions {
+.confirm-modal__actions {
     display: flex;
     justify-content: flex-end;
-    gap: 12px;
+    gap: 1rem;
 }
 
-.confirm-modal-btn-cancel {
-    padding: 8px 16px;
-    border-radius: 8px;
+.confirm-modal__actions .btn-cancel {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
     border: 1px solid gray;
     cursor: pointer;
     background-color: white;
 }
 
-.confirm-modal-btn-cancel:hover {
+.confirm-modal__actions .btn-cancel:hover {
     background-color: lightgray;
 }
 
-.confirm-modal-btn-delete {
-    padding: 8px 16px;
-    border-radius: 8px;
+.confirm-modal__actions .btn-delete {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
     background-color: red;
     color: white;
     cursor: pointer;
 }
 
-.confirm-modal-btn-delete:hover {
+.confirm-modal__actions .btn-delete:hover {
     background-color: darkred;
 }
