@@ -87,7 +87,7 @@ export default function Form({ clinic, allDoctors }: ClinicFormProps) {
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={handleSubmit(onSubmit)} className="clinic-form">
+      <form onSubmit={handleSubmit(onSubmit)} className="form-wrapper">
         <FieldsGroup
           fields={['name', 'address', 'phone', 'email']}
           requiredFields={['name', 'address', 'phone']}
@@ -102,7 +102,7 @@ export default function Form({ clinic, allDoctors }: ClinicFormProps) {
         <button
           type="submit"
           disabled={isSubmitting}
-          className={`button ${isDisabled ? 'disabled' : 'enabled'}`}
+          className={isDisabled ? 'disabled' : 'enabled'}
         >
           {isSubmitting
             ? 'Saving...'

@@ -1,7 +1,8 @@
 'use client';
 
-import './style.css';
 import { Clinic } from '@/interfaces/clinic';
+
+import './style.css';
 
 interface ClinicCardProps {
   clinic: Clinic;
@@ -11,14 +12,14 @@ interface ClinicCardProps {
 const Card = ({ clinic, onClick }: ClinicCardProps) => {
   return (
     <div onClick={onClick} className="card-wrapper">
-      <h2 className="card-title">{clinic.name}</h2>
-      <p className="card-info">
+      <h2>{clinic.name}</h2>
+      <p>
         <strong>Address:</strong> {clinic.address}
       </p>
-      <p className="card-info">
+      <p>
         <strong>Phone:</strong> {clinic.phone}
       </p>
-      <p className="card-info">
+      <p>
         <strong>Email:</strong> {clinic.email}
       </p>
     </div>

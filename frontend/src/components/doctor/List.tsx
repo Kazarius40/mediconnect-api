@@ -25,14 +25,17 @@ export function List({
       doc.lastName,
       doc.email,
       doc.phone,
-      ...(doc.services?.flatMap((s) => [s.name, s.description || null]) ?? []),
-      ...(doc.clinics?.flatMap((c) => [c.name, c.address, c.email || null]) ??
-        []),
+      ...(doc.services?.flatMap((s) =>
+        [s.name, s.description].filter(Boolean),
+      ) ?? []),
+      ...(doc.clinics?.flatMap((c) =>
+        [c.name, c.address, c.email].filter(Boolean),
+      ) ?? []),
     ]),
   );
 
   if (!filteredDoctors.length) {
-    return <p className="doctor-empty">No doctors match your search.</p>;
+    return <p>No match your search.</p>;
   }
 
   return (
@@ -46,65 +49,61 @@ export function List({
           : [];
 
         return (
-          <li key={doc.id} className="doctor-list-item">
-            <p>
+          <li key={doc.id} className="doctor-list__item">
+            <p className="doctor-list__name">
               <strong>Name:</strong> {doc.lastName} {doc.firstName}
             </p>
             {doc.email && (
-              <p>
+              <p className="doctor-list__email">
                 <strong>Email:</strong> {doc.email}
               </p>
             )}
             {doc.phone && (
-              <p>
+              <p className="doctor-list__phone">
                 <strong>Phone:</strong> {doc.phone}
               </p>
             )}
 
-            {mode === 'default' && (
-              <>
-                {sortedServices.length ? (
-                  <div className="doctor-subsection">
-                    <strong>Services:</strong>
-                    <ul className="doctor-sublist">
-                      {sortedServices.map((s) => (
-                        <li key={s.id}>
-                          <span className="doctor-item-title">{s.name}</span>
-                          {s.description && (
-                            <p className="doctor-item-sub">{s.description}</p>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : (
-                  <p className="doctor-empty">No services listed</p>
-                )}
-              </>
+            {mode === 'default' && sortedServices.length > 0 && (
+              <div className="doctor-list__section">
+                <strong className="doctor-list__section-title">
+                  Services:
+                </strong>
+                <ul className="doctor-list__sublist">
+                  {sortedServices.map((s) => (
+                    <li key={s.id} className="doctor-list__sublist-item">
+                      <span className="doctor-list__sublist-item-name">
+                        {s.name}
+                      </span>
+                      {s.description && (
+                        <p className="doctor-list__sublist-item-desc">
+                          {s.description}
+                        </p>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
 
-            {mode === 'withClinics' && (
-              <>
-                {sortedClinics.length ? (
-                  <div className="doctor-subsection">
-                    <strong>Clinics:</strong>
-                    <ul className="doctor-sublist">
-                      {sortedClinics.map((c) => (
-                        <li key={c.id}>
-                          <span className="doctor-item-title">{c.name}</span>
-                          <p className="doctor-item-sub">
-                            {c.address}
-                            {c.phone && ` • ${c.phone}`}
-                            {c.email && ` • ${c.email}`}
-                          </p>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : (
-                  <p className="doctor-empty">No clinics listed</p>
-                )}
-              </>
+            {mode === 'withClinics' && sortedClinics.length > 0 && (
+              <div className="doctor-list__section">
+                <strong className="doctor-list__section-title">Clinics:</strong>
+                <ul className="doctor-list__sublist">
+                  {sortedClinics.map((c) => (
+                    <li key={c.id} className="doctor-list__sublist-item">
+                      <span className="doctor-list__sublist-item-name">
+                        {c.name}
+                      </span>
+                      <p className="doctor-list__sublist-item-desc">
+                        {c.address}
+                        {c.phone && ` • ${c.phone}`}
+                        {c.email && ` • ${c.email}`}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
           </li>
         );

@@ -1,4 +1,4 @@
-.container {
+.wrapper {
     max-width: 55rem;
     margin: 0 auto;
     padding: 1rem;
@@ -7,12 +7,12 @@
     gap: 1rem;
 }
 
-.title {
+.wrapper>h1 {
     font-size: 3rem;
     margin-bottom: 1rem;
 }
 
-.btn-create {
+.wrapper>button {
     width: 10rem;
     background-color: green;
     color: white;
@@ -23,11 +23,11 @@
     margin-bottom: 1rem;
 }
 
-.btn-create:hover {
+.wrapper>button:hover {
     background-color: darkgreen;
 }
 
-.search-input {
+.wrapper>label>input {
     width: 100%;
     max-width: 25rem;
     padding: 0.5rem;
@@ -37,6 +37,6 @@
     box-sizing: border-box;
 }
 
-.no-results {
+.wrapper>p {
     color: gray;
 }

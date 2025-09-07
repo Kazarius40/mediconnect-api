@@ -1,87 +1,121 @@
-.doctor-card {
+.card-wrapper {
     cursor: pointer;
-    border: 1px solid black;
-    border-radius: 16px;
-    padding: 16px;
-    box-shadow: 1px 1px 4px lightgray;
-    transition: all 0.2s;
+    border: 1px solid lightgray;
+    border-radius: 1rem;
+    padding: 1rem;
+    box-shadow: 0 1px 2px gray;
+    transition: all 0.2s ease-in-out;
+    background: white;
 }
 
-.doctor-card:hover {
-    box-shadow: 2px 2px 8px gray;
+.card-wrapper:hover {
+    box-shadow: 0 4px 8px gray;
     border-color: blue;
-    background-color: lightblue;
+    background: lightblue;
 }
 
-.doctor-card-title {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 8px;
+.card-wrapper>h2 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
 }
 
-.doctor-card-info {
-    font-size: 14px;
+.card-wrapper>p {
+    font-size: 0.8rem;
     color: gray;
+    margin-bottom: 0.2rem;
 }
 
-.doctor-detail-container {
-    max-width: 768px;
-    margin: 0 auto;
-    padding: 16px;
+.details-wrapper {
+    max-width: 95vw;
+    padding: 1rem;
 }
 
-.doctor-basic-info {
-    margin-bottom: 24px;
+.entity-sections-row {
+    display: flex;
+    gap: 16px;
+    width: 100%;
 }
 
-.doctor-section {
-    margin-top: 24px;
+.entity-section{
+    flex: 1;
+    box-sizing: border-box;
     border: 1px solid black;
     border-radius: 8px;
     padding: 16px;
     box-shadow: 1px 1px 4px lightgray;
 }
 
-.doctor-search-input {
+.entity-section>input {
     width: 100%;
-    padding: 8px;
-    margin-bottom: 16px;
-    border: 1px solid black;
-    border-radius: 8px;
+    padding: 0.5rem;
+    border: 1px solid lightgray;
+    border-radius: 0.5rem;
+    box-sizing: border-box;
 }
 
-.doctor-list {
-    list-style-type: disc;
+.entity-section>ul {
     margin-left: 20px;
     padding-left: 0;
 }
 
-.doctor-list-item {
+.entity-section>ul div {
+    font-size: 0.8rem;
+    color: gray;
+}
+
+.doctor-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.doctor-list__item {
     border: 1px solid black;
-    padding: 12px;
-    border-radius: 8px;
+    padding: 0.9rem;
+    border-radius: 0.5rem;
     box-shadow: 1px 1px 3px lightgray;
-    margin-bottom: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
-.doctor-subsection {
-    margin-top: 8px;
+.doctor-list__name,
+.doctor-list__email,
+.doctor-list__phone {
+    margin: 0;
 }
 
-.doctor-sublist {
-    list-style-type: disc;
+.doctor-list__section {
+    margin-top: 0.5rem;
+}
+
+.doctor-list__section-title {
+    font-weight: bold;
+}
+
+.doctor-list__sublist {
     margin-left: 20px;
     margin-top: 4px;
+    padding-left: 0;
 }
 
-.doctor-item-title {
+.doctor-list__sublist-item {
+    margin-bottom: 4px;
+}
+
+.doctor-list__sublist-item-name {
     font-weight: 500;
 }
 
-.doctor-item-sub {
-    font-size: 14px;
+.doctor-list__sublist-item-desc {
+    font-size: 0.8rem;
     color: gray;
-    margin: 2px 0;
+    margin: 0.2rem 0 0 0;
+}
+
+.doctor-list__empty {
+    font-style: italic;
+    color: gray;
 }
 
 .doctor-form {
@@ -107,9 +141,4 @@
 .doctor-btn-submit:disabled {
     opacity: 0.5;
     cursor: default;
-}
-
-.doctor-empty {
-    color: gray;
-    margin-top: 8px;
 }

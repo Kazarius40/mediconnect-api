@@ -34,14 +34,10 @@ export default function Details({
     '/services',
   );
 
-  const {
-    search,
-    setSearch,
-    filteredItems: filteredDoctors,
-  } = useSortedSearch(
+  const { search, setSearch } = useSortedSearch(
     doctors,
     (items) => sortByFields(items, ['lastName', 'firstName']),
-    ['firstName', 'lastName', 'email', 'phone'],
+    [],
   );
 
   return (
@@ -71,19 +67,17 @@ export default function Details({
         {doctors.length > 0 && (
           <input
             type="text"
-            placeholder="Search doctors by name, email, phone..."
+            placeholder="Search doctors or clinics..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="service-details-doctors-search"
           />
         )}
 
-        {filteredDoctors.length > 0 ? (
-          <List doctors={filteredDoctors} search={search} mode="withClinics" />
-        ) : (
-          <p className="service-details-doctors-none">
-            {doctors.length === 0 ? 'No doctors linked' : 'No matching doctors'}
-          </p>
+        <List doctors={doctors} search={search} mode="withClinics" />
+
+        {doctors.length === 0 && (
+          <p className="service-details-doctors-none">No doctors linked</p>
         )}
       </div>
 

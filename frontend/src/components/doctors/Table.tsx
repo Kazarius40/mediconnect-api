@@ -52,25 +52,23 @@ export default function Table({ doctors }: { doctors: Doctor[] }) {
   }, [doctors, searchTerm, sortBy, sortOrder]);
 
   return (
-    <div className="table-container">
-      <h1 className="table-title">Doctors</h1>
+    <div className="wrapper">
+      <h1>Doctors</h1>
 
       {user?.role === 'ADMIN' && (
-        <button
-          onClick={() => router.push('/admin/doctors/create')}
-          className="table-create-btn"
-        >
+        <button onClick={() => router.push('/admin/doctors/create')}>
           + Create Doctor
         </button>
       )}
 
-      <input
-        type="text"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        placeholder="Search doctors by name, phone or email"
-        className="table-search-input"
-      />
+      <label>
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Search doctors by name, phone or email"
+        />
+      </label>
 
       <SortControls<SortableFields>
         sortFields={sortFields}
@@ -80,9 +78,7 @@ export default function Table({ doctors }: { doctors: Doctor[] }) {
         onSortOrderChangeAction={setSortOrder}
       />
 
-      {filteredAndSorted.length === 0 && (
-        <p className="table-no-results">No doctors found.</p>
-      )}
+      {filteredAndSorted.length === 0 && <p>No doctors found.</p>}
 
       {filteredAndSorted.map((doctor) => (
         <Card

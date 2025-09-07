@@ -57,7 +57,7 @@ export default function Details({ doctor }: { doctor: Doctor }) {
   );
 
   return (
-    <div className="doctor-detail-container">
+    <div className="details-wrapper">
       <EntityHeader
         title={`${doctor.lastName} ${doctor.firstName}`}
         editPath={`/admin/doctors/${doctor.id}`}
@@ -66,7 +66,7 @@ export default function Details({ doctor }: { doctor: Doctor }) {
         showControls={isAdmin}
       />
 
-      <div className="doctor-basic-info">
+      <div>
         {doctor.phone && (
           <p>
             <strong>Phone:</strong> {doctor.phone}
@@ -83,72 +83,74 @@ export default function Details({ doctor }: { doctor: Doctor }) {
         />
       </div>
 
-      <div className="doctor-section">
-        <h2>Services</h2>
-        {services.length > 0 && (
-          <input
-            type="text"
-            placeholder="Search services by name or description..."
-            value={serviceSearch}
-            onChange={(e) => setServiceSearch(e.target.value)}
-            className="doctor-search-input"
-          />
-        )}
-        {filteredServices.length > 0 ? (
-          <ul className="doctor-list">
-            {filteredServices.map((s) => (
-              <li key={s.id}>
-                <span className="doctor-item-title">{s.name}</span>
-                {s.description && (
-                  <p className="doctor-item-sub">{s.description}</p>
-                )}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="doctor-empty">
-            {services.length === 0
-              ? 'No services linked'
-              : 'No matching services'}
-          </p>
-        )}
-      </div>
+      <div className="entity-sections-row">
+        <div className="entity-section">
+          <h2>Services</h2>
+          {services.length > 0 && (
+            <input
+              type="text"
+              placeholder="Search services by name or description..."
+              value={serviceSearch}
+              onChange={(e) => setServiceSearch(e.target.value)}
+            />
+          )}
+          {filteredServices.length > 0 ? (
+            <ul>
+              {filteredServices.map((s) => (
+                <li key={s.id}>
+                  <span>{s.name}</span>
+                  <div>
+                    <p>{s.description}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>
+              {services.length === 0
+                ? 'No services linked'
+                : 'No matching services'}
+            </p>
+          )}
+        </div>
 
-      <div className="doctor-section">
-        <h2>Clinics</h2>
-        {clinics.length > 0 && (
-          <input
-            type="text"
-            placeholder="Search clinics by name, address, phone or email..."
-            value={clinicSearch}
-            onChange={(e) => setClinicSearch(e.target.value)}
-            className="doctor-search-input"
-          />
-        )}
-        {filteredClinics.length > 0 ? (
-          <ul className="doctor-list">
-            {filteredClinics.map((c) => (
-              <li key={c.id}>
-                <span className="doctor-item-title">{c.name}</span>
-                <div className="doctor-item-sub">
-                  <p>{c.address}</p>
-                  <p>
-                    <strong>Phone:</strong> {c.phone}
-                  </p>
-                  {c.email && (
+        <div className="entity-section">
+          <h2>Clinics</h2>
+          {clinics.length > 0 && (
+            <input
+              type="text"
+              placeholder="Search clinics by name, address, phone or email..."
+              value={clinicSearch}
+              onChange={(e) => setClinicSearch(e.target.value)}
+            />
+          )}
+          {filteredClinics.length > 0 ? (
+            <ul>
+              {filteredClinics.map((c) => (
+                <li key={c.id}>
+                  <span>{c.name}</span>
+                  <div>
+                    <p>{c.address}</p>
                     <p>
-                      <strong>Email:</strong> {c.email}
+                      <strong>Phone:</strong> {c.phone}
                     </p>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="doctor-empty">
-            {clinics.length === 0 ? 'No clinics linked' : 'No matching clinics'}
-          </p>
-        )}
+                    {c.email && (
+                      <p>
+                        <strong>Email:</strong> {c.email}
+                      </p>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>
+              {clinics.length === 0
+                ? 'No clinics linked'
+                : 'No matching clinics'}
+            </p>
+          )}
+        </div>
       </div>
 
       {isConfirmOpen && (

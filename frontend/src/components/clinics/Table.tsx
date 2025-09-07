@@ -47,14 +47,11 @@ export default function Table({ clinics }: { clinics: Clinic[] }) {
   }, [clinics, searchTerm, sortBy, sortOrder]);
 
   return (
-    <div className="container">
-      <h1 className="title">Clinics</h1>
+    <div className="wrapper">
+      <h1>Clinics</h1>
 
       {user?.role === 'ADMIN' && (
-        <button
-          onClick={() => router.push('/admin/clinics/create')}
-          className="btn-create"
-        >
+        <button onClick={() => router.push('/admin/clinics/create')}>
           + Create Clinic
         </button>
       )}
@@ -65,7 +62,6 @@ export default function Table({ clinics }: { clinics: Clinic[] }) {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Search clinics by name, address, phone or email"
-          className="search-input"
         />
       </label>
 
@@ -77,9 +73,7 @@ export default function Table({ clinics }: { clinics: Clinic[] }) {
         onSortOrderChangeAction={setSortOrder}
       />
 
-      {filteredAndSorted.length === 0 && (
-        <p className="no-results">No clinics found.</p>
-      )}
+      {filteredAndSorted.length === 0 && <p>No clinics found.</p>}
 
       {filteredAndSorted.map((clinic) => (
         <Card

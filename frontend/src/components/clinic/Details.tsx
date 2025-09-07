@@ -27,22 +27,10 @@ export default function Details({ clinic }: { clinic: Clinic }) {
     '/clinics',
   );
 
-  const DOCTOR_SORT_FIELDS = ['lastName', 'firstName'] as const;
-  const DOCTOR_SEARCH_FIELDS = [
-    'firstName',
-    'lastName',
-    'email',
-    'phone',
-  ] as const;
-
-  const {
-    search,
-    setSearch,
-    filteredItems: filteredDoctors,
-  } = useSortedSearch(
+  const { search, setSearch } = useSortedSearch(
     doctors,
-    (items) => sortByFields(items, [...DOCTOR_SORT_FIELDS]),
-    [...DOCTOR_SEARCH_FIELDS],
+    (items) => sortByFields(items, ['lastName', 'firstName']),
+    [],
   );
 
   return (
@@ -55,7 +43,7 @@ export default function Details({ clinic }: { clinic: Clinic }) {
         showControls={isAdmin}
       />
 
-      <div className="details-info">
+      <div>
         <p>
           <strong>Address:</strong> {clinic.address}
         </p>
@@ -73,24 +61,18 @@ export default function Details({ clinic }: { clinic: Clinic }) {
         />
       </div>
 
-      <div className="details-doctors-section">
+      <div className="entity-section">
         <h2>Doctors</h2>
+
         {doctors.length > 0 && (
           <input
             type="text"
-            placeholder="Search doctors by name, email, phone..."
+            placeholder="Search doctors or services..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="input"
           />
         )}
-        {filteredDoctors.length > 0 ? (
-          <List doctors={filteredDoctors} search={search} />
-        ) : (
-          <p className="text-muted">
-            {doctors.length === 0 ? 'No doctors linked' : 'No matching doctors'}
-          </p>
-        )}
+        <List doctors={doctors} search={search} />
       </div>
 
       {isConfirmOpen && (

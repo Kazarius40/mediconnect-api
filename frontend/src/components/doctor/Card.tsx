@@ -11,17 +11,17 @@ interface DoctorCardProps {
 
 const Card = ({ doctor, onClick }: DoctorCardProps) => {
   return (
-    <div onClick={onClick} className="doctor-card">
-      <h2 className="doctor-card-title">
+    <div onClick={onClick} className="card-wrapper">
+      <h2>
         {doctor.lastName} {doctor.firstName}
       </h2>
       {doctor.phone && (
-        <p className="doctor-card-info">
+        <p>
           <strong>Phone:</strong> {doctor.phone}
         </p>
       )}
       {doctor.email && (
-        <p className="doctor-card-info">
+        <p>
           <strong>Email:</strong> {doctor.email}
         </p>
       )}
