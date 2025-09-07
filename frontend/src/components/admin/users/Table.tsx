@@ -9,13 +9,13 @@ export default function Table({ users }: { users: User[] }) {
   const router = useRouter();
 
   if (!users || users.length === 0) {
-    return <div className="no-users">No users found</div>;
+    return <div>No users found</div>;
   }
 
   return (
     <div className="table-container">
-      <h1 className="title">All Users</h1>
-      <table className="user-table">
+      <h1>All Users</h1>
+      <table>
         <thead>
           <tr>
             <th>ID</th>
@@ -29,7 +29,7 @@ export default function Table({ users }: { users: User[] }) {
           {users.map((u) => (
             <tr key={u.id} onClick={() => router.push(`/admin/users/${u.id}`)}>
               <td>{u.id}</td>
-              <td className="email">{u.email}</td>
+              <td className="table-container__email">{u.email}</td>
               <td>{`${u.firstName || ''} ${u.lastName || ''}`}</td>
               <td>{u.phone || '-'}</td>
               <td>{u.role}</td>

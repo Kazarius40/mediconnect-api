@@ -46,7 +46,7 @@ export default function Form({
     setValue,
     watch,
     setError,
-    formState: { isSubmitting },
+    formState: { isSubmitting, isValid },
   } = methods;
 
   const clinicIds = watch('clinicIds') || [];
@@ -101,9 +101,11 @@ export default function Form({
     label: s.name.trim(),
   }));
 
+  const isDisabled = isSubmitting || !isValid;
+
   return (
     <FormProvider {...methods}>
-      <form onSubmit={handleSubmit(onSubmit)} className="doctor-form">
+      <form onSubmit={handleSubmit(onSubmit)} className="form-wrapper">
         <FieldsGroup
           fields={['firstName', 'lastName', 'phone', 'email']}
           requiredFields={['firstName', 'lastName']}
@@ -125,7 +127,7 @@ export default function Form({
         <button
           type="submit"
           disabled={isSubmitting}
-          className="doctor-btn-submit"
+          className={isDisabled ? 'disabled' : 'enabled'}
         >
           {isSubmitting
             ? 'Saving...'

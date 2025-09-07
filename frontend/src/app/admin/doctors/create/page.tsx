@@ -6,8 +6,6 @@ import { FRONTEND_URL } from '@/config/frontend';
 import { ClinicShort } from '@/interfaces/clinic';
 import { ServiceShort } from '@/interfaces/service';
 
-import './style.css';
-
 export default async function DoctorCreate() {
   try {
     const [clinicsRes, servicesRes] = await Promise.all([
@@ -29,7 +27,7 @@ export default async function DoctorCreate() {
     const { services }: { services: ServiceShort[] } = await servicesRes.json();
 
     return (
-      <div className="page-container">
+      <>
         <EntityHeader
           title="Create Doctor"
           editPath=""
@@ -38,7 +36,7 @@ export default async function DoctorCreate() {
         />
 
         <Form allClinics={clinics} allServices={services} />
-      </div>
+      </>
     );
   } catch (error) {
     return <p className="error-message">Failed to load doctor</p>;

@@ -92,6 +92,7 @@ export default function Form({ clinic, allDoctors }: ClinicFormProps) {
           fields={['name', 'address', 'phone', 'email']}
           requiredFields={['name', 'address', 'phone']}
         />
+
         <MultiSelect
           label="Doctors"
           options={doctorOptions}

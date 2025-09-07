@@ -40,25 +40,23 @@ export default function Table({ services }: { services: Service[] }) {
   }, [services, searchTerm, sortBy, sortOrder]);
 
   return (
-    <div className="services-container">
-      <h1 className="services-title">Services</h1>
+    <div className="services-wrapper">
+      <h1>Services</h1>
 
       {user?.role === 'ADMIN' && (
-        <button
-          onClick={() => router.push('/admin/services/create')}
-          className="create-button"
-        >
+        <button onClick={() => router.push('/admin/services/create')}>
           + Create Service
         </button>
       )}
 
-      <input
-        type="text"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        placeholder="Search services by name or description"
-        className="search-input"
-      />
+      <label>
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Search services by name or description"
+        />
+      </label>
 
       <SortControls<SortableFields>
         sortFields={sortFields}
@@ -68,9 +66,7 @@ export default function Table({ services }: { services: Service[] }) {
         onSortOrderChangeAction={setSortOrder}
       />
 
-      {filteredAndSorted.length === 0 && (
-        <p className="no-results">No services found.</p>
-      )}
+      {filteredAndSorted.length === 0 && <p>No services found.</p>}
 
       {filteredAndSorted.map((service) => (
         <Card

@@ -36,7 +36,7 @@ export default function Form({ service, allDoctors }: ServiceFormProps) {
     setValue,
     watch,
     setError,
-    formState: { isSubmitting },
+    formState: { isSubmitting, isValid },
   } = methods;
 
   const doctorIds = watch('doctorIds') || [];
@@ -83,9 +83,11 @@ export default function Form({ service, allDoctors }: ServiceFormProps) {
     label: `${doc.lastName} ${doc.firstName}`,
   }));
 
+  const isDisabled = isSubmitting || !isValid;
+
   return (
     <FormProvider {...methods}>
-      <form onSubmit={handleSubmit(onSubmit)} className="service-form">
+      <form onSubmit={handleSubmit(onSubmit)} className="form-wrapper">
         <FieldsGroup
           fields={['name', 'description']}
           requiredFields={['name']}
@@ -102,7 +104,7 @@ export default function Form({ service, allDoctors }: ServiceFormProps) {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="service-form-submit"
+          className={isDisabled ? 'disabled' : 'enabled'}
         >
           {isSubmitting
             ? 'Saving...'

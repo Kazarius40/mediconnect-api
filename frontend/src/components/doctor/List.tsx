@@ -76,7 +76,7 @@ export function List({
                         {s.name}
                       </span>
                       {s.description && (
-                        <p className="doctor-list__sublist-item-desc">
+                        <p className="doctor-list__sublist-item">
                           {s.description}
                         </p>
                       )}
@@ -95,7 +95,7 @@ export function List({
                       <span className="doctor-list__sublist-item-name">
                         {c.name}
                       </span>
-                      <p className="doctor-list__sublist-item-desc">
+                      <p className="doctor-list__sublist-item">
                         {c.address}
                         {c.phone && ` • ${c.phone}`}
                         {c.email && ` • ${c.email}`}

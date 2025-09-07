@@ -41,7 +41,7 @@ export default function Details({
   );
 
   return (
-    <div className="service-details-container">
+    <div className="details-wrapper">
       <EntityHeader
         title={service.name}
         editPath={`/admin/services/${service.id}`}
@@ -50,7 +50,7 @@ export default function Details({
         showControls={isAdmin}
       />
 
-      <div className="service-details-info">
+      <div>
         <p>
           <strong>Description:</strong>{' '}
           {service.description || 'No description available'}
@@ -61,8 +61,8 @@ export default function Details({
         />
       </div>
 
-      <div className="service-details-doctors">
-        <h2 className="service-details-doctors-title">Doctors</h2>
+      <div className="entity-section">
+        <h2>Doctors</h2>
 
         {doctors.length > 0 && (
           <input
@@ -70,15 +70,9 @@ export default function Details({
             placeholder="Search doctors or clinics..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="service-details-doctors-search"
           />
         )}
-
         <List doctors={doctors} search={search} mode="withClinics" />
-
-        {doctors.length === 0 && (
-          <p className="service-details-doctors-none">No doctors linked</p>
-        )}
       </div>
 
       {isConfirmOpen && (

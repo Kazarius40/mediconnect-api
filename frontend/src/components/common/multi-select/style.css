@@ -54,8 +54,6 @@
 .selected .remove-button {
     border: none;
     background: none;
-    max-width: 0.7rem;
-    height: 0.7rem;
     display: flex;
     align-items: center;
     color: red;
@@ -63,6 +61,7 @@
 
 .selected .remove-button:hover {
     color: darkblue;
+    cursor: pointer;
 }
 
 .dropdown {

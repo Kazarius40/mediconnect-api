@@ -1,95 +1,74 @@
-.service-card {
+.card-wrapper {
     cursor: pointer;
-    border: 1px solid gray;
-    border-radius: 12px;
-    padding: 16px;
-    box-shadow: 0 1px 3px gray;
-    transition: all 0.2s;
-    background-color: white;
+    border: 1px solid lightgray;
+    border-radius: 1rem;
+    padding: 1rem;
+    box-shadow: 0 1px 2px gray;
+    transition: all 0.2s ease-in-out;
+    background: white;
 }
-
-.service-card:hover {
-    box-shadow: 0 4px 6px gray;
+.card-wrapper:hover {
+    box-shadow: 0 4px 8px gray;
     border-color: blue;
-    background-color: lightblue;
+    background: lightblue;
 }
 
-.service-card-title {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 8px;
-    color: black;
+.card-wrapper>h2 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
 }
 
-.service-card-description {
-    font-size: 14px;
+.card-wrapper>p {
+    font-size: 0.8rem;
     color: gray;
+    margin-bottom: 0.2rem;
 }
 
-.service-details-container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+.details-wrapper {
+    max-width: 95vw;
+    padding: 1rem;
 }
 
-.service-details-info {
-    margin-bottom: 24px;
-    gap: 8px;
-    display: flex;
-    flex-direction: column;
-}
-
-.service-details-doctors {
-    border: 1px solid gray;
-    border-radius: 8px;
-    padding: 16px;
-    box-shadow: 0 1px 3px gray;
-}
-
-.service-details-doctors-title {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 12px;
-    color: black;
-}
-
-.service-details-doctors-search {
+.entity-section>input {
     width: 100%;
-    padding: 8px;
-    border: 1px solid gray;
-    border-radius: 6px;
-    margin-bottom: 12px;
+    padding: 0.5rem;
+    border: 1px solid lightgray;
+    border-radius: 0.5rem;
+    box-sizing: border-box;
 }
 
-.service-details-doctors-none {
-    font-size: 14px;
-    color: gray;
-}
-
-.service-form {
+.form-wrapper {
+    max-width: 30rem;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    max-width: 600px;
+    margin: 0 auto;
+    box-sizing: border-box;
 }
 
-.service-form-submit {
-    background-color: blue;
+.form-wrapper>button {
+    width: 10rem;
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
     color: white;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 6px;
+    border-radius: 0.5rem;
     cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
-.service-form-submit:hover {
-    background-color: darkblue;
+.form-wrapper>button.enabled {
+    background-color: royalblue;
 }
 
-.service-form-submit:disabled {
-    opacity: 0.5;
+.form-wrapper>button.enabled:hover {
+    background-color: mediumblue;
+}
+
+.form-wrapper>button.disabled {
+    background-color: gray;
     cursor: not-allowed;
 }

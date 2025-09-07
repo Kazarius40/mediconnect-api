@@ -5,8 +5,6 @@ import Form from '@/components/service/Form';
 import { FRONTEND_URL } from '@/config/frontend';
 import { DoctorShort } from '@/interfaces/doctor';
 
-import './style.css';
-
 export default async function ServiceCreate() {
   try {
     const doctorsRes = await fetch(`${FRONTEND_URL}/api/doctors`, {
@@ -21,7 +19,7 @@ export default async function ServiceCreate() {
     const { doctors }: { doctors: DoctorShort[] } = await doctorsRes.json();
 
     return (
-      <div className="page-container">
+      <div>
         <EntityHeader
           title="Create Service"
           editPath=""
@@ -33,6 +31,6 @@ export default async function ServiceCreate() {
       </div>
     );
   } catch (error) {
-    return <p className="error-message">Failed to load service</p>;
+    return <p>Failed to load service</p>;
   }
 }
