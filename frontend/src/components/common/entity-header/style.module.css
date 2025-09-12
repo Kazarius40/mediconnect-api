@@ -2,7 +2,7 @@
     padding: 1rem;
 }
 
-.back-btn {
+.backBtn {
     display: inline-flex;
     gap: 0.5rem;
     margin-bottom: 1.5rem;
@@ -14,7 +14,7 @@
     cursor: pointer;
 }
 
-.back-btn:hover {
+.backBtn:hover {
     background-color: lightblue;
     color: darkblue;
 }
@@ -31,13 +31,13 @@
     margin: 0 auto 2rem auto;
 }
 
-.header__actions {
+.headerActions {
     display: flex;
     gap: 0.5rem;
     margin-bottom: 2rem;
 }
 
-.edit-btn {
+.editBtn {
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
     background-color: blue;
@@ -45,12 +45,12 @@
     cursor: pointer;
 }
 
-.edit-btn:hover {
+.editBtn:hover {
     background-color: darkblue;
     transform: scale(1.05);
 }
 
-.delete-btn {
+.deleteBtn {
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
     background-color: red;
@@ -58,7 +58,7 @@
     cursor: pointer;
 }
 
-.delete-btn:hover {
+.deleteBtn:hover {
     background-color: darkred;
     transform: scale(1.05);
 }

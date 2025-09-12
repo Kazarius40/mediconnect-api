@@ -1,8 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-
-import './style.css';
+import styles from './style.module.css';
 
 interface EntityHeaderProps {
   title: string;
@@ -21,20 +20,23 @@ export function EntityHeader({
 }: EntityHeaderProps) {
   const router = useRouter();
   return (
-    <div className="wrapper">
-      <button onClick={() => router.back()} className="back-btn">
+    <div className={styles.wrapper}>
+      <button onClick={() => router.back()} className={styles.backBtn}>
         <span>←</span> <span>{backText}</span>
       </button>
-      <div className="header">
+      <div className={styles.header}>
         <h1>{title}</h1>
         {showControls && (
-          <div className="header__actions">
-            <button onClick={() => router.push(editPath)} className="edit-btn">
+          <div className={styles.headerActions}>
+            <button
+              onClick={() => router.push(editPath)}
+              className={styles.editBtn}
+            >
               Edit
             </button>
             <button
               onClick={onDeleteClick ?? (() => {})}
-              className="delete-btn"
+              className={styles.deleteBtn}
             >
               Delete
             </button>
