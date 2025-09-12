@@ -6,7 +6,11 @@ Run Docker environment and initialize the database:
 
 # ✅ Create a .env file
 
-Create a [.env]() file in the **`root`** of the project based on [.env.example]() and fill in your environment variables.
+Before running Docker, create a `.env` file in the root of the project **based on `.env.example`**:
+
+```bash
+cp .env.example .env
+```
 
 How to get SMTP_PASS (Gmail App Password)
 
