@@ -29,6 +29,25 @@ Select Custom (Other), name it, for example, Mediconnect, and generate the passw
 Copy the generated password and paste it into SMTP_PASS in .env without spaces!
 
 
+---
+
+⚠️ **Important Note about Docker Containers**
+
+Before running the build, please make sure the container names in `docker-compose.yml` do not conflict with existing containers on your system.  
+For example, in this project they are:
+
+```
+services:
+  frontend:
+    container_name: mediconnect-frontend
+  api:
+    container_name: mediconnect-api
+  db:
+    container_name: mediconnect-db
+  nginx:
+    container_name: mediconnect-nginx
+```
+
 
 From the root of the project, run:
 ```bash
